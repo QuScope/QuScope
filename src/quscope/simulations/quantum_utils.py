@@ -190,7 +190,7 @@ class TEMQFT:
             N = len(data_1d)
             return amplitudes * norm / np.sqrt(N)
         
-    def qft_2d(self, data_2d, progress=True):
+    def qft_2d(self, data_2d, progress=False):
         """
         Perform 2D QFT using row-column decomposition.
         
@@ -199,7 +199,7 @@ class TEMQFT:
         data_2d : np.ndarray
             2D complex array.
         progress : bool
-            Print progress messages. Default is True.
+            Print progress messages. Default is False.
         
         Returns:
         --------
@@ -226,7 +226,7 @@ class TEMQFT:
             
         return result
     
-    def iqft_2d(self, data_2d, progress=True):
+    def iqft_2d(self, data_2d, progress=False):
         """
         Perform 2D iQFT using row-column decomposition.
         
@@ -235,7 +235,7 @@ class TEMQFT:
         data_2d : np.ndarray
             2D complex array.
         progress : bool
-            Print progress message. Default is True.
+            Print progress message. Default is False.
         
         Returns:
         --------

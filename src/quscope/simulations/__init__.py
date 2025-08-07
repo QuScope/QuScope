@@ -10,14 +10,18 @@ Classes:
 - TEMQFT: Necessary quantum transformations and algorithms for TEM simulations.
 """
 
-from quscope.simulations.wpo import ThinCTEM
-from quscope.simulations.multislice import ThickCTEM
-from quscope.simulations.quantum_utils import TEMQFT
+try:
+    from quscope.simulations.wpo import ThinCTEM  # type: ignore
+    from quscope.simulations.multislice import ThickCTEM  # type: ignore
+    from quscope.simulations.quantum_utils import TEMQFT  # type: ignore
+except Exception:
+    # Optional dependency or import issues should not break package import
+    ThinCTEM = None  # type: ignore
+    ThickCTEM = None  # type: ignore
+    TEMQFT = None  # type: ignore
 
 __version__ = "0.1.0"
-__author__ = "Roberto dos Reis and Sean D. Lam"
+__author__ = "Reis, Roberto and Lam, Sean"
 __all__ = [
-    ThinCTEM,
-    ThickCTEM,
-    TEMQFT
+    name for name in ("ThinCTEM", "ThickCTEM", "TEMQFT") if globals().get(name) is not None
 ]

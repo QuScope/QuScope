@@ -16,95 +16,57 @@ from scipy.special import kn
 KIRKLAND_SCATTERING_FACTOR = 14.4 # eV⋅Å
 
 class KirklandPotential:
-    """
-    Calculate atomic potentials using Kirkland parametrization.
-    """
-    
+    """Calculate atomic potentials using Kirkland parametrization."""
+
     def __init__(self, params_file='kirkland.json'):
-        """
-        Initialize with Kirkland parameters.
-        
-        Parameters:
-        -----------
-        params_file : str
-            Path to JSON file with Kirkland parameters.
-        """
         self.params_file = params_file
-        self.parameters = self.load_parameters()
-        
+        self.parameters = self.load_parameters() or {}
+
     def load_parameters(self):
-        """
-        Load Kirkland parameters from JSON file
-        
-        Returns:
-        --------
-        dict : contains element parameters
-        """
         try:
             with open(self.params_file, 'r') as f:
-                params = json.load(f)
-            return params
-        
+                return json.load(f)
         except FileNotFoundError:
-            print(f"Warning: {params} not found. Using default parameters.")
-    
+            print(f"Warning: Kirkland parameter file '{self.params_file}' not found. Using empty parameter set.")
+            return None
+        except json.JSONDecodeError as e:
+            print(f"Warning: Failed to parse Kirkland parameter file '{self.params_file}': {e}")
+            return None
+
     def kirkland_potential_2d(self, x_grid, y_grid, atom_x, atom_y, Z, element=None):
-        """
-        Calculate 2D projected atomic potential using Kirkland parametrization.
-        
-        Parameters:
-        -----------
-        x_grid, y_grid : np.ndarray
-            Coordinate grids.
-        atom_x, atom_y : float
-            Atom position.
-        Z : int
-            Atomic number.
-        element : str, optional
-            Element symbol (if not provided, will try to determine from Z).
-            
-        Returns:
-        --------
-        V : np.ndarray
-            Projected atomic potential in eV.
-        """
-        element = self.get_element_symbol(Z)
-        if element not in self.load_parameters:
+        element = element or self.get_element_symbol(Z)
+        if element not in self.parameters:
             raise ValueError(f"Element with Z={Z} ({element}) not found in Kirkland parameters")
-        
-        params = self.load_parameters[element]
+
+        params = self.parameters[element]
         a = np.array(params[0], dtype=float)
         b = np.array(params[1], dtype=float)
         c = np.array(params[2], dtype=float)
         d = np.array(params[3], dtype=float)
-        
+
         r2 = (x_grid - atom_x)**2 + (y_grid - atom_y)**2
-        r = np.sqrt(r2 + 1e-16) # Add small value to avoid division by zero
-        
+        r = np.sqrt(r2 + 1e-16)
+
         V = np.zeros_like(r, dtype=float)
-        
-        # Modified Bessel K0 terms
+
         for i in range(3):
             if b[i] > 0:
                 arg = 2 * np.pi * r * np.sqrt(b[i])
                 mask_small = arg < 50
-                mask_large = arg >= 50
-                
+                mask_large = ~mask_small
                 if np.any(mask_small):
                     V[mask_small] += 4 * np.pi**2 * a[i] * kn(0, arg[mask_small])
                 if np.any(mask_large):
                     x = arg[mask_large]
                     V[mask_large] += 4 * np.pi**2 * a[i] * np.sqrt(np.pi/(2*x)) * np.exp(-x)
-        
-        # Gaussian terms
+
         for i in range(3):
             if d[i] > 0:
                 V += 2 * np.pi**(3/2) * c[i] / d[i]**(3/2) * np.exp(-np.pi**2 * r2 / d[i])
-        
-        # Handle r=0
+
         center_mask = r < 1e-8
         if np.any(center_mask):
-            V_center = 0
+            V_center = 0.0
             for i in range(3):
                 if b[i] > 0:
                     small_arg = 2 * np.pi * 1e-8 * np.sqrt(b[i])
@@ -113,12 +75,11 @@ class KirklandPotential:
                 if d[i] > 0:
                     V_center += 2 * np.pi**(3/2) * c[i] / d[i]**(3/2)
             V[center_mask] = V_center
-        
-        V *= KIRKLAND_SCATTERING_FACTOR  # Scaling factor
+
+        V *= KIRKLAND_SCATTERING_FACTOR
         return V
-        
+
     def get_element_symbol(self, Z):
-        """Get element symbol from atomic number"""
         elements = {1: 'H', 2: 'He', 3: 'Li', 4: 'Be', 5: 'B', 6: 'C', 7: 'N', 8: 'O', 9: 'F', 10: 'Ne',
                    11: 'Na', 12: 'Mg', 13: 'Al', 14: 'Si', 15: 'P', 16: 'S', 17: 'Cl', 18: 'Ar', 19: 'K', 20: 'Ca',
                    21: 'Sc', 22: 'Ti', 23: 'V', 24: 'Cr', 25: 'Mn', 26: 'Fe', 27: 'Co', 28: 'Ni', 29: 'Cu', 30: 'Zn',

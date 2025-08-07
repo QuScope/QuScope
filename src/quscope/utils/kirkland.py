@@ -43,6 +43,8 @@ class KirklandPotential:
         try:
             with open(self.params_file, 'r') as f:
                 params = json.load(f)
+            return params
+        
         except FileNotFoundError:
             print(f"Warning: {params} not found. Using default parameters.")
     

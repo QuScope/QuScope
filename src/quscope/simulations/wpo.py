@@ -14,7 +14,7 @@ from quscope.simulations.quantum_utils import TEMQFT
 from quscope.utils.constants import PhysicalConstants
 from quscope.utils.kirkland import KirklandPotential
 
-class ThinCTEM():
+class ThinCTEM:
     """
     Quantum CTEM simulation for thin specimens using weak phase object approximation.
     
@@ -25,7 +25,7 @@ class ThinCTEM():
     - For CTEM at the moment
     """
     
-    def __init__(self, image_size=50.0, n_qubits=8, beam_energy=200e3):
+    def __init__(self, image_size=50.0, n_qubits=8, beam_energy=200e3, kirkland_params_file='kirkland.json'):
         """
         Initialize thin specimen simulator.
         
@@ -49,7 +49,7 @@ class ThinCTEM():
         self.sigma = PhysicalConstants.calculate_sigma(beam_energy)
         
         # Load Kirkland parameters
-        self.params = KirklandPotential(params_file='kirkland.json')
+        self.params = KirklandPotential(kirkland_params_file)
         
         # Set up QFTs
         self.qfts = TEMQFT(n_qubits)
@@ -118,7 +118,7 @@ class ThinCTEM():
         Returns:
         --------
         H : np.ndarray
-            Wave function after objective lens.
+            Transfer function.
         """
         k2 = kx**2 + ky**2
         k = np.sqrt(k2)
@@ -293,3 +293,14 @@ class ThinCTEM():
         plt.show()
         
         return fig, fig2
+
+# Kirkland example structure
+def create_five_atoms_example():
+    """Create the classic 5-atom example from Kirkland Figure 5.11"""
+    elements = ['C', 'Si', 'Cu', 'Au', 'U']
+    z_values = [6, 14, 29, 79, 92]
+    positions = []
+    for i in range(5):
+        x_pos = (i - 2) * 10.0
+        positions.append([x_pos, 0.0])
+    return positions, z_values, elements

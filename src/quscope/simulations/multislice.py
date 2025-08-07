@@ -20,7 +20,7 @@ class ThickCTEM:
     - Dynamical scattering effects
     """
     
-    def __init__(self, image_size=50.0, n_qubits=8, beam_energy=200e3):
+    def __init__(self, image_size=50.0, n_qubits=8, beam_energy=200e3, kirkland_params_file='kirkland.json'):
         """
         Initialize thick specimen simulator.
         
@@ -33,7 +33,6 @@ class ThickCTEM:
         beam_energy : float
             Electron beam energy in eV.
         """
-        super().__init__()
         
         self.image_size = image_size
         self.n_qubits = n_qubits
@@ -45,7 +44,7 @@ class ThickCTEM:
         self.sigma = PhysicalConstants.calculate_sigma(beam_energy)
         
         # Load Kirkland parameters
-        self.params = KirklandPotential(params_file='kirkland.json')
+        self.params = KirklandPotential(kirkland_params_file)
         
         # Set up QFTs
         self.qfts = TEMQFT(n_qubits)
@@ -385,3 +384,61 @@ class ThickCTEM:
                 intensity = results[thickness]['mean_intensity']
                 n_slices = results[thickness]['n_slices']
                 print(f"{thickness:8.1f}     | {intensity:12.4f}   | {n_slices:8d}")
+                
+# Kirkland example structure
+def create_gaas_structure(supercell_size=(6, 6, 20), a_gaas=5.65):
+    """
+    Create GaAs crystal structure oriented for [110] projection
+    
+    Parameters:
+    - supercell_size: (nx, ny, nz) repetitions of unit cell
+    - a_gaas: GaAs lattice constant in Angstroms
+    
+    Returns:
+    - List of atom dictionaries with 'position' and 'Z' keys
+    - Dictionary with structural information
+    """
+    nx, ny, nz = supercell_size
+    
+    # For [110] projection, unit cell dimensions:
+    unit_cell_x = a_gaas / np.sqrt(2)  # along [1-10]
+    unit_cell_y = a_gaas  # along [001]
+    unit_cell_z = a_gaas * np.sqrt(2)  # along [110]
+    
+    # Atomic positions in unit cell for [110] projection
+    unit_positions = [
+        # Ga atoms
+        {'x': 0, 'y': 0, 'z': 0, 'element': 'Ga', 'Z': 31},
+        {'x': 0.5, 'y': 0.5, 'z': 0.25, 'element': 'Ga', 'Z': 31},
+        # As atoms  
+        {'x': 0, 'y': 0.25, 'z': 0.125, 'element': 'As', 'Z': 33},
+        {'x': 0.5, 'y': 0.75, 'z': 0.375, 'element': 'As', 'Z': 33},
+    ]
+    
+    atoms_3d = []
+    
+    # Generate supercell
+    for i in range(nx):
+        for j in range(ny):
+            for k in range(nz):
+                for atom in unit_positions:
+                    x_pos = (i + atom['x']) * unit_cell_x
+                    y_pos = (j + atom['y']) * unit_cell_y
+                    z_pos = (k + atom['z']) * unit_cell_z
+                    
+                    atoms_3d.append({
+                        'position': [x_pos, y_pos, z_pos],
+                        'Z': atom['Z'],
+                        'element': atom['element']
+                    })
+    
+    structure_info = {
+        'unit_cell_dimensions': (unit_cell_x, unit_cell_y, unit_cell_z),
+        'supercell_size': supercell_size,
+        'total_atoms': len(atoms_3d),
+        'image_size_x': nx * unit_cell_x,
+        'image_size_y': ny * unit_cell_y,
+        'specimen_thickness': nz * unit_cell_z
+    }
+    
+    return atoms_3d, structure_info

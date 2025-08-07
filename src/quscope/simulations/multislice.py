@@ -114,6 +114,8 @@ class ThickCTEM:
         phase = self.sigma * V_slice * slice_thickness
         transmission = np.exp(1j * phase)
         
+        return transmission
+        
     def calculate_propagator(self, slice_thickness):
         """
         Calculate Fresnel propagator.

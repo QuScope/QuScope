@@ -5,13 +5,19 @@
 
 import os
 import sys
-# sys.path.insert(0, os.path.abspath('../../src')) # No longer needed, package is installed
+
+# Ensure the src/ directory is on sys.path for src-layout projects
+_THIS_DIR = os.path.dirname(__file__)
+_PROJECT_ROOT = os.path.abspath(os.path.join(_THIS_DIR, '..'))
+_SRC_DIR = os.path.join(_PROJECT_ROOT, 'src')
+if os.path.isdir(_SRC_DIR) and _SRC_DIR not in sys.path:
+    sys.path.insert(0, _SRC_DIR)
 
 # -- Project information -----------------------------------------------------
 
 project = 'QuScope'
-copyright = '2025, Roberto Reis'
-author = 'Roberto Reis'
+copyright = '2025, Roberto dos Reis and Sean Lam'
+author = 'Roberto dos Reis and Sean Lam'
 
 version = '0.1.0'
 release = '0.1.0'
@@ -24,15 +30,23 @@ extensions = [
     'sphinx.ext.napoleon',      # Support for Google and NumPy style docstrings
     'sphinx.ext.intersphinx',   # Link to other projects' documentation
     'sphinx.ext.viewcode',      # Add links to source code
-    'nbsphinx',               # Include Jupyter notebooks
+    # 'nbsphinx',               # Made optional below
     'myst_parser',            # Parse Markdown files like README.md
     'sphinx_rtd_theme',      # Read the Docs theme
     'sphinx.ext.githubpages', # Support for GitHub Pages
 ]
 
+# Try to enable nbsphinx if environment supports it
+try:
+    import nbsphinx  # noqa: F401
+    extensions.append('nbsphinx')
+    NBS_PHINX_AVAILABLE = True
+except Exception:
+    NBS_PHINX_AVAILABLE = False
+
 autodoc_member_order = 'bysource'
 
-autosummary_generate = True  # Enable automatic generation of stub files
+autosummary_generate = False  # Disable auto stub generation to avoid import-time issues
 
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
@@ -62,8 +76,10 @@ intersphinx_mapping = {
 source_suffix = {
     '.rst': 'restructuredtext',
     '.md': 'markdown',
-    '.ipynb': 'nbsphinx', # Add .ipynb for nbsphinx
 }
+if NBS_PHINX_AVAILABLE:
+    # Only register ipynb when nbsphinx is available
+    source_suffix['.ipynb'] = 'nbsphinx'
 
 templates_path = ['_templates']
 exclude_patterns = [
@@ -74,11 +90,22 @@ exclude_patterns = [
     'requirements.txt' # Exclude the docs requirements file itself
 ]
 
+# If nbsphinx is not available, exclude notebooks from the build
+if not NBS_PHINX_AVAILABLE:
+    exclude_patterns += ['**/*.ipynb', 'notebooks/**']
+
 # Mock imports for problematic/optional dependencies
 autodoc_mock_imports = [
     'torch',
-    'qiskit', 'qiskit_aer', 'qiskit.quantum_info', 'qiskit.quantum.info',
-    'quscope.simulations', 'quscope.simulations.quantum_utils', 'quscope.simulations.multislice', 'quscope.simulations.wpo',
+    'qiskit',
+    'qiskit_aer',
+    'qiskit_ibm_provider',
+    'qiskit.quantum_info',
+    'qiskit.quantum.info',
+    'quscope.simulations',
+    'quscope.simulations.quantum_utils',
+    'quscope.simulations.multislice',
+    'quscope.simulations.wpo',
 ]
 
 # -- Options for HTML output -------------------------------------------------

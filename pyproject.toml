@@ -10,7 +10,8 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
 authors = [
-    {name = "Roberto Reis", email = "roberto@example.com"},
+    {name = "Roberto dos Reis", email = "roberto@example.com"},
+    {name = "Sean Lam", email = ""},
 ]
 keywords = ["quantum", "computing", "microscopy", "EELS", "image-processing", "qiskit", "quantum-ml"]
 classifiers = [

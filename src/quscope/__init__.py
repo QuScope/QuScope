@@ -15,8 +15,8 @@ try:
 except _PkgNotFoundError:
     __version__ = "0.1.0+dev"
 
-# Import main modules
-from . import quantum_backend
+# Import main modules (avoid importing quantum_backend eagerly to prevent
+# optional qiskit_ibm_provider dependency during docs build)
 from . import image_processing
 from . import qml
 from . import eels_analysis
@@ -27,8 +27,7 @@ try:
 except Exception:
     simulations = None  # type: ignore
 
-# Import key classes and functions for easy access
-from .quantum_backend import QuantumBackendManager
+# Import key classes and functions for easy access (lazy import for backend)
 from .image_processing.quantum_encoding import (
     encode_image_to_circuit,
     EncodingMethod,
@@ -46,7 +45,6 @@ __all__ = [
     "__version__",
     
     # Modules
-    "quantum_backend",
     "image_processing", 
     "qml",
     "eels_analysis",
@@ -59,7 +57,6 @@ if simulations is not None:
 # Add key classes and functions
 __all__ += [
     # Key classes
-    "QuantumBackendManager",
     "QuantumImageEncoder",
     
     # Key functions
@@ -71,3 +68,12 @@ __all__ += [
     "binarize_image",
     "encode_image_quantum",
 ]
+
+# Provide lazy access to QuantumBackendManager to avoid import-time side effects
+def __getattr__(name):
+    if name == "QuantumBackendManager" or name == "quantum_backend":
+        from . import quantum_backend as _qb
+        if name == "QuantumBackendManager":
+            return _qb.QuantumBackendManager
+        return _qb
+    raise AttributeError(f"module 'quscope' has no attribute {name!r}")

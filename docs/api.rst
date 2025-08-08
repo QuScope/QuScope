@@ -1,14 +1,6 @@
 API Reference
 =============
 
-.. autosummary::
-   :toctree: api/
-   :recursive:
-
-   quscope.eels_analysis
-   quscope.image_processing
-   quscope.qml
-
 .. toctree::
    :maxdepth: 2
    :caption: Package Modules:

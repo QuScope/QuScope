@@ -21,7 +21,7 @@ except Exception:
     TEMQFT = None  # type: ignore
 
 __version__ = "0.1.0"
-__author__ = "Reis, Roberto and Lam, Sean"
+__author__ = "Roberto dos Reis and Sean Lam"
 __all__ = [
     name for name in ("ThinCTEM", "ThickCTEM", "TEMQFT") if globals().get(name) is not None
 ]

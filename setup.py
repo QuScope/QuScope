@@ -29,7 +29,7 @@ version_str = get_version()
 setup(
     name="quantum-algo-microscopy",
     version=version_str,
-    author="Roberto Reis",
+    author="Roberto dos Reis and Sean Lam",
     author_email="roberto@example.com",
     description="Quantum Algorithm Microscopy - Advanced quantum computing analysis tools",
     long_description=long_description,

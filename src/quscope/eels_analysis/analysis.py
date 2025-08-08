@@ -33,19 +33,13 @@ from qiskit.primitives import Estimator, Sampler
 from qiskit.quantum_info import SparsePauliOp, Statevector, DensityMatrix, entropy, partial_trace
 from qiskit_algorithms.minimum_eigensolvers import VQE
 from qiskit_algorithms.optimizers import SPSA, COBYLA, ADAM
-from qiskit_aer import AerSimulator
+from qiskit_aer import Aer
 from qiskit_machine_learning.algorithms.classifiers import VQC
 from qiskit_machine_learning.neural_networks import SamplerQNN, EstimatorQNN
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
 
 from quscope.eels_analysis.eels_utils import ElementSubstitutionEngine, SpatialMappingEngine
 from quscope.eels_analysis.quantum_processing import QuantumCircuitLibrary, QuantumPreprocessor, QuantumFeatureExtractor, QuantumMLProcessor
-
-# Set random seed for reproducibility
-import random
-seed = 42
-np.random.seed(seed)
-random.seed(seed)
 
 class EELSAnalyzer:
     """
@@ -56,7 +50,7 @@ class EELSAnalyzer:
     
     def __init__(self, n_qubits=8):
         self.n_qubits = n_qubits
-        self.backend = AerSimulator(seed_simulator=seed)
+        self.backend = Aer.get_backend('qasm_simulator')
         self.estimator = Estimator()
         self.sampler = Sampler()
         

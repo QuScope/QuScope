@@ -1,15 +1,32 @@
 # 🔬 QuScope v0.1.0: Quantum Algorithms for Microscopy
 
-[![PyPI version](https://badge.fury.io/py/quscope.svg)](https://badge.fury.io/py/quscope)
+[![GitHub release](https://img.shields.io/github/v/release/QuScope/QuScope?include_prereleases&label=version)](https://github.com/QuScope/QuScope/releases)
 [![Documentation Status](https://readthedocs.org/projects/quscope/badge/?version=latest)](https://quscope.readthedocs.io/en/latest/?badge=latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Tests](https://github.com/QuScope/QuScope/workflows/Tests/badge.svg)](https://github.com/QuScope/QuScope/actions)
 
 Developers: Roberto dos Reis and Sean Lam
 
-**QuScope** is a comprehensive Python package for applying quantum computing algorithms to electron microscopy image processing and Electron Energy Loss Spectroscopy (EELS) analysis. Built on Qiskit, QuScope provides robust quantum circuit design and execution capabilities with seamless integration to quantum simulators and real quantum hardware.
+> Note: QuScope v0.1.0 is preparing for initial PyPI release. Install from source until the PyPI package is available.
+
+**QuScope** is a comprehensive Python package for applying quantum computing algorithms to electron microscopy image processing, Electron Energy Loss Spectroscopy (EELS) analysis, and electron diffraction analysis. Built on Qiskit, QuScope provides robust quantum circuit design and execution capabilities with seamless integration to quantum simulators and real quantum hardware.
 
 ## 🚀 **Quick Start**
+
+### Current Installation (Development)
+
+```bash
+# Clone the repository
+git clone https://github.com/QuScope/QuScope.git
+cd QuScope
+
+# Install in development mode
+pip install -e .
+```
+
+### After PyPI Release (Coming Soon)
 
 ```bash
 pip install quscope
@@ -69,46 +86,71 @@ print(f"Encoded into {circuit.num_qubits} qubits")
 ## Repository Structure
 
 ```
-quantum_algo_microscopy/
+QuScope/
 ├── notebooks/                      # Jupyter notebooks with examples
-│   └── complete_quantum_microscopy_examples.ipynb  # Comprehensive examples
+│   ├── complete_quantum_microscopy_examples.ipynb  # Comprehensive examples
+│   ├── image_denoising.ipynb       # Image denoising examples
+│   └── qml_image_encoding_example.ipynb  # QML examples
 ├── src/
 │   └── quscope/                    # Main package source
-│       ├── __init__.py
-│       ├── quantum_backend.py      # IBM Quantum backend management
+│       ├── eels_analysis/          # EELS analysis modules
+│       │   ├── __init__.py
+│       │   ├── preprocessing.py
+│       │   └── quantum_processing.py
+│       ├── electron_diffraction/   # Electron Diffraction analysis modules
 │       ├── image_processing/       # Quantum image processing modules
 │       │   ├── __init__.py
 │       │   ├── preprocessing.py
 │       │   ├── quantum_encoding.py
 │       │   ├── quantum_segmentation.py
-│       │   └── filtering.py        # (Placeholder for quantum filters)
-│       ├── eels_analysis/          # EELS analysis modules
+│       │   ├── filtering.py
+│       │   └── image_denoising.py  # Quantum-classical hybrid denoising
+│       ├── qml/                    # Quantum Machine Learning modules
 │       │   ├── __init__.py
-│       │   ├── preprocessing.py
-│       │   └── quantum_processing.py
-│       └── qml/                    # Quantum Machine Learning modules
-│           ├── __init__.py
-│           └── image_encoding.py   # (Integrates PiQture/INEQR)
+│       │   └── image_encoding.py
+│       ├── __init__.py
+│       └── quantum_backend.py      # IBM Quantum backend management
+├── docs/                           # Sphinx documentation
+│   ├── conf.py
+│   ├── index.rst
+│   └── notebooks/                  # Documentation notebooks
+├── tests/                          # Test suite
 ├── README.md                       # This file
+├── pyproject.toml                  # Modern Python packaging configuration
 ├── requirements.txt                # Project dependencies
-├── setup.py                        # Setup script for installation
-└── docs/                           # (Sphinx documentation - to be generated)
+└── .readthedocs.yaml              # Read the Docs configuration
 ```
 
 ## Installation
 
+### From PyPI (Coming Soon)
+
+> Status: QuScope v0.1.0 will be available on PyPI after the first official release is created on GitHub.
+
+```bash
+pip install quscope  # Available after v0.1.0 release
+```
+
+### Development Installation (Current)
+
+```bash
+git clone https://github.com/QuScope/QuScope.git
+cd QuScope
+pip install -e .
+```
+
 ### Prerequisites
 
-*   Python 3.8 or higher
+*   Python 3.9 or higher
 *   Qiskit (core, aer, ibm-provider) - see `requirements.txt` for specific versions.
 *   NumPy, SciPy, Matplotlib, Pillow, Pandas, Scikit-image, PiQture, etc. (see `requirements.txt`)
 
-### Setup
+### Development Setup
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/rmsreis/quantum_algo_microscopy.git
-    cd quantum_algo_microscopy
+    git clone https://github.com/QuScope/QuScope.git
+    cd QuScope
     ```
 
 2.  **Create and activate a virtual environment (recommended):**
@@ -117,17 +159,12 @@ quantum_algo_microscopy/
     source venv/bin/activate  # On Windows: venv\Scripts\activate
     ```
 
-3.  **Install dependencies:**
+3.  **Install in development mode:**
     ```bash
-    pip install -r requirements.txt
+    pip install -e .[docs,dev]
     ```
 
-4.  **Install the QuScope package in editable mode:**
-    ```bash
-    pip install -e .
-    ```
-
-5.  **Set up IBM Quantum Access (Optional, for running on IBM backends):**
+4.  **Set up IBM Quantum Access (Optional, for running on IBM backends):**
     *   Obtain an API token from your [IBM Quantum account](https://quantum.ibm.com/).
     *   Set the `IBMQ_TOKEN` environment variable:
         ```bash
@@ -296,10 +333,21 @@ except Exception as e:
 
 For more detailed examples, including data generation, visualization, and advanced usage, please see the Jupyter Notebook: `notebooks/complete_quantum_microscopy_examples.ipynb`.
 
-## API Documentation
+## 📚 Documentation
 
-Detailed API documentation for all modules and functions can be generated using Sphinx.
-(TODO: Add instructions on how to build Sphinx docs or link to hosted documentation).
+Full documentation is available at **[quscope.readthedocs.io](https://quscope.readthedocs.io)**
+
+The documentation includes:
+- **API Reference**: Complete documentation of all modules and functions
+- **Tutorials**: Step-by-step guides for common tasks
+- **Examples**: Jupyter notebook examples demonstrating key features
+- **Installation Guide**: Detailed setup instructions
+
+You can also build the documentation locally:
+```bash
+cd docs
+make html
+```
 
 ## Performance and Benchmarking
 
@@ -320,31 +368,53 @@ QuScope aims to bridge the gap between theoretical quantum algorithms and practi
 
 ## Scientific Publication
 
-This package is developed to support research in quantum algorithms for electron microscopy. If you are using QuScope for your research, please consider citing our work.
-(TODO: Add placeholder for an associated scientific paper citation and link once available.)
+This package is developed to support research in quantum algorithms for electron microscopy. If you use QuScope in your research, please cite:
 
-```
-@software{quscope_reis_2025,
+```bibtex
+@software{quscope_2025,
   author = {Reis, Roberto and Lam, Sean},
   title = {{QuScope: Quantum Algorithms for Advanced Electron Microscopy}},
+  version = {0.1.0},
   year = {2025},
   publisher = {GitHub},
   journal = {GitHub repository},
-  url = {https://github.com/rmsreis/quantum_algo_microscopy}
+  url = {https://github.com/QuScope/QuScope},
+  doi = {10.5281/zenodo.XXXXXXX}
 }
 ```
 
 ## Contributing
 
-Contributions to QuScope are welcome! If you'd like to contribute, please follow these steps:
+Contributions to QuScope are welcome! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
-1.  Fork the repository.
-2.  Create a new branch for your feature or bug fix (`git checkout -b feature/your-feature-name`).
-3.  Make your changes and commit them with clear, descriptive messages.
-4.  Ensure your code adheres to PEP 8 style guidelines and includes docstrings.
-5.  Add or update unit tests for your changes.
-6.  Push your branch to your fork (`git push origin feature/your-feature-name`).
-7.  Open a Pull Request to the `main` branch of the original repository.
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🔗 Links
+
+- **GitHub Repository**: [https://github.com/QuScope/QuScope](https://github.com/QuScope/QuScope)
+- **Documentation**: [https://quscope.readthedocs.io](https://quscope.readthedocs.io)
+- **PyPI Package**: [https://pypi.org/project/quscope/](https://pypi.org/project/quscope/)
+- **Issues**: [https://github.com/QuScope/QuScope/issues](https://github.com/QuScope/QuScope/issues)
+
+## 🤝 Support
+
+If you encounter any issues or have questions:
+1. Check the [documentation](https://quscope.readthedocs.io)
+2. Look through existing [issues](https://github.com/QuScope/QuScope/issues)
+3. Create a new issue with details about your problem
+
+---
+
+## 🛠️ Contributions
+
+To contribute to QuScope:
+1.  Make your changes and commit them with clear, descriptive messages.
+2.  Ensure your code adheres to PEP 8 style guidelines and includes docstrings.
+3.  Add or update unit tests for your changes.
+4.  Push your branch to your fork (`git push origin feature/your-feature-name`).
+5.  Open a Pull Request to the `main` branch of the original repository.
 
 Please make sure to update tests as appropriate.
 

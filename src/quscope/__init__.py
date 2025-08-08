@@ -41,7 +41,7 @@ from .image_processing.preprocessing import (
 from .qml.image_encoding import QuantumImageEncoder, encode_image_quantum
 
 __all__ = [
-    # Version
+    # Version (always available)
     "__version__",
     
     # Modules

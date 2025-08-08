@@ -20,8 +20,8 @@ For development or to get the latest features:
 
 .. code-block:: bash
 
-   git clone https://github.com/robertoreis/quantum_algo_microscopy.git
-   cd quantum_algo_microscopy
+   git clone https://github.com/QuScope/QuScope.git
+   cd quscope
    pip install -e ".[dev,docs]"
 
 ⚙️ **Requirements**

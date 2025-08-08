@@ -8,12 +8,12 @@ version = "0.1.0"
 description = "QuScope - Quantum algorithms for microscopy image processing and EELS analysis"
 readme = "README.md"
 requires-python = ">=3.9"
-license = "MIT"
+license = {text = "MIT"}
 authors = [
-    {name = "Roberto dos Reis", email = "roberto@example.com"},
-    {name = "Sean Lam", email = ""},
+    {name = "Roberto dos Reis", email = "robertomsreis@gmail.com"},
+    {name = "Sean Lam", email = "seanlam702@gmail.com"},
 ]
-keywords = ["quantum", "computing", "microscopy", "EELS", "image-processing", "qiskit", "quantum-ml"]
+keywords = ["quantum", "computing", "microscopy", "EELS", "image-processing", "qiskit", "quantum-ml", "electron-diffraction"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
@@ -33,13 +33,14 @@ dependencies = [
     "numpy>=1.21.0",
     "pillow>=8.0.0",
     "scipy>=1.7.0",
+    "scikit-learn>=1.0.0",
 ]
 
 [project.urls]
-Homepage = "https://quscope.readthedocs.io"
+Homepage = "https://github.com/QuScope/QuScope"
 Documentation = "https://quscope.readthedocs.io"
-Repository = "https://github.com/robertoreis/quantum_algo_microscopy.git"
-"Bug Tracker" = "https://github.com/robertoreis/quantum_algo_microscopy/issues"
+Repository = "https://github.com/QuScope/QuScope.git"
+"Bug Tracker" = "https://github.com/QuScope/QuScope/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -49,6 +50,8 @@ dev = [
     "flake8>=6.0.0",
     "mypy>=1.5.0",
     "pre-commit>=3.3.0",
+    "build>=0.10.0",
+    "twine>=4.0.0",
 ]
 docs = [
     "sphinx>=7.1.0",

@@ -13,13 +13,31 @@ from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union, Any, Callable, Set
 
 import numpy as np
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
-from qiskit.circuit.library import GroverOperator, PhaseOracle, ZGate
-from qiskit.quantum_info import Statevector
-from qiskit.circuit import Gate
-import matplotlib.pyplot as plt
 
-from .quantum_encoding import EncodingMethod, encode_image_to_circuit, InvalidImageError
+# Optional heavy imports with fallbacks
+try:
+    from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
+    from qiskit.circuit.library import GroverOperator, PhaseOracle, ZGate
+    from qiskit.quantum_info import Statevector
+    from qiskit.circuit import Gate
+    QISKIT_AVAILABLE = True
+except ImportError:
+    QISKIT_AVAILABLE = False
+    QuantumCircuit = None
+
+try:
+    import matplotlib.pyplot as plt
+    MATPLOTLIB_AVAILABLE = True
+except ImportError:
+    MATPLOTLIB_AVAILABLE = False
+    plt = None
+
+try:
+    from .quantum_encoding import EncodingMethod, encode_image_to_circuit, InvalidImageError
+except ImportError:
+    EncodingMethod = None
+    encode_image_to_circuit = None
+    InvalidImageError = Exception
 
 # Configure logging
 logger = logging.getLogger(__name__)

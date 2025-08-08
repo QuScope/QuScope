@@ -12,11 +12,25 @@ from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union, Any, Callable
 
 import numpy as np
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
-from qiskit.circuit import Parameter
-from qiskit.exceptions import QiskitError
-from qiskit.quantum_info import Statevector
-from PIL import Image
+
+# Optional heavy imports with fallbacks
+try:
+    from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
+    from qiskit.circuit import Parameter
+    from qiskit.exceptions import QiskitError
+    from qiskit.quantum_info import Statevector
+    QISKIT_AVAILABLE = True
+except ImportError:
+    QISKIT_AVAILABLE = False
+    QuantumCircuit = None
+    QiskitError = Exception
+
+try:
+    from PIL import Image
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
+    Image = None
 
 # Configure logging
 logger = logging.getLogger(__name__)

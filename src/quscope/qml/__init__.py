@@ -20,12 +20,14 @@ def __getattr__(name: str):  # noqa: D401
         try:
             module: ModuleType = importlib.import_module('.image_encoding', __name__)
             return getattr(module, name)
-        except Exception as exc:  # pragma: no cover – forward the original error lazily
+        except Exception as import_exc:  # pragma: no cover – forward the original error lazily
+            # Capture the exception in the closure
+            captured_exc = import_exc
             def _stub(*_args, **_kwargs):  # type: ignore
                 raise ImportError(
                     'INEQR encoding requires optional dependencies (torch, piqture).\n'
                     'Install them with:\n\n'
                     '    pip install "quscope[piqture,torch]"\n'
-                ) from exc
+                ) from captured_exc
             return _stub
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -6,12 +6,10 @@
 import os
 import sys
 
-# Ensure the src/ directory is on sys.path for src-layout projects
-_THIS_DIR = os.path.dirname(__file__)
-_PROJECT_ROOT = os.path.abspath(os.path.join(_THIS_DIR, '..'))
-_SRC_DIR = os.path.join(_PROJECT_ROOT, 'src')
-if os.path.isdir(_SRC_DIR) and _SRC_DIR not in sys.path:
-    sys.path.insert(0, _SRC_DIR)
+# Ensure src is on path for autodoc without installing package
+SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
+if os.path.isdir(SRC_PATH) and SRC_PATH not in sys.path:
+    sys.path.insert(0, SRC_PATH)
 
 # -- Project information -----------------------------------------------------
 
@@ -45,7 +43,6 @@ except Exception:
     NBS_PHINX_AVAILABLE = False
 
 autodoc_member_order = 'bysource'
-
 autosummary_generate = False  # Disable auto stub generation to avoid import-time issues
 
 napoleon_google_docstring = True
@@ -66,7 +63,7 @@ napoleon_attr_annotations = True
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
     'numpy': ('https://numpy.org/doc/stable/', None),
-    'scipy': ('https://docs.scipy.org/doc/scipy/', None), # Corrected URL
+    'scipy': ('https://docs.scipy.org/doc/scipy/', None),
     'matplotlib': ('https://matplotlib.org/stable/', None),
     'qiskit': ('https://docs.quantum.ibm.com/api/qiskit/', None),
     'pillow': ('https://pillow.readthedocs.io/en/stable/', None),
@@ -78,7 +75,6 @@ source_suffix = {
     '.md': 'markdown',
 }
 if NBS_PHINX_AVAILABLE:
-    # Only register ipynb when nbsphinx is available
     source_suffix['.ipynb'] = 'nbsphinx'
 
 templates_path = ['_templates']
@@ -87,25 +83,17 @@ exclude_patterns = [
     'Thumbs.db', 
     '.DS_Store', 
     '**.ipynb_checkpoints',
-    'requirements.txt' # Exclude the docs requirements file itself
+    'requirements.txt'
 ]
 
-# If nbsphinx is not available, exclude notebooks from the build
-if not NBS_PHINX_AVAILABLE:
-    exclude_patterns += ['**/*.ipynb', 'notebooks/**']
-
-# Mock imports for problematic/optional dependencies
+# Mock imports for problematic dependencies
 autodoc_mock_imports = [
-    'torch',
-    'qiskit',
-    'qiskit_aer',
-    'qiskit_ibm_provider',
-    'qiskit.quantum_info',
-    'qiskit.quantum.info',
-    'quscope.simulations',
-    'quscope.simulations.quantum_utils',
-    'quscope.simulations.multislice',
-    'quscope.simulations.wpo',
+    "qiskit",
+    "qiskit_aer",
+    "qiskit_ibm_provider",
+    "matplotlib",
+    "sklearn",
+    "torch",
 ]
 
 # -- Options for HTML output -------------------------------------------------
@@ -113,26 +101,14 @@ autodoc_mock_imports = [
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
-# Add logo (optional)
-# html_logo = "_static/logo.png"
-
 # Add custom CSS (optional)
 def setup(app):
-    # Check if the file exists before adding
     css_file = os.path.join(os.path.dirname(__file__), '_static', 'custom.css')
     if os.path.exists(css_file):
-        app.add_css_file('custom.css') # create docs/_static/custom.css
+        app.add_css_file('custom.css')
 
 # -- Options for nbsphinx ----------------------------------------------------
 
-# Execute notebooks before processing?
-# 'always' means always execute
-# 'never' means never execute
-# 'auto' means execute if no output files are present (good for CI)
 nbsphinx_execute = 'auto'
-
-# Allow errors during notebook execution? (Set to True to debug)
 nbsphinx_allow_errors = True
-
-# Timeout for notebook execution in seconds
-# nbsphinx_timeout = 180 # Increase if notebooks take longer
+# nbsphinx_timeout = 180

@@ -11,6 +11,7 @@ QuScope v0.1.0 Documentation
 
 - **Quantum Image Processing**: Encode and process microscopy images using quantum circuits
 - **EELS Analysis**: Quantum algorithms for Electron Energy Loss Spectroscopy data
+- **Electron Diffraction Analysis**: Quantum algorithms for Electron Diffraction analysis
 - **Quantum Machine Learning**: ML algorithms optimized for microscopy applications  
 - **Backend Management**: Seamless integration with quantum simulators and hardware
 - **Ready-to-Use Examples**: Comprehensive Jupyter notebooks and tutorials
@@ -74,8 +75,8 @@ Basic usage:
 🔗 **Links**
 ============
 
-- **Repository**: https://github.com/robertoreis/quantum_algo_microscopy
-- **Issues**: https://github.com/robertoreis/quantum_algo_microscopy/issues
+- **Repository**: https://github.com/QuScope/QuScope
+- **Issues**: https://github.com/QuScope/QuScope/issues
 - **PyPI**: https://pypi.org/project/quscope/
 
 📖 **Indices and Tables**

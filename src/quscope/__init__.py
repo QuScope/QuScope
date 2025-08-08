@@ -38,6 +38,7 @@ try:
     from . import eels_analysis
     _eels_analysis_available = True
 except ImportError:
+    eels_analysis = None
     _eels_analysis_available = False
 
 # Import key classes and functions for easy access (with fallbacks)

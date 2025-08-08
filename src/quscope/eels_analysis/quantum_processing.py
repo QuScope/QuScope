@@ -1008,7 +1008,12 @@ class QuantumMLProcessor:
         """
         feature_map = QuantumCircuitLibrary.feature_map_circuit(len(features[0]))
         quantum_kernel = self.create_quantum_kernel(feature_map)
-        
+
+        import random
+        seed = 42
+        np.random.seed(seed)
+        random.seed(seed)
+      
         try:
             # Calculate kernel matrix for self-similarity
             kernel_matrix = quantum_kernel.evaluate(x_vec=features)

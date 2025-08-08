@@ -19,6 +19,23 @@ QuantumFeatureExtractor : Class for extracting physically meaningful and interpr
 QuantumMLProcessor : Class for training a quantum machine learning model for materials characterization.
 """
 
+import numpy as np
+import matplotlib.pyplot as plt
+from pathlib import Path
+from scipy import signal, optimize, integrate, interpolate
+from scipy.ndimage import gaussian_filter1d
+from scipy.fft import fft, ifft, fftfreq
+from scipy.signal import hilbert
+from sklearn.cluster import KMeans, DBSCAN
+from sklearn.decomposition import PCA, FastICA
+from sklearn.metrics import silhouette_score
+from sklearn.mixture import GaussianMixture
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.manifold import TSNE
+from sklearn.neural_network import MLPRegressor
+import warnings
+warnings.filterwarnings('ignore')
+
 import qiskit
 from qiskit import QuantumCircuit, transpile, ClassicalRegister, QuantumRegister
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap, PauliFeatureMap, EfficientSU2

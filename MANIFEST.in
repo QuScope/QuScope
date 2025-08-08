@@ -16,6 +16,9 @@ include docs/requirements.txt
 # Include example notebooks
 recursive-include notebooks *.ipynb *.py *.md
 recursive-include notebooks *.png *.jpg *.jpeg *.gif
+# Exclude large notebooks from source distribution to keep PyPI package small
+recursive-exclude notebooks *.ipynb
+recursive-exclude docs/notebooks *.ipynb
 
 # Include test data and fixtures
 recursive-include tests *.py *.json *.txt *.png *.jpg
@@ -24,6 +27,9 @@ recursive-include tests *.py *.json *.txt *.png *.jpg
 include .readthedocs.yaml
 include pyproject.toml
 include setup.py
+
+# Ensure runtime data files are packaged
+include src/quscope/utils/kirkland.json
 
 # Exclude development and build artifacts
 global-exclude *.pyc

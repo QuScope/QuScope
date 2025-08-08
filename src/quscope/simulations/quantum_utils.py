@@ -21,7 +21,7 @@ try:
         from qiskit.quantum_info import Statevector  # type: ignore
     except Exception:
         try:
-            from qiskit.quantum.info import Statevector  # type: ignore
+            from qiskit.quantum_info import Statevector  # type: ignore
         except Exception:
             Statevector = None  # type: ignore
 except Exception:

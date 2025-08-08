@@ -31,6 +31,18 @@ from sklearn.neural_network import MLPRegressor
 import warnings
 warnings.filterwarnings('ignore')
 
+import qiskit
+from qiskit import QuantumCircuit, transpile, ClassicalRegister, QuantumRegister
+from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap, PauliFeatureMap, EfficientSU2
+from qiskit.primitives import Estimator, Sampler
+from qiskit.quantum_info import SparsePauliOp, Statevector, DensityMatrix, entropy, partial_trace
+from qiskit_algorithms.minimum_eigensolvers import VQE
+from qiskit_algorithms.optimizers import SPSA, COBYLA, ADAM
+from qiskit_aer import Aer
+from qiskit_machine_learning.algorithms.classifiers import VQC
+from qiskit_machine_learning.neural_networks import SamplerQNN, EstimatorQNN
+from qiskit_machine_learning.kernels import FidelityQuantumKernel
+
 class ElementSubstitutionEngine:
     """
     Engine for modeling element substitution and doping effects in EELS spectra.
@@ -588,7 +600,7 @@ class SpatialMappingEngine:
     
     def __init__(self, n_qubits=6):
         self.n_qubits = n_qubits
-        self.backend = AerSimulator(seed_simulator=seed)
+        self.backend = Aer.get_backend('qasm_simulator')
         self.spatial_data = {}
         self.maps = {}
     

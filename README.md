@@ -5,6 +5,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
+Developers: Roberto dos Reis and Sean Lam
+
 **QuScope** is a comprehensive Python package for applying quantum computing algorithms to electron microscopy image processing and Electron Energy Loss Spectroscopy (EELS) analysis. Built on Qiskit, QuScope provides robust quantum circuit design and execution capabilities with seamless integration to quantum simulators and real quantum hardware.
 
 ## 🚀 **Quick Start**
@@ -323,7 +325,7 @@ This package is developed to support research in quantum algorithms for electron
 
 ```
 @software{quscope_reis_2025,
-  author = {Reis, Roberto},
+  author = {Reis, Roberto and Lam, Sean},
   title = {{QuScope: Quantum Algorithms for Advanced Electron Microscopy}},
   year = {2025},
   publisher = {GitHub},

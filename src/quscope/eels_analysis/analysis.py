@@ -25,17 +25,8 @@ from sklearn.neural_network import MLPRegressor
 import warnings
 warnings.filterwarnings('ignore')
 
-import qiskit
-from qiskit import QuantumCircuit, transpile, ClassicalRegister, QuantumRegister
-from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap, PauliFeatureMap, EfficientSU2
-from qiskit.primitives import Estimator, Sampler
-from qiskit.quantum_info import SparsePauliOp, Statevector, DensityMatrix, entropy, partial_trace
-from qiskit_algorithms.minimum_eigensolvers import VQE
-from qiskit_algorithms.optimizers import SPSA, COBYLA, ADAM
-from qiskit_aer import AerSimulator
-from qiskit_machine_learning.algorithms.classifiers import VQC
-from qiskit_machine_learning.neural_networks import SamplerQNN, EstimatorQNN
-from qiskit_machine_learning.kernels import FidelityQuantumKernel
+from quscope.eels_analysis.eels_utils import ElementSubstitutionEngine, SpatialMappingEngine
+from quscope.eels_analysis.quantum_processing import QuantumCircuitLibrary, QuantumPreprocessor, QuantumFeatureExtractor, QuantumMLProcessor
 
 # Set random seed for reproducibility
 import random

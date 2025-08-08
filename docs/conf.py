@@ -182,6 +182,7 @@ autodoc_mock_imports = [
     "qiskit.providers.aer",
     "qiskit.circuit.library",
     "qiskit_ibm_provider",
+    "qiskit_algorithms",
     
     # Machine learning and data science
     "torch", 

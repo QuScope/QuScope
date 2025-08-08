@@ -9,7 +9,7 @@ import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
 from qiskit.circuit.library import QFT
 from qiskit_aer import AerSimulator
-from qiskit.quantum.info import Statevector
+from qiskit.quantum_info import Statevector
 
 class TEMQFT:
     """

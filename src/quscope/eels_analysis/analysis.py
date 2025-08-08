@@ -10,6 +10,7 @@ interpretation of EELS spectra from advanced microscopy analysis techniques.
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 from pathlib import Path
 from scipy import signal, optimize, integrate, interpolate
 from scipy.ndimage import gaussian_filter1d
@@ -36,6 +37,7 @@ from qiskit_aer import AerSimulator
 from qiskit_machine_learning.algorithms.classifiers import VQC
 from qiskit_machine_learning.neural_networks import SamplerQNN, EstimatorQNN
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
+
 from quscope.eels_analysis.eels_utils import ElementSubstitutionEngine, SpatialMappingEngine
 from quscope.eels_analysis.quantum_processing import QuantumCircuitLibrary, QuantumPreprocessor, QuantumFeatureExtractor, QuantumMLProcessor
 
@@ -3695,7 +3697,7 @@ class EELSAnalyzer:
         organic_elements = {'C', 'H', 'O', 'N', 'S', 'Cl', 'F', 'Br', 'I'}
         
         if has_carbon:
-            organic_fraction = len(set(element_list) & organic_elements) / len(elemen_list)
+            organic_fraction = len(set(element_list) & organic_elements) / len(element_list)
             base_confidence = 0.7 if has_hydrogen else 0.4
             
             # Check bonding type
@@ -3721,7 +3723,7 @@ class EELSAnalyzer:
                         classification['material_subclass'] = 'Oxygen-Containing Polymer'
                         classification['specific_identification'] = 'Polyester or Polyether'
                         classification['confidence'] = 0.75
-                        classifcation['classification_reasoning'].append(f'C/O ratio ({co_ratio:.1f}) suggests polyester/polyether')
+                        classification['classification_reasoning'].append(f'C/O ratio ({co_ratio:.1f}) suggests polyester/polyether')
                         
                 elif 'N' in element_list:
                     classification['material_subclass'] = 'Nitrogen-Containing Polymer'
@@ -3815,7 +3817,7 @@ class EELSAnalyzer:
             # Pure metal identification
             if len(element_list) == 1 and element_list[0] in all_metals:
                 metal = element_list[0]
-                classificaiton['material_subclass'] = 'Pure Metal'
+                classification['material_subclass'] = 'Pure Metal'
                 classification['specific_identification'] = f'Pure {metal.lower()}'
                 classification['confidence'] = 0.95
                 classification['classification_reasoning'].append(f'Single metallic element: {metal}')
@@ -4091,7 +4093,7 @@ class EELSAnalyzer:
                 elif element_set == {'In', 'Ga', 'Zn', 'O'}:
                     classification['specific_identification'] = 'Indium Gallium Zinc Oxide (IGZO)'
                     classification['confidence'] = 0.8
-                    classificaiton['classification_reasoning'].append('IGZO transparent conductor')
+                    classification['classification_reasoning'].append('IGZO transparent conductor')
                     
         # Organic semiconductors
         elif element_set <= {'C', 'H', 'N', 'O', 'S'}:

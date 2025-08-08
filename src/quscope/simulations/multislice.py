@@ -175,7 +175,7 @@ class ThickCTEM:
             z_start = i * actual_slice_thickness
             z_end = (i+1) * actual_slice_thickness
             
-            print(f"  Slice {i+1}/{n_slices}: z = {z_start:.1f} - {z_end:.1f} Å")
+            #print(f"  Slice {i+1}/{n_slices}: z = {z_start:.1f} - {z_end:.1f} Å")
             
             # Get atoms in slice
             atoms_in_slice = self.get_atoms_in_slice(atoms_3d, z_start, z_end)

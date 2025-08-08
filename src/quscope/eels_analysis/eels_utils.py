@@ -43,6 +43,8 @@ from qiskit_machine_learning.algorithms.classifiers import VQC
 from qiskit_machine_learning.neural_networks import SamplerQNN, EstimatorQNN
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
 
+from quscope.eels_analysis.quantum_processing import QuantumCircuitLibrary, QuantumPreprocessor, QuantumFeatureExtractor, QuantumMLProcessor
+
 class ElementSubstitutionEngine:
     """
     Engine for modeling element substitution and doping effects in EELS spectra.

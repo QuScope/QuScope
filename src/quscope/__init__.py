@@ -21,6 +21,12 @@ from . import image_processing
 from . import qml
 from . import eels_analysis
 
+# Optional: simulations (may depend on qiskit)
+try:
+    from . import simulations  # type: ignore
+except Exception:
+    simulations = None  # type: ignore
+
 # Import key classes and functions for easy access
 from .quantum_backend import QuantumBackendManager
 from .image_processing.quantum_encoding import (
@@ -44,7 +50,14 @@ __all__ = [
     "image_processing", 
     "qml",
     "eels_analysis",
-    
+]
+
+# Conditionally expose simulations when available
+if simulations is not None:
+    __all__.append("simulations")
+
+# Add key classes and functions
+__all__ += [
     # Key classes
     "QuantumBackendManager",
     "QuantumImageEncoder",

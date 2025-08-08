@@ -6,10 +6,28 @@ Quantum Fourier Transforms (QFT) and Inverse Quantum Fourier Transforms (iQFT).
 """
 
 import numpy as np
-from qiskit import QuantumCircuit, QuantumRegister
-from qiskit.circuit.library import QFT
-from qiskit_aer import AerSimulator
-from qiskit.quantum.info import Statevector
+
+# Optional Qiskit imports with graceful fallback
+QISKIT_AVAILABLE = True
+try:
+    from qiskit import QuantumCircuit, QuantumRegister  # type: ignore
+    from qiskit.circuit.library import QFT  # type: ignore
+    try:
+        from qiskit_aer import AerSimulator  # type: ignore
+    except Exception:  # Aer may be a separate optional package
+        AerSimulator = None  # type: ignore
+    # Support both modern and legacy import paths for Statevector
+    try:
+        from qiskit.quantum_info import Statevector  # type: ignore
+    except Exception:
+        try:
+            from qiskit.quantum.info import Statevector  # type: ignore
+        except Exception:
+            Statevector = None  # type: ignore
+except Exception:
+    QISKIT_AVAILABLE = False
+    QuantumCircuit = QuantumRegister = QFT = AerSimulator = Statevector = None  # type: ignore
+
 
 class TEMQFT:
     """
@@ -25,6 +43,11 @@ class TEMQFT:
         n_qubits : int
             Number of qubits used for the circuit.
         """
+        if not QISKIT_AVAILABLE or AerSimulator is None or Statevector is None:
+            raise ImportError(
+                "Qiskit and qiskit-aer are required for TEMQFT. Install with:"
+                " pip install qiskit qiskit-aer"
+            )
         self.n_qubits = n_qubits
         self.backend = AerSimulator()
         

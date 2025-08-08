@@ -74,8 +74,12 @@ exclude_patterns = [
     'requirements.txt' # Exclude the docs requirements file itself
 ]
 
-# Mock imports for problematic dependencies
-autodoc_mock_imports = ["torch"]
+# Mock imports for problematic/optional dependencies
+autodoc_mock_imports = [
+    'torch',
+    'qiskit', 'qiskit_aer', 'qiskit.quantum_info', 'qiskit.quantum.info',
+    'quscope.simulations', 'quscope.simulations.quantum_utils', 'quscope.simulations.multislice', 'quscope.simulations.wpo',
+]
 
 # -- Options for HTML output -------------------------------------------------
 

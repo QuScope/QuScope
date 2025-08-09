@@ -393,12 +393,17 @@ def create_gaas_structure(supercell_size=(6, 6, 20), a_gaas=5.65):
     Create GaAs crystal structure oriented for [110] projection
     
     Parameters:
-    - supercell_size: (nx, ny, nz) repetitions of unit cell
-    - a_gaas: GaAs lattice constant in Angstroms
+    -----------
+    supercell_size : tuple 
+        (nx, ny, nz) repetitions of unit cell.
+    a_gaas: float
+        GaAs lattice constant in Angstroms.
     
     Returns:
-    - List of atom dictionaries with 'position' and 'Z' keys
-    - Dictionary with structural information
+    atoms_3d : list
+        List of atom dictionaries with 'position' and 'Z' keys.
+    structure_info : dict
+        Dictionary with structural information.
     """
     nx, ny, nz = supercell_size
     
@@ -408,13 +413,22 @@ def create_gaas_structure(supercell_size=(6, 6, 20), a_gaas=5.65):
     unit_cell_z = a_gaas * np.sqrt(2)  # along [110]
     
     # Atomic positions in unit cell for [110] projection
-    unit_positions = [
-        # Ga atoms
-        {'x': 0, 'y': 0, 'z': 0, 'element': 'Ga', 'Z': 31},
-        {'x': 0.5, 'y': 0.5, 'z': 0.25, 'element': 'Ga', 'Z': 31},
-        # As atoms  
-        {'x': 0, 'y': 0.25, 'z': 0.125, 'element': 'As', 'Z': 33},
-        {'x': 0.5, 'y': 0.75, 'z': 0.375, 'element': 'As', 'Z': 33},
+    unit_atoms = [
+        # Ga-As dumbell pair 1
+        {'frac_pos': [0.0, 0.0, 0.0], 'element': 'Ga', 'Z': 31},
+        {'frac_pos': [0.0, 0.0, 0.25], 'element': 'As', 'Z': 33},
+        
+        # Ga-As dumbell pair 2
+        {'frac_pos': [0.5, 0.5, 0.0], 'element': 'Ga', 'Z': 31},
+        {'frac_pos': [0.5, 0.5, 0.25], 'element': 'As', 'Z': 33},
+        
+        # As-Ga dumbell pair 3 (offset)
+        {'frac_pos': [0.0, 0.5, 0.5], 'element': 'As', 'Z': 33},
+        {'frac_pos': [0.0, 0.5, 0.75], 'element': 'Ga', 'Z': 31},
+        
+        # As-Ga dumbell pair 4 (offset)
+        {'frac_pos': [0.5, 0.0, 0.5], 'element': 'As', 'Z': 33},
+        {'frac_pos': [0.5, 0.0, 0.75], 'element': 'Ga', 'Z': 31},
     ]
     
     atoms_3d = []
@@ -423,24 +437,32 @@ def create_gaas_structure(supercell_size=(6, 6, 20), a_gaas=5.65):
     for i in range(nx):
         for j in range(ny):
             for k in range(nz):
-                for atom in unit_positions:
-                    x_pos = (i + atom['x']) * unit_cell_x
-                    y_pos = (j + atom['y']) * unit_cell_y
-                    z_pos = (k + atom['z']) * unit_cell_z
+                for atom in unit_atoms:
+                    fx, fy, fz = atom['frac_pos']
+                    x_pos = (i + fx) * unit_cell_x
+                    y_pos = (j + fy) * unit_cell_y
+                    z_pos = (k + fz) * unit_cell_z
                     
                     atoms_3d.append({
                         'position': [x_pos, y_pos, z_pos],
                         'Z': atom['Z'],
                         'element': atom['element']
                     })
+                    
+    # Calculate structure information
+    image_size_x = nx * unit_cell_x
+    image_size_y = ny * unit_cell_y
+    specimen_thickness = nz * unit_cell_z
     
     structure_info = {
+        'crystal_system': 'GaAs [110] projection',
         'unit_cell_dimensions': (unit_cell_x, unit_cell_y, unit_cell_z),
         'supercell_size': supercell_size,
         'total_atoms': len(atoms_3d),
-        'image_size_x': nx * unit_cell_x,
-        'image_size_y': ny * unit_cell_y,
-        'specimen_thickness': nz * unit_cell_z
+        'image_size_x': image_size_x,
+        'image_size_y': image_size_y,
+        'specimen_thickness': specimen_thickness,
+        'zone_axis': '[110]'
     }
     
     return atoms_3d, structure_info

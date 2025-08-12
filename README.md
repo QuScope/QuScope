@@ -106,6 +106,16 @@ QuScope/
 │       ├── qml/                    # Quantum Machine Learning modules
 │       │   ├── __init__.py
 │       │   └── image_encoding.py
+│       ├── simulations/            # Simulation modules
+│       │   ├── __init__.py
+│       │   ├── multislice.py       # Multislice methods
+│       │   ├── quantum_utils.py    # Quantum algorithms for simulations
+│       │   └── wpo.py              # Weak phase object approximation calculations
+│       ├── utils/                  # Utility modules
+│       │   ├── __init__.py
+│       │   ├── constants.py        # Physical constants
+│       │   ├── kirkland.json       # Kirkland parameters
+│       │   └── kirkland.py         # Atomic potential calculations
 │       ├── __init__.py
 │       └── quantum_backend.py      # IBM Quantum backend management
 ├── docs/                           # Sphinx documentation

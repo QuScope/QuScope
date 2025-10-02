@@ -27,7 +27,7 @@ rm README.md.bak
 
 echo "✅ README.md updated successfully!"
 echo ""
-echo "📝 Don't forget to:"
+echo "Don't forget to:"
 echo "1. Commit and push the updated README"
 echo "2. Verify the PyPI package: https://pypi.org/project/quscope/"
 echo "3. Test installation: pip install quscope"

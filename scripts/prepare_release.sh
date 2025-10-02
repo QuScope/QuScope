@@ -1,7 +1,7 @@
 #!/bin/bash
 # Pre-release checklist and helper script for QuScope
 
-echo "🔬 QuScope v0.1.0 Release Preparation"
+echo "QuScope v0.1.0 Release Preparation"
 echo "====================================="
 
 echo ""
@@ -26,9 +26,9 @@ echo ""
 echo "🧪 Running Tests:"
 echo "-----------------"
 if [ -d "tests" ]; then
-    python -m pytest tests/ -v || echo "⚠️  Some tests failed or no tests found"
+    python -m pytest tests/ -v || echo "Warning: Some tests failed or no tests found"
 else
-    echo "⚠️  No tests directory found"
+    echo "Warning: No tests directory found"
 fi
 
 echo ""
@@ -44,17 +44,17 @@ python -m twine check dist/*
 echo "✅ Package structure verified"
 
 echo ""
-echo "📚 Documentation Check:"
+echo "Documentation Check:"
 echo "-----------------------"
 if [ -f "docs/Makefile" ]; then
     cd docs && make html && cd ..
     echo "✅ Documentation built successfully"
 else
-    echo "⚠️  Documentation build skipped"
+    echo "Warning: Documentation build skipped"
 fi
 
 echo ""
-echo "🚀 Ready for Release!"
+echo "Ready for Release!"
 echo "====================="
 echo ""
 echo "Next Steps:"

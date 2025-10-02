@@ -50,7 +50,7 @@ Welcome to the QuScope tutorials! These guides will walk you through the key fea
 - :doc:`performance_optimization` - Optimize your quantum algorithms
 - :doc:`hardware_deployment` - Deploy on real quantum hardware
 
-📚 **Prerequisites**
+**Prerequisites**
 -------------------
 
 Before starting these tutorials, you should have:
@@ -60,7 +60,7 @@ Before starting these tutorials, you should have:
 - Basic knowledge of quantum computing (helpful but not required)
 - QuScope installed (see :doc:`../installation`)
 
-🔗 **Additional Resources**
+**Additional Resources**
 ---------------------------
 
 - :doc:`../notebooks` - Interactive Jupyter notebooks

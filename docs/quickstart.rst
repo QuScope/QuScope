@@ -47,7 +47,7 @@ Set up a quantum backend for circuit execution:
    
    print("Measurement results:", result.get_counts())
 
-📊 **Quantum Machine Learning Example**
+**Quantum Machine Learning Example**
 =======================================
 
 Use QuScope for quantum machine learning on image data:
@@ -69,7 +69,7 @@ Use QuScope for quantum machine learning on image data:
    
    print(f"Encoded {len(encoded_circuits)} image patches")
 
-🔬 **EELS Analysis Example**
+**EELS Analysis Example**
 ============================
 
 Process electron energy loss spectroscopy data:
@@ -118,7 +118,7 @@ QuScope includes tools for visualizing quantum circuits and results:
    plt.tight_layout()
    plt.show()
 
-🚀 **Next Steps**
+**Next Steps**
 =================
 
 - Explore the :doc:`tutorials/index` for detailed guides

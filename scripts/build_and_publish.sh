@@ -21,7 +21,7 @@ echo "📦 Package contents:"
 tar -tzf dist/*.tar.gz | head -20
 
 echo ""
-echo "🚀 To publish to PyPI:"
+echo "To publish to PyPI:"
 echo "   Test PyPI: python -m twine upload --repository testpypi dist/*"
 echo "   Real PyPI: python -m twine upload dist/*"
 echo ""

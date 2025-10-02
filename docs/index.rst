@@ -6,7 +6,7 @@ QuScope v0.1.0 Documentation
 
 **QuScope** (Quantum Algorithm Microscopy) is a comprehensive Python package for applying quantum computing algorithms to electron microscopy data processing and analysis.
 
-🔬 **Key Features**
+**Key Features**
 ===================
 
 - **Quantum Image Processing**: Encode and process microscopy images using quantum circuits
@@ -16,7 +16,7 @@ QuScope v0.1.0 Documentation
 - **Backend Management**: Seamless integration with quantum simulators and hardware
 - **Ready-to-Use Examples**: Comprehensive Jupyter notebooks and tutorials
 
-🚀 **Quick Start**
+**Quick Start**
 ==================
 
 Install QuScope via pip:
@@ -40,7 +40,7 @@ Basic usage:
    
    print(f"QuScope version: {quscope.__version__}")
 
-📚 **Documentation Structure**
+**Documentation Structure**
 ==============================
 
 .. toctree::
@@ -72,7 +72,7 @@ Basic usage:
    changelog
    license
 
-🔗 **Links**
+**Links**
 ============
 
 - **Repository**: https://github.com/QuScope/QuScope

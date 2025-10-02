@@ -1,4 +1,4 @@
-# 🔬 QuScope v0.1.0: Quantum Algorithms for Microscopy
+# QuScope v0.1.0: Quantum Algorithms for Microscopy
 
 [![GitHub release](https://img.shields.io/github/v/release/QuScope/QuScope?include_prereleases&label=version)](https://github.com/QuScope/QuScope/releases)
 [![Documentation Status](https://readthedocs.org/projects/quscope/badge/?version=latest)](https://quscope.readthedocs.io/en/latest/?badge=latest)
@@ -13,7 +13,7 @@ Developers: Roberto dos Reis and Sean Lam
 
 **QuScope** is a comprehensive Python package for applying quantum computing algorithms to electron microscopy image processing, Electron Energy Loss Spectroscopy (EELS) analysis, and electron diffraction analysis. Built on Qiskit, QuScope provides robust quantum circuit design and execution capabilities with seamless integration to quantum simulators and real quantum hardware.
 
-## 🚀 **Quick Start**
+## Quick Start
 
 ### Current Installation (Development)
 
@@ -45,7 +45,7 @@ circuit = encode_image_to_circuit(image, method=EncodingMethod.AMPLITUDE)
 print(f"Encoded into {circuit.num_qubits} qubits")
 ```
 
-## ✨ **Key Features**
+## Key Features
 
 *   **IBM Quantum Integration**:
     *   Seamless connection to IBM Quantum backends using `QuantumBackendManager`.
@@ -333,7 +333,7 @@ except Exception as e:
 
 For more detailed examples, including data generation, visualization, and advanced usage, please see the Jupyter Notebook: `notebooks/complete_quantum_microscopy_examples.ipynb`.
 
-## 📚 Documentation
+## Documentation
 
 Full documentation is available at **[quscope.readthedocs.io](https://quscope.readthedocs.io)**
 
@@ -387,18 +387,18 @@ This package is developed to support research in quantum algorithms for electron
 
 Contributions to QuScope are welcome! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🔗 Links
+## Links
 
 - **GitHub Repository**: [https://github.com/QuScope/QuScope](https://github.com/QuScope/QuScope)
 - **Documentation**: [https://quscope.readthedocs.io](https://quscope.readthedocs.io)
 - **PyPI Package**: [https://pypi.org/project/quscope/](https://pypi.org/project/quscope/)
 - **Issues**: [https://github.com/QuScope/QuScope/issues](https://github.com/QuScope/QuScope/issues)
 
-## 🤝 Support
+## Support
 
 If you encounter any issues or have questions:
 1. Check the [documentation](https://quscope.readthedocs.io)
@@ -407,7 +407,7 @@ If you encounter any issues or have questions:
 
 ---
 
-## 🛠️ Contributions
+## Contributions
 
 To contribute to QuScope:
 1.  Make your changes and commit them with clear, descriptive messages.

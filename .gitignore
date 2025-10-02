@@ -178,3 +178,20 @@ cython_debug/
 
 # Quantum computing specific
 qiskit_cache/
+
+# Security - API tokens and credentials
+*.pypirc
+.pypirc
+*token*
+*secret*
+*credentials*
+*.pem
+*.key
+.env.local
+.env.*.local
+secrets/
+credentials/
+
+# Shell history (if accidentally added)
+.bash_history
+.zsh_history

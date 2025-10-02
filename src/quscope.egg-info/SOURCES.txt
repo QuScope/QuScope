@@ -7,7 +7,6 @@ pyproject.toml
 requirements-dev.txt
 requirements.txt
 setup.cfg
-setup.py
 docs/Makefile
 docs/api.rst
 docs/changelog.rst
@@ -43,14 +42,16 @@ src/quscope/quantum_backend.py
 src/quscope.egg-info/PKG-INFO
 src/quscope.egg-info/SOURCES.txt
 src/quscope.egg-info/dependency_links.txt
-src/quscope.egg-info/not-zip-safe
 src/quscope.egg-info/requires.txt
 src/quscope.egg-info/top_level.txt
 src/quscope/eels_analysis/__init__.py
+src/quscope/eels_analysis/analysis.py
+src/quscope/eels_analysis/eels_utils.py
 src/quscope/eels_analysis/preprocessing.py
 src/quscope/eels_analysis/quantum_processing.py
 src/quscope/image_processing/__init__.py
 src/quscope/image_processing/filtering.py
+src/quscope/image_processing/image_denoising.py
 src/quscope/image_processing/preprocessing.py
 src/quscope/image_processing/quantum_encoding.py
 src/quscope/image_processing/quantum_segmentation.py

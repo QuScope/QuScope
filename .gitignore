@@ -68,7 +68,17 @@ instance/
 .scrapy
 
 # Sphinx documentation
+# Sphinx documentation
 docs/_build/
+docs/_static/
+docs/_templates/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
 
 # PyBuilder
 .pybuilder/

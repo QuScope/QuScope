@@ -38,10 +38,12 @@ class QuantumMicroscopy(BaseQuantumAlgorithm):
     
     def build_circuit(self, **kwargs) -> QuantumCircuit:
         """Build quantum microscopy circuit."""
-        num_qubits = kwargs['num_qubits']
-        target_function = kwargs['target_function']
-        
         try:
+            # Validate and extract parameters
+            self.validate_parameters(**kwargs)
+            num_qubits = kwargs['num_qubits']
+            target_function = kwargs['target_function']
+            
             # Create quantum and classical registers
             qreg = QuantumRegister(num_qubits, 'q')
             creg = ClassicalRegister(num_qubits, 'c')
@@ -61,6 +63,9 @@ class QuantumMicroscopy(BaseQuantumAlgorithm):
             
             return circuit
             
+        except (ValidationError, KeyError) as e:
+            logger.error(f"Parameter error building quantum microscopy circuit: {e}")
+            raise QuantumCircuitError(f"Failed to build circuit: {e}")
         except Exception as e:
             logger.error(f"Error building quantum microscopy circuit: {e}")
             raise QuantumCircuitError(f"Failed to build circuit: {e}")

@@ -15,98 +15,65 @@ try:
 except _PkgNotFoundError:
     __version__ = "0.1.0+dev"
 
-# Import main modules with optional fallbacks
-try:
-    from . import quantum_backend
-    _quantum_backend_available = True
-except ImportError:
-    _quantum_backend_available = False
+# Import main modules (avoid importing quantum_backend eagerly to prevent
+# optional qiskit_ibm_provider dependency during docs build)
+from . import image_processing
+from . import qml
+from . import eels_analysis
 
+# Optional: simulations (may depend on qiskit)
 try:
-    from . import image_processing
-    _image_processing_available = True
-except ImportError:
-    _image_processing_available = False
+    from . import simulations  # type: ignore
+except Exception:
+    simulations = None  # type: ignore
 
-try:
-    from . import qml
-    _qml_available = True
-except ImportError:
-    _qml_available = False
-
-try:
-    from . import eels_analysis
-    _eels_analysis_available = True
-except ImportError:
-    eels_analysis = None
-    _eels_analysis_available = False
-
-# Import key classes and functions for easy access (with fallbacks)
-try:
-    from .quantum_backend import QuantumBackendManager
-    _backend_manager_available = True
-except ImportError:
-    _backend_manager_available = False
-
-try:
-    from .image_processing.quantum_encoding import (
-        encode_image_to_circuit,
-        EncodingMethod,
-        validate_image_array,
-        calculate_required_qubits
-    )
-    _encoding_available = True
-except ImportError:
-    _encoding_available = False
-
-try:
-    from .image_processing.preprocessing import (
-        preprocess_image,
-        binarize_image
-    )
-    _preprocessing_available = True
-except ImportError:
-    _preprocessing_available = False
-
-try:
-    from .qml.image_encoding import QuantumImageEncoder, encode_image_quantum
-    _qml_encoding_available = True
-except ImportError:
-    _qml_encoding_available = False
+# Import key classes and functions for easy access (lazy import for backend)
+from .image_processing.quantum_encoding import (
+    encode_image_to_circuit,
+    EncodingMethod,
+    validate_image_array,
+    calculate_required_qubits
+)
+from .image_processing.preprocessing import (
+    preprocess_image,
+    binarize_image
+)
+from .qml.image_encoding import QuantumImageEncoder, encode_image_quantum
 
 __all__ = [
     # Version (always available)
     "__version__",
+    
+    # Modules
+    "image_processing", 
+    "qml",
+    "eels_analysis",
 ]
 
-# Add modules if available
-if _quantum_backend_available:
-    __all__.append("quantum_backend")
-if _image_processing_available:
-    __all__.append("image_processing")
-if _qml_available:
-    __all__.append("qml")
-if _eels_analysis_available:
-    __all__.append("eels_analysis")
+# Conditionally expose simulations when available
+if simulations is not None:
+    __all__.append("simulations")
 
-# Add classes if available
-if _backend_manager_available:
-    __all__.append("QuantumBackendManager")
-if _qml_encoding_available:
-    __all__.append("QuantumImageEncoder")
+# Add key classes and functions
+__all__ += [
+    # Key classes
+    "QuantumImageEncoder",
+    
+    # Key functions
+    "encode_image_to_circuit",
+    "EncodingMethod",
+    "validate_image_array",
+    "calculate_required_qubits",
+    "preprocess_image",
+    "binarize_image",
+    "encode_image_quantum",
+]
 
-# Add functions if available
-if _encoding_available:
-    __all__.extend([
-        "encode_image_to_circuit",
-        "EncodingMethod",
-        "validate_image_array",
-        "calculate_required_qubits"
-    ])
-if _preprocessing_available:
-    __all__.extend([
-        "preprocess_image",
-        "binarize_image"
-    ])
-if _qml_encoding_available:
-    __all__.append("encode_image_quantum")
+# Provide lazy access to QuantumBackendManager to avoid import-time side effects
+def __getattr__(name):
+    if name == "QuantumBackendManager" or name == "quantum_backend":
+        from . import quantum_backend as _qb
+        if name == "QuantumBackendManager":
+            return _qb.QuantumBackendManager
+        return _qb
+    raise AttributeError(f"module 'quscope' has no attribute {name!r}")

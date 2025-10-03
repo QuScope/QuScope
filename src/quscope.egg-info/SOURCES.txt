@@ -44,6 +44,8 @@ src/quscope.egg-info/SOURCES.txt
 src/quscope.egg-info/dependency_links.txt
 src/quscope.egg-info/requires.txt
 src/quscope.egg-info/top_level.txt
+src/quscope/ctem/__init__.py
+src/quscope/ctem/kirkland_potential.py
 src/quscope/eels_analysis/__init__.py
 src/quscope/eels_analysis/analysis.py
 src/quscope/eels_analysis/eels_utils.py
@@ -67,3 +69,5 @@ src/quscope/utils/kirkland.json
 src/quscope/utils/kirkland.py
 src/utils/validation.py
 tests/test_quantum_microscopy.py
+tests/ctem/__init__.py
+tests/ctem/test_kirkland_potential.py

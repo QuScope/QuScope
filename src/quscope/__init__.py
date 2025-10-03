@@ -19,7 +19,8 @@ except _PkgNotFoundError:
 # optional qiskit_ibm_provider dependency during docs build)
 from . import image_processing
 from . import qml
-from . import eels_analysis
+# Temporarily disabled due to qiskit_algorithms compatibility issues
+# from . import eels_analysis
 
 # Optional: simulations (may depend on qiskit)
 try:
@@ -47,7 +48,7 @@ __all__ = [
     # Modules
     "image_processing", 
     "qml",
-    "eels_analysis",
+    # "eels_analysis",  # Temporarily disabled
 ]
 
 # Conditionally expose simulations when available

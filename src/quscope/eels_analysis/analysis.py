@@ -29,7 +29,8 @@ warnings.filterwarnings('ignore')
 import qiskit
 from qiskit import QuantumCircuit, transpile, ClassicalRegister, QuantumRegister
 from qiskit.circuit.library import RealAmplitudes, ZZFeatureMap, PauliFeatureMap, EfficientSU2
-from qiskit.primitives import Estimator, Sampler
+# Qiskit 2.0+ moved Estimator/Sampler to aer package
+from qiskit_aer.primitives import Estimator, Sampler
 from qiskit.quantum_info import SparsePauliOp, Statevector, DensityMatrix, entropy, partial_trace
 from qiskit_algorithms.minimum_eigensolvers import VQE
 from qiskit_algorithms.optimizers import SPSA, COBYLA, ADAM

@@ -46,6 +46,7 @@ src/quscope.egg-info/requires.txt
 src/quscope.egg-info/top_level.txt
 src/quscope/ctem/__init__.py
 src/quscope/ctem/kirkland_potential.py
+src/quscope/ctem/wpoa_simulator.py
 src/quscope/eels_analysis/__init__.py
 src/quscope/eels_analysis/analysis.py
 src/quscope/eels_analysis/eels_utils.py
@@ -71,3 +72,4 @@ src/utils/validation.py
 tests/test_quantum_microscopy.py
 tests/ctem/__init__.py
 tests/ctem/test_kirkland_potential.py
+tests/ctem/test_wpoa_simulator.py

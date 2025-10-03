@@ -82,19 +82,22 @@ psi = IFFT(psi_k)
        return circuit, norm
    ```
 
-**What's Still Classical**:
-1. ❌ **Potential calculation** - Kirkland potential computed with NumPy/SciPy
+**What's Still Classical (and that's OK)**:
+1. ✅ **Potential calculation** - Kirkland potential computed with NumPy/SciPy
    ```python
    V = np.zeros_like(r)
    V += 4 * pi**2 * a[i] * kn(0, arg)  # Modified Bessel function
    V += 2 * pi**(3/2) * c[i] / d[i]**(3/2) * np.exp(...)
    ```
+   **Note**: This is fine! These are just numerical parameters derived from atomic scattering factors. The quantum part is how the electron wave evolves through this potential.
 
-2. ❌ **Transmission function** - Computed classically
+**What's Still Classical (and MUST become quantum for pure Bloch wave)**:
+1. ❌ **Transmission function** - Phase grating computed classically
    ```python
    phase = self.sigma * V_total * slice_thickness
    transmission = np.exp(1j * phase)  # NumPy operation
    ```
+   **Must become**: Quantum controlled phase rotations based on potential values
 
 3. ❌ **fftshift operation** - Classical array manipulation
    ```python

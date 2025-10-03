@@ -220,25 +220,30 @@ def quantum_fftshift(circuit, qubits):
         circuit.swap(qubits[i], qubits[i + n//2])
 ```
 
-### Challenge 2: Storing Crystal Potential Quantumly
-**Problem**: Kirkland potential is computed classically
+### Challenge 2: Using Classical Potential in Quantum Simulation
+**Problem**: Need to apply phase shifts based on classically-computed potential values
 
-**Solution**: Quantum RAM (QRAM) or quantum state preparation
+**Solution**: Classical potential → Quantum controlled phase gates
 ```python
-def prepare_potential_quantum(circuit, potential_classical):
+def apply_potential_quantum(circuit, wave_qubits, potential_classical, sigma, dz):
     """
-    Encode crystal potential into quantum state
+    Apply transmission function using controlled phase gates
     
-    Options:
-    1. QRAM: Store V(x,y) in quantum accessible memory
-    2. Oracle: Quantum circuit that computes V(x,y)
-    3. Amplitude encoding: |V⟩ = Σ V(x,y)|x,y⟩
+    Strategy:
+    1. Compute potential classically (V(x,y) from Kirkland parameters)
+    2. For each spatial position, calculate phase = σ * V(x,y) * dz
+    3. Apply controlled phase rotation to quantum state
+    
+    This is valid! The potential is a parameter, like the Hamiltonian.
+    The quantum part is the wave function evolution through this potential.
     """
-    # Normalize potential for quantum state
-    V_normalized = potential_classical / np.linalg.norm(potential_classical)
-    
-    # Initialize quantum state with potential values
-    circuit.initialize(V_normalized.flatten(), potential_qubits)
+    # For each position (x,y)
+    for idx, (x, y) in enumerate(spatial_positions):
+        V_xy = potential_classical[idx]  # Classical value
+        phase = sigma * V_xy * dz  # Classical calculation
+        
+        # Quantum operation: apply phase to quantum state
+        circuit.p(phase, wave_qubits[idx])  # Phase gate
 ```
 
 ### Challenge 3: Quantum Measurement of Final Image

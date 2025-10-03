@@ -9,32 +9,29 @@
 
 Developers: Roberto dos Reis and Sean Lam
 
-> Note: QuScope v0.1.0 is preparing for initial PyPI release. Install from source until the PyPI package is available.
+**QuScope** is a Python framework integrating quantum computing algorithms with electron microscopy analysis. Built on Qiskit, QuScope provides quantum circuit implementations for image processing and EELS feature extraction, establishing a foundation for quantum-enhanced materials characterization.
 
-**QuScope** is a comprehensive Python package for applying quantum computing algorithms to electron microscopy image processing, Electron Energy Loss Spectroscopy (EELS) analysis, and electron diffraction analysis. Built on Qiskit, QuScope provides robust quantum circuit design and execution capabilities with seamless integration to quantum simulators and real quantum hardware.
+> **v0.1.0 Status**: Published on PyPI - This is a foundational release demonstrating quantum-classical integration patterns. See [Current Capabilities](#current-capabilities-v010) for details.
 
-## Quick Start
+## Installation
 
-### Current Installation (Development)
-
-```bash
-# Clone the repository
-git clone https://github.com/QuScope/QuScope.git
-cd QuScope
-
-# Install in development mode
-pip install -e .
-```
-
-### After PyPI Release (Coming Soon)
+QuScope v0.1.0 is available on PyPI:
 
 ```bash
 pip install quscope
 ```
 
+For development installation:
+
+```bash
+git clone https://github.com/QuScope/QuScope.git
+cd QuScope
+pip install -e .
+```
+
 ```python
 import quscope
-from quscope import EncodingMethod, encode_image_to_circuit
+from quscope.image_processing.quantum_encoding import encode_image_to_circuit, EncodingMethod
 import numpy as np
 
 # Create a sample image
@@ -45,31 +42,77 @@ circuit = encode_image_to_circuit(image, method=EncodingMethod.AMPLITUDE)
 print(f"Encoded into {circuit.num_qubits} qubits")
 ```
 
-## Key Features
+## Current Capabilities (v0.1.0)
+
+QuScope v0.1.0 provides a **foundational framework** for quantum-classical microscopy analysis:
+
+### ✅ Implemented Features
+
+**Image Processing**:
+- Multiple quantum encoding methods (Amplitude, Basis, Angle, FRQI, INEQR)
+- Grover's algorithm for image segmentation
+- Quantum-guided classical denoising (4×4 patches, 16 qubits)
+- Classical preprocessing utilities
+
+**EELS Analysis**:
+- Classical preprocessing (Richardson-Lucy, Kramers-Kronig)
+- Quantum feature extraction (parameterized circuits, 4-8 qubits)
+- Element identification (~20 common elements)
+- Property lookup from reference database
+
+**Backend Management**:
+- IBM Quantum integration
+- Simulator support (Aer, statevector)
+- Noise model capabilities
+
+### ⚠️ Important Notes
+
+**Current Limitations**:
+- EELS preprocessing is classical (quantum enhancement planned)
+- Element database covers ~20 elements (expansion ongoing)
+- Property predictions use reference lookup (not quantum-derived)
+- Image processing limited by NISQ constraints (small patches)
+- Most workflows use classical simulation
+
+**Not Yet Implemented** (Planned for Future):
+- Electron diffraction analysis (placeholder in v0.1.0)
+- Advanced QML models
+- Comprehensive materials database
+- Many-body effects analysis
+- Magnetic characterization
+
+## Key Features (Detailed)
 
 *   **IBM Quantum Integration**:
-    *   Seamless connection to IBM Quantum backends using `QuantumBackendManager`.
-    *   Support for API token authentication (via environment variable `IBMQ_TOKEN` or direct input).
-    *   Execution on simulators (e.g., `aer_simulator`) and real quantum hardware.
-    *   Selection of least busy backends and retrieval of backend properties.
-    *   Noise model integration for realistic simulations.
-*   **Advanced Quantum Image Encoding**:
-    *   Multiple encoding methods: Amplitude, Basis, Angle, Flexible, and FRQI (Flexible Representation of Quantum Images).
-    *   Integration with PiQture for INEQR (Improved Novel Enhanced Quantum Representation) encoding.
-    *   Support for grayscale and multi-channel images.
-    *   Utilities for analyzing encoding resource requirements (qubits, depth, gates).
-*   **Quantum Image Segmentation**:
-    *   Implementation of Grover's algorithm for various segmentation tasks.
-    *   Customizable oracles for:
-        *   Threshold-based segmentation.
-        *   Edge-based segmentation (placeholder for quantum edge detection).
-        *   Region-based segmentation (e.g., quantum region growing).
-        *   Pattern-based segmentation.
-    *   Automatic calculation of optimal Grover iterations.
-    *   Comprehensive `SegmentationResult` class for easy analysis and visualization.
-*   **Quantum EELS Analysis**:
-    *   Preprocessing utilities for EELS spectra (background subtraction, normalization).
-    *   Quantum Fourier Transform (QFT) for frequency analysis and peak detection in EELS data.
+    *   Connection to IBM Quantum backends via `QuantumBackendManager`
+    *   API token authentication (environment variable or direct input)
+    *   Execution on simulators (Aer) and real quantum hardware
+    *   Backend selection and noise model integration
+    
+*   **Quantum Image Encoding**:
+    *   Multiple encoding methods: Amplitude, Basis, Angle, FRQI
+    *   Optional INEQR encoding (requires PiQture)
+    *   Support for grayscale images
+    *   Resource analysis utilities (qubits, depth, gates)
+    
+*   **Quantum-Classical Image Denoising**:
+    *   Grover's algorithm for noise candidate identification
+    *   Quantum feature extraction (entropy, confidence, correlation)
+    *   Adaptive classical filtering guided by quantum features
+    *   Patch-based processing (4×4 patches, 16 qubits)
+    *   Performance metrics (SNR improvement, edge preservation)
+    
+*   **Image Segmentation**:
+    *   Grover's algorithm with customizable oracles
+    *   Threshold-based, edge-based, region-based segmentation
+    *   Automatic Grover iteration optimization
+    *   Visualization and analysis tools
+    
+*   **EELS Analysis Framework**:
+    *   **Classical preprocessing**: Background subtraction, normalization, Richardson-Lucy deconvolution, Kramers-Kronig analysis
+    *   **Quantum feature extraction**: Parameterized circuits (4-8 qubits) for spectral signatures
+    *   **Element identification**: Peak detection and database matching (~20 elements: C, N, O, Si, Fe, Cu, Al, Ti, Cr, Ni, B, Mg, Ca, Na, K, S, Cl, P, Mn, Co)
+    *   **Property lookup**: Reference-based material classification and properties
 *   **Synthetic Data Generation**:
     *   Functions to generate synthetic electron microscopy images with particles and noise.
     *   Functions to generate synthetic EELS spectra with customizable peaks and background.

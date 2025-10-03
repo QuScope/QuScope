@@ -47,49 +47,66 @@ Set up a quantum backend for circuit execution:
    
    print("Measurement results:", result.get_counts())
 
-**Quantum Machine Learning Example**
-=======================================
+**Image Denoising Example**
+=============================
 
-Use QuScope for quantum machine learning on image data:
+Use quantum-guided classical denoising on microscopy images:
 
 .. code-block:: python
 
-   from quscope.qml.image_encoding import QuantumImageEncoder
+   from quscope.image_processing.image_denoising import ImageDenoiser
+   import numpy as np
    
-   # Create encoder
-   encoder = QuantumImageEncoder(encoding_method=EncodingMethod.ANGLE)
+   # Create a noisy test image or load one
+   # For this example, create synthetic noisy image
+   clean_image = np.random.rand(64, 64)
+   noisy_image = clean_image + 0.3 * np.random.randn(64, 64)
    
-   # Encode multiple image patches
-   image_patches = [test_image, test_image * 0.5, test_image * 1.5]
+   # Initialize denoiser (4x4 patches = 16 qubits each)
+   denoiser = ImageDenoiser(patch_size=4, threshold=0.5)
    
-   encoded_circuits = []
-   for patch in image_patches:
-       circuit = encoder.encode(patch)
-       encoded_circuits.append(circuit)
+   # Process the image
+   results = denoiser.process_image_array(noisy_image)
    
-   print(f"Encoded {len(encoded_circuits)} image patches")
+   # Results include denoised image and quantum features
+   print(f"SNR Improvement: {results['snr_improvement']:.2f} dB")
+   print(f"Edge Preservation: {results['edge_preservation']:.3f}")
+   print(f"Mean Quantum Entropy: {results['mean_entropy']:.3f}")
+   
+   # Visualize results (shows original, denoised, difference, quantum features)
+   denoiser.visualize_results(results)
 
 **EELS Analysis Example**
 ============================
 
-Process electron energy loss spectroscopy data:
+Process electron energy loss spectroscopy data with quantum feature extraction:
 
 .. code-block:: python
 
-   from quscope.eels_analysis.quantum_processing import quantum_eels_filter
+   from quscope.eels_analysis.analysis import EELSAnalyzer
    from quscope.eels_analysis.preprocessing import normalize_spectrum
+   import numpy as np
    
    # Simulate EELS spectrum data
    energy_range = np.linspace(0, 1000, 256)  # eV
    spectrum = np.exp(-energy_range/100) + 0.1*np.random.normal(size=256)
    
-   # Preprocess the spectrum
-   normalized_spectrum = normalize_spectrum(spectrum)
+   # Create analyzer with 6-qubit quantum circuits
+   analyzer = EELSAnalyzer(n_qubits=6)
    
-   # Apply quantum filtering (this would create a quantum circuit for processing)
-   filtered_circuit = quantum_eels_filter(normalized_spectrum)
+   # Option 1: Analyze from array
+   results = analyzer.comprehensive_analysis_from_array(spectrum, energy_range)
    
-   print(f"EELS quantum filter circuit depth: {filtered_circuit.depth()}")
+   # Option 2: Analyze from MSA file
+   # results = analyzer.comprehensive_analysis('sample.msa')
+   
+   # Access results
+   print(f"Detected elements: {results['elements']}")
+   print(f"Quantum entropy: {results['quantum_features']['entropy']:.3f}")
+   print(f"Material type: {results['material_classification']}")
+   
+   # Visualize results
+   analyzer.visualize_results(results)
 
 📈 **Visualization and Analysis**
 =================================

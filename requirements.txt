@@ -9,6 +9,10 @@ scipy>=1.10.0,<2.0.0
 matplotlib>=3.7.0,<4.0.0
 pandas>=2.0.0,<3.0.0
 
+# Atomic structure and electron microscopy simulation
+ase>=3.22.0  # Atomic Simulation Environment
+abtem>=1.0.0  # ab initio TEM simulation
+
 # Data visualization
 seaborn>=0.12.0,<1.0.0
 plotly>=5.15.0,<6.0.0

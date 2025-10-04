@@ -18,7 +18,8 @@ Current Status: Phase 1 - Week 2
 
 Modules:
 - quantum_wave_function: Quantum encoding of electron wave functions ✅
-- circuit_optimization: Hardware-ready circuit optimization 🔄
+- circuit_optimization: Hardware-ready circuit optimization ✅
+- momentum_space: Enhanced momentum space operations 🔄
 - [TO BE ADDED] quantum_phase_grating: Quantum transmission function
 - [TO BE ADDED] quantum_propagator: Quantum Fresnel propagation
 - [TO BE ADDED] quantum_multislice: Full quantum multislice simulation
@@ -30,14 +31,26 @@ from .circuit_optimization import (
     HardwareTranspiler,
     benchmark_state_preparation,
 )
+from .momentum_space import (
+    MomentumSpaceConverter,
+    ParsevalValidator,
+    MomentumSpaceFilter,
+    analyze_momentum_distribution,
+    demonstrate_uncertainty_principle,
+)
 
 __all__ = [
     'QuantumWaveFunction',
     'StatePreparationOptimizer',
     'HardwareTranspiler',
     'benchmark_state_preparation',
+    'MomentumSpaceConverter',
+    'ParsevalValidator',
+    'MomentumSpaceFilter',
+    'analyze_momentum_distribution',
+    'demonstrate_uncertainty_principle',
 ]
 
 __version__ = '0.1.0'
-__phase__ = 'Phase 1 Week 2: Circuit Optimization for IBM Hardware'
+__phase__ = 'Phase 1 Week 2: Circuit Optimization & Momentum Space'
 __status__ = 'Active Development'

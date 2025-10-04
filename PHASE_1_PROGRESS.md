@@ -171,15 +171,48 @@ class QuantumWaveFunction:
 
 **Completed**: Oct 3, 2025
 
-### 📋 Task 1.5: Add Momentum Space Support
+### ✅ Task 1.5: Add Momentum Space Support [COMPLETE]
 
-**Status**: 📋 NEXT (Already have QFT/IQFT in Week 1)
+**Status**: ✅ COMPLETE
 
-**Goals**:
-- Direct k-space wave function encoding (QFT already implemented)
-- Enhanced momentum-space utilities
-- Parseval's theorem validation (energy conservation)
-- Bidirectional real ↔ reciprocal space conversions
+**Implementation**:
+- Created `momentum_space.py` (565+ lines, 98% coverage)
+- `MomentumSpaceConverter` class:
+  - create_qft_circuit(), create_iqft_circuit(): 2D Fourier transforms
+  - transform_to_momentum(), transform_to_real(): Space conversions
+  - get_momentum_grid(): Correct k-space grids with proper 2π factor
+- `ParsevalValidator` class:
+  - validate_transform(): Energy conservation (Parseval's theorem)
+  - validate_round_trip(): QFT→IQFT fidelity validation
+- `MomentumSpaceFilter` class:
+  - create_aperture_filter(): Objective aperture simulation
+  - create_lowpass_filter(): Smooth frequency cutoff
+  - apply_filter_classical(): Classical validation reference
+- Analysis utilities:
+  - analyze_momentum_distribution(): k-space statistics
+  - demonstrate_uncertainty_principle(): Heisenberg Δx·Δk ≥ 1/2
+
+**Test Results**: 21/21 tests passing ✅
+- MomentumSpaceConverter: 8 tests (QFT/IQFT, transformations, grid generation)
+- ParsevalValidator: 3 tests (energy conservation, round-trip validation)
+- MomentumSpaceFilter: 3 tests (aperture, lowpass, classical reference)
+- Momentum analysis: 2 tests (plane wave, Gaussian spread)
+- Uncertainty principle: 2 tests (validation of quantum mechanics)
+- Integration: 3 tests (complete pipeline validation)
+
+**Key Features**:
+- Proper momentum grid with 2π factor for angular frequencies
+- Parseval's theorem validated: ∫|ψ(x)|²dx = ∫|ψ̃(k)|²dk
+- Uncertainty principle demonstrated: Δx·Δk ≥ 1/2
+- k-space filtering ready for aperture and phase plate simulation
+- Full bidirectional real ↔ momentum space conversions
+
+**Fixes Applied**:
+- Corrected momentum grid to use 2π × np.fft.fftfreq for angular frequencies
+- Added fftshift to probability distributions to match shifted k-grids
+- Ensured plane wave (uniform state) correctly transforms to k=0 peak
+
+**Completed**: Oct 3, 2025
 
 ---
 
@@ -240,18 +273,18 @@ class QuantumWaveFunction:
 
 ## Progress Summary
 
-**Overall Phase 1**: 40% complete (4/10 tasks) 🎯
+**Overall Phase 1**: 50% complete (5/10 tasks) 🎯
 
 **Week 1 Status**: ✅ ALL TASKS COMPLETE (3/3)
 - ✅ Task 1.1: Encoding scheme selected (Amplitude encoding)
 - ✅ Task 1.2: State preparation implemented (344 lines, 100% coverage)
 - ✅ Task 1.3: Validation tests complete (34/34 passing, <1e-10 accuracy)
 
-**Week 2 Status**: ✅ Task 1.4 COMPLETE (1/2)
+**Week 2 Status**: ✅ ALL TASKS COMPLETE (2/2)
 - ✅ Task 1.4: Circuit optimization for IBM hardware (470+ lines, 82% coverage)
-- 📋 Task 1.5: Enhanced momentum space support (NEXT)
+- ✅ Task 1.5: Enhanced momentum space support (565+ lines, 98% coverage)
 
-**Current Milestone**: Week 2 In Progress - Hardware Optimization Complete!
+**Current Milestone**: Week 2 Complete! Ready for Week 3 Integration 🎉
 
 **Next Steps**:
 1. ✅ ~~Create quantum_ctem directory structure~~ DONE
@@ -259,8 +292,8 @@ class QuantumWaveFunction:
 3. ✅ ~~Write comprehensive tests~~ DONE (55 tests total)
 4. ✅ ~~Validate plane wave and Gaussian encoding~~ DONE (<1e-10 accuracy)
 5. ✅ ~~Optimize circuits for IBM hardware~~ DONE (Task 1.4)
-6. 📋 **NEXT**: Enhanced momentum space utilities (Task 1.5)
-7. 📋 Create validation notebook
+6. ✅ ~~Enhanced momentum space utilities~~ DONE (Task 1.5)
+7. 📋 **NEXT**: Create validation notebook
 8. 📋 Begin Week 3 - Integration with classical modules
 
 ---
@@ -314,18 +347,20 @@ class QuantumWaveFunction:
 - WPOA Graphene: 7/7 tests
 - Multislice Simulator: 25/25 tests (87% coverage)
 
-**Phase 1 (Quantum CTEM)**: 55/55 tests passing ✅
+**Phase 1 (Quantum CTEM)**: 76/76 tests passing ✅
 - Quantum Wave Function (Week 1): 34/34 tests (100% coverage)
-- Circuit Optimization (Week 2): 21/21 tests (82% coverage)
+- Circuit Optimization (Week 2 Task 1.4): 21/21 tests (82% coverage)
+- Momentum Space (Week 2 Task 1.5): 21/21 tests (98% coverage)
 
-**Total CTEM Tests**: 111/114 passing (3 intentionally skipped for notebook validation)
+**Total CTEM Tests**: 132/135 passing (3 intentionally skipped for notebook validation)
 
 **Combined Coverage**:
 - quantum_wave_function.py: 100% ⭐
-- circuit_optimization.py: 82% ✅
+- momentum_space.py: 98% ⭐
 - wpoa_simulator.py: 100% ⭐
 - kirkland_potential.py: 90% ✅
 - multislice_simulator.py: 87% ✅
+- circuit_optimization.py: 82% ✅
 
 **Hardware Readiness**:
 - All circuits transpilable to IBM native gates ✅

@@ -14,21 +14,30 @@ Phases:
 - Phase 5: Optimization & Hardware (Weeks 17-20)
 - Phase 6: Publication (Weeks 21-24)
 
-Current Status: Phase 1 - Week 1
+Current Status: Phase 1 - Week 2
 
 Modules:
-- quantum_wave_function: Quantum encoding of electron wave functions
+- quantum_wave_function: Quantum encoding of electron wave functions ✅
+- circuit_optimization: Hardware-ready circuit optimization 🔄
 - [TO BE ADDED] quantum_phase_grating: Quantum transmission function
 - [TO BE ADDED] quantum_propagator: Quantum Fresnel propagation
 - [TO BE ADDED] quantum_multislice: Full quantum multislice simulation
 """
 
 from .quantum_wave_function import QuantumWaveFunction
+from .circuit_optimization import (
+    StatePreparationOptimizer,
+    HardwareTranspiler,
+    benchmark_state_preparation,
+)
 
 __all__ = [
     'QuantumWaveFunction',
+    'StatePreparationOptimizer',
+    'HardwareTranspiler',
+    'benchmark_state_preparation',
 ]
 
 __version__ = '0.1.0'
-__phase__ = 'Phase 1: Quantum Wave Function Representation'
+__phase__ = 'Phase 1 Week 2: Circuit Optimization for IBM Hardware'
 __status__ = 'Active Development'

@@ -14,12 +14,13 @@ Phases:
 - Phase 5: Optimization & Hardware (Weeks 17-20)
 - Phase 6: Publication (Weeks 21-24)
 
-Current Status: Phase 1 - Week 2
+Current Status: Phase 1 - Week 3
 
 Modules:
 - quantum_wave_function: Quantum encoding of electron wave functions ✅
 - circuit_optimization: Hardware-ready circuit optimization ✅
-- momentum_space: Enhanced momentum space operations 🔄
+- momentum_space: Enhanced momentum space operations ✅
+- classical_integration: Quantum-classical bridge interfaces 🔄
 - [TO BE ADDED] quantum_phase_grating: Quantum transmission function
 - [TO BE ADDED] quantum_propagator: Quantum Fresnel propagation
 - [TO BE ADDED] quantum_multislice: Full quantum multislice simulation
@@ -38,6 +39,12 @@ from .momentum_space import (
     analyze_momentum_distribution,
     demonstrate_uncertainty_principle,
 )
+from .classical_integration import (
+    QuantumClassicalBridge,
+    WPOAQuantumInterface,
+    MultisliceQuantumInterface,
+    benchmark_quantum_classical_integration,
+)
 
 __all__ = [
     'QuantumWaveFunction',
@@ -49,8 +56,12 @@ __all__ = [
     'MomentumSpaceFilter',
     'analyze_momentum_distribution',
     'demonstrate_uncertainty_principle',
+    'QuantumClassicalBridge',
+    'WPOAQuantumInterface',
+    'MultisliceQuantumInterface',
+    'benchmark_quantum_classical_integration',
 ]
 
 __version__ = '0.1.0'
-__phase__ = 'Phase 1 Week 2: Circuit Optimization & Momentum Space'
+__phase__ = 'Phase 1 Week 3: Classical-Quantum Integration'
 __status__ = 'Active Development'

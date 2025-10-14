@@ -352,7 +352,9 @@ class EELSAnalyzer:
             
             'nanomaterials': {
                 'carbon_nanomaterials': {
-                    'types': ['graphene', 'carbon_nanotubes', 'fullerenes', 'carbon_dots'],
+                    # Removed explicit 'graphene' entry per project scope consolidation;
+                    # retain other carbon nanomaterial categories.
+                    'types': ['carbon_nanotubes', 'fullerenes', 'carbon_dots'],
                     'signature': ['C'],
                     'spectral_features': {
                         'pi_plasmon': (6,7), # eV
@@ -4507,7 +4509,8 @@ class EELSAnalyzer:
             
             # Need spctral analysis for specific identification
             if quantum_signature > 0.5:
-                classification['specific_identification'] = 'Graphene or Carbon Nanotubes'
+                # Use a generic carbon nanostructure identification (graphene removed)
+                classification['specific_identification'] = 'Carbon Nanotubes or Carbon Nanosheet'
                 classification['confidence'] = 0.7
             else:
                 classification['specific_identification'] = 'Carbon Nanostructure'
@@ -4762,8 +4765,8 @@ class EELSAnalyzer:
                 structure_prediction['dimensional_structure'] = '0D_quantum_confined'
             elif 'nanotubes' in specific_id:
                 structure_prediction['dimensional_structure'] = '1D_nanostructure'
-            elif 'graphene' in specific_id:
-                structure_prediction['dimensional_structure'] = '2D_layered'
+            elif 'carbon nanosheet' in specific_id.lower() or 'carbon nanotube' in specific_id.lower():
+                structure_prediction['dimensional_structure'] = '2D_layered_or_1D_tube'
         
         return structure_prediction
     

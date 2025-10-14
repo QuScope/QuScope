@@ -200,6 +200,38 @@ pip install -e .
 
 ### Development Setup
 
+Conda environment (recommended)
+-------------------------------
+
+We provide an example `environment.yml` tailored to this project. It creates a reproducible conda environment named `quantum` with abTEM, ASE and common scientific packages.
+
+Create and activate the environment:
+
+```bash
+conda env create -f environment.yml
+conda activate quantum
+```
+
+Install the project in editable mode:
+
+```bash
+pip install -e .
+# (Optional) Install extras for development
+pip install -e .[dev]
+```
+
+Run the MoS2 smoke test (small grid) to verify the environment is working:
+
+```bash
+python scripts/run_smoke_test.py
+```
+
+Notes and troubleshooting:
+
+- abTEM is distributed on conda-forge; if you run into GPU-related issues, ensure you have a compatible CUDA runtime and the correct abTEM build for your platform.
+- If you only need CPU execution, the conda-forge abTEM package will run on CPU by default.
+- If you prefer a pip-only setup, you can recreate a virtualenv and install the same pip packages listed in `environment.yml` (abTEM is recommended via conda-forge).
+
 1.  **Clone the repository:**
     ```bash
     git clone https://github.com/QuScope/QuScope.git

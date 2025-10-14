@@ -46,6 +46,7 @@ src/quscope.egg-info/requires.txt
 src/quscope.egg-info/top_level.txt
 src/quscope/ctem/__init__.py
 src/quscope/ctem/kirkland_potential.py
+src/quscope/ctem/multislice_simulator.py
 src/quscope/ctem/wpoa_simulator.py
 src/quscope/eels_analysis/__init__.py
 src/quscope/eels_analysis/analysis.py
@@ -60,6 +61,10 @@ src/quscope/image_processing/quantum_encoding.py
 src/quscope/image_processing/quantum_segmentation.py
 src/quscope/qml/__init__.py
 src/quscope/qml/image_encoding.py
+src/quscope/quantum_ctem/__init__.py
+src/quscope/quantum_ctem/circuit_optimization.py
+src/quscope/quantum_ctem/momentum_space.py
+src/quscope/quantum_ctem/quantum_wave_function.py
 src/quscope/simulations/__init__.py
 src/quscope/simulations/multislice.py
 src/quscope/simulations/quantum_utils.py
@@ -72,4 +77,10 @@ src/utils/validation.py
 tests/test_quantum_microscopy.py
 tests/ctem/__init__.py
 tests/ctem/test_kirkland_potential.py
+tests/ctem/test_multislice_simulator.py
+tests/ctem/test_wpoa_graphene.py
 tests/ctem/test_wpoa_simulator.py
+tests/quantum_ctem/__init__.py
+tests/quantum_ctem/test_circuit_optimization.py
+tests/quantum_ctem/test_momentum_space.py
+tests/quantum_ctem/test_quantum_wave_function.py

@@ -1,0 +1,25 @@
+name: quantum
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - numpy
+  - scipy
+  - matplotlib
+  - pandas
+  - scikit-image
+  - jupyterlab
+  - ipykernel
+  - pip
+  - ase
+  - abtem
+  - dask
+  - pillow
+  - pyyaml
+  - pytest
+  - pip:
+    # Optional / extra Python packages installed via pip
+    - qiskit
+    - black
+    - flake8

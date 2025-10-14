@@ -1,0 +1,33 @@
+name: CI - MoS2 smoke
+
+on:
+  push:
+    branches: [ dev, main ]
+  pull_request:
+    branches: [ dev, main ]
+
+jobs:
+  test-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-activate-base: false
+
+      - name: Install mamba and create env
+        run: |
+          # install mamba into the base env so we can use it
+          conda install -y -n base -c conda-forge mamba
+          # create a small env with core deps for the smoke test
+          mamba create -y -n quantum python=3.10 numpy scipy matplotlib pytest -c conda-forge
+          # Ensure pip is available and install qiskit via pip (lightweight install)
+          mamba run -n quantum python -m pip install qiskit
+
+      - name: Run fast MoS2 smoke test
+        run: |
+          mamba run -n quantum python -c "import sys, os; sys.path.append('src'); import pytest; pytest.main(['-q','tests/test_mos2_smoke.py'])"

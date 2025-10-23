@@ -15,20 +15,14 @@ try:
 except _PkgNotFoundError:
     __version__ = "0.1.0+dev"
 
-# Import main modules (avoid importing quantum_backend eagerly to prevent
-# optional qiskit_ibm_provider dependency during docs build)
+# Import main modules
+from . import quantum_backend
 from . import image_processing
 from . import qml
-# Temporarily disabled due to qiskit_algorithms compatibility issues
-# from . import eels_analysis
+from . import eels_analysis
 
-# Optional: simulations (may depend on qiskit)
-try:
-    from . import simulations  # type: ignore
-except Exception:
-    simulations = None  # type: ignore
-
-# Import key classes and functions for easy access (lazy import for backend)
+# Import key classes and functions for easy access
+from .quantum_backend import QuantumBackendManager
 from .image_processing.quantum_encoding import (
     encode_image_to_circuit,
     EncodingMethod,
@@ -42,22 +36,17 @@ from .image_processing.preprocessing import (
 from .qml.image_encoding import QuantumImageEncoder, encode_image_quantum
 
 __all__ = [
-    # Version (always available)
+    # Version
     "__version__",
     
     # Modules
+    "quantum_backend",
     "image_processing", 
     "qml",
-    # "eels_analysis",  # Temporarily disabled
-]
-
-# Conditionally expose simulations when available
-if simulations is not None:
-    __all__.append("simulations")
-
-# Add key classes and functions
-__all__ += [
+    "eels_analysis",
+    
     # Key classes
+    "QuantumBackendManager",
     "QuantumImageEncoder",
     
     # Key functions
@@ -69,12 +58,3 @@ __all__ += [
     "binarize_image",
     "encode_image_quantum",
 ]
-
-# Provide lazy access to QuantumBackendManager to avoid import-time side effects
-def __getattr__(name):
-    if name == "QuantumBackendManager" or name == "quantum_backend":
-        from . import quantum_backend as _qb
-        if name == "QuantumBackendManager":
-            return _qb.QuantumBackendManager
-        return _qb
-    raise AttributeError(f"module 'quscope' has no attribute {name!r}")

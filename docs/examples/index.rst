@@ -21,7 +21,7 @@ Simple examples to get you started:
 - **Backend Setup**: Configure quantum simulators and hardware
 - **Basic Visualization**: Plot quantum circuits and measurement results
 
-**Advanced Examples** 
+🚀 **Advanced Examples** 
 ========================
 
 More complex applications:
@@ -30,7 +30,7 @@ More complex applications:
 - **EELS Spectrum Analysis**: Process electron energy loss spectroscopy data
 - **Quantum Machine Learning**: Train quantum models on microscopy data
 
-**Integration Examples**
+🔗 **Integration Examples**
 ===========================
 
 Real-world integration scenarios:

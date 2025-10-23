@@ -56,7 +56,7 @@ Using QuScope in interactive Jupyter environments:
        circuit = encoder.encode_amplitude_encoding(image_data)
        
        # Display results
-       print(f"Image size: {image_size}")
+       print(f"🔬 Image size: {image_size}")
        print(f"⚛️  Quantum circuit: {circuit.num_qubits} qubits")
        print(f"🔧 Gates: {circuit.size()}")
        

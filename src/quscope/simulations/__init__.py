@@ -11,9 +11,9 @@ Classes:
 """
 
 try:
-    from quscope.simulations.wpo import ThinCTEM  # type: ignore
     from quscope.simulations.multislice import ThickCTEM  # type: ignore
     from quscope.simulations.quantum_utils import TEMQFT  # type: ignore
+    from quscope.simulations.wpo import ThinCTEM  # type: ignore
 except Exception:
     # Optional dependency or import issues should not break package import
     ThinCTEM = None  # type: ignore
@@ -23,5 +23,7 @@ except Exception:
 __version__ = "0.1.0"
 __author__ = "Roberto dos Reis and Sean Lam"
 __all__ = [
-    name for name in ("ThinCTEM", "ThickCTEM", "TEMQFT") if globals().get(name) is not None
+    name
+    for name in ("ThinCTEM", "ThickCTEM", "TEMQFT")
+    if globals().get(name) is not None
 ]

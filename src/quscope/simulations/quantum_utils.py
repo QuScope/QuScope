@@ -12,6 +12,7 @@ QISKIT_AVAILABLE = True
 try:
     from qiskit import QuantumCircuit, QuantumRegister  # type: ignore
     from qiskit.circuit.library import QFT  # type: ignore
+
     try:
         from qiskit_aer import AerSimulator  # type: ignore
     except Exception:  # Aer may be a separate optional package
@@ -33,11 +34,11 @@ class TEMQFT:
     """
     Class containing quantum transform operations for CTEM simulations.
     """
-    
+
     def __init__(self, n_qubits=8):
         """
         Initialize quantum transforms.
-        
+
         Parameters:
         -----------
         n_qubits : int
@@ -50,16 +51,16 @@ class TEMQFT:
             )
         self.n_qubits = n_qubits
         self.backend = AerSimulator()
-        
+
     def encode_to_quantum_state(self, data_1d):
         """
         Encode classical 1D array into quantum state amplitudes.
-        
+
         Parameters:
         -----------
         data_1d : np.ndarray
             1D numpy array of length 2^n_qubits to encode.
-        
+
         Returns:
         --------
         circuit : QuantumCircuit
@@ -69,11 +70,13 @@ class TEMQFT:
         """
         n = len(data_1d)
         if n != 2**self.n_qubits:
-            raise ValueError(f"Data length {n} must equal 2^{self.n_qubits} = {2**self.n_qubits}")
-        
+            raise ValueError(
+                f"Data length {n} must equal 2^{self.n_qubits} = {2**self.n_qubits}"
+            )
+
         # Calculate norm for later restoration
         norm = np.linalg.norm(data_1d)
-        
+
         # Handle zero or near-zero data
         if norm < 1e-10:
             # Create uniform superposition for zero data
@@ -81,25 +84,25 @@ class TEMQFT:
             norm = 0.0  # Mark as zero for restoration
         else:
             normalized_data = data_1d / norm
-        
+
         # Create quantum circuit and initialize
-        qreg = QuantumRegister(self.n_qubits, 'q')
+        qreg = QuantumRegister(self.n_qubits, "q")
         circuit = QuantumCircuit(qreg)
         circuit.initialize(normalized_data, qreg)
-        
+
         return circuit, norm
-    
+
     def apply_qft(self, circuit, qubits):
         """
         Apply Quantum Fourier Transform to specified qubits.
-        
+
         Parameters:
         -----------
         circuit : QuantumCircuit
             Quantum circuit.
         qubits : list
             List of qubit indices.
-        
+
         Returns:
         --------
         circuit : QuantumCircuit
@@ -108,18 +111,18 @@ class TEMQFT:
         qft = QFT(num_qubits=len(qubits), do_swaps=True)
         circuit.compose(qft, qubits, inplace=True)
         return circuit
-    
+
     def apply_iqft(self, circuit, qubits):
         """
         Apply Inverse Quantum Fourier Transform to specified qubits.
-        
+
         Parameters:
         -----------
         circuit : QuantumCircuit
             Quantum circuit.
         qubits : list
             List of qubit indices.
-        
+
         Returns:
         --------
         circuit : QuantumCircuit
@@ -128,16 +131,16 @@ class TEMQFT:
         iqft = QFT(num_qubits=len(qubits), do_swaps=True).inverse()
         circuit.compose(iqft, qubits, inplace=True)
         return circuit
-    
+
     def decode_quantum_state(self, circuit):
         """
         Decode quantum state back to classical data.
-        
+
         Parameters:
         -----------
         circuit : QuantumCircuit
             Quantum circuit to decode.
-        
+
         Returns:
         --------
         amplitudes : np.ndarray
@@ -146,16 +149,16 @@ class TEMQFT:
         statevector = Statevector.from_instruction(circuit)
         amplitudes = statevector.data
         return amplitudes
-    
+
     def qft_1d(self, data_1d):
         """
         Perform 1D QFT on classical data.
-        
+
         Parameters:
         -----------
         data_1d : np.ndarray
             1D complex array.
-        
+
         Returns:
         --------
         transformed_data : np.ndarray
@@ -163,14 +166,14 @@ class TEMQFT:
         """
         # Encode data
         circuit, norm = self.encode_to_quantum_state(data_1d)
-        
+
         # Apply iQFT
         qubits = list(range(self.n_qubits))
         self.apply_qft(circuit, qubits)
-        
+
         # Decode result
         amplitudes = self.decode_quantum_state(circuit)
-        
+
         # Restore normalization (handle zero case)
         if norm == 0.0:
             return np.zeros_like(data_1d)
@@ -179,16 +182,16 @@ class TEMQFT:
             # FFT convention does not have this
             N = len(data_1d)
             return amplitudes * norm * np.sqrt(N)
-        
+
     def iqft_1d(self, data_1d):
         """
         Perform 1D iQFT on classical data.
-        
+
         Parameters:
         -----------
         data_1d : np.ndarray
             1D complex array.
-        
+
         Returns:
         --------
         transformed_data : np.ndarray
@@ -196,14 +199,14 @@ class TEMQFT:
         """
         # Encode data
         circuit, norm = self.encode_to_quantum_state(data_1d)
-        
+
         # Apply iQFT
         qubits = list(range(self.n_qubits))
         self.apply_iqft(circuit, qubits)
-        
+
         # Decode result
         amplitudes = self.decode_quantum_state(circuit)
-        
+
         # Restore normalization (handle zero case)
         if norm == 0.0:
             return np.zeros_like(data_1d)
@@ -212,25 +215,25 @@ class TEMQFT:
             # FFT convention does not have this
             N = len(data_1d)
             return amplitudes * norm / np.sqrt(N)
-        
+
     def qft_2d(self, data_2d, progress=False):
         """
         Perform 2D QFT using row-column decomposition.
-        
+
         Parameters:
         -----------
         data_2d : np.ndarray
             2D complex array.
         progress : bool
             Print progress messages. Default is False.
-        
+
         Returns:
         --------
         transformed_data : np.ndarray
             2D QFT result.
         """
         result = np.zeros_like(data_2d, dtype=complex)
-        
+
         # QFT on rows
         if progress:
             print(f"  Applying QFT to {data_2d.shape[0]} rows...")
@@ -238,7 +241,7 @@ class TEMQFT:
             if progress and i % 32 == 0:
                 print(f"    Row {i}/{data_2d.shape[0]}")
             result[i, :] = self.qft_1d(data_2d[i, :])
-        
+
         # QFT on columns
         if progress:
             print(f"  Applying QFT to {data_2d.shape[1]} columns...")
@@ -246,27 +249,27 @@ class TEMQFT:
             if progress and j % 32 == 0:
                 print(f"    Column {j}/{data_2d.shape[1]}")
             result[:, j] = self.qft_1d(result[:, j])
-            
+
         return result
-    
+
     def iqft_2d(self, data_2d, progress=False):
         """
         Perform 2D iQFT using row-column decomposition.
-        
+
         Parameters:
         -----------
         data_2d : np.ndarray
             2D complex array.
         progress : bool
             Print progress message. Default is False.
-        
+
         Returns:
         --------
         transformed_data : np.ndarray
             2D iQFT result.
         """
         result = np.zeros_like(data_2d, dtype=complex)
-        
+
         # iQFT on rows
         if progress:
             print(f"  Applying iQFT to {data_2d.shape[0]} rows...")
@@ -274,7 +277,7 @@ class TEMQFT:
             if progress and i % 32 == 0:
                 print(f"    Row {i}/{data_2d.shape[0]}")
             result[i, :] = self.iqft_1d(data_2d[i, :])
-        
+
         # iQFT on columns
         if progress:
             print(f"  Applying iQFT to {data_2d.shape[1]} columns...")
@@ -282,5 +285,5 @@ class TEMQFT:
             if progress and j % 32 == 0:
                 print(f"    Column {j}/{data_2d.shape[1]}")
             result[:, j] = self.iqft_1d(result[:, j])
-            
+
         return result

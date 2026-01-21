@@ -3,22 +3,19 @@
 Find the correct interaction constant by working backwards from abTEM.
 """
 
-import numpy as np
-from scipy.constants import h, m_e, e, c
 import abtem
+import numpy as np
 from ase.build import mx2
+from scipy.constants import c, e, h, m_e
 
 # Create test structure
-atoms = mx2(formula='MoS2', kind='2H', a=3.18, thickness=3.19, vacuum=2.0)
+atoms = mx2(formula="MoS2", kind="2H", a=3.18, thickness=3.19, vacuum=2.0)
 atoms = abtem.orthogonalize_cell(atoms) * (3, 2, 1)
 
 # Get abTEM potential
 voltage = 200e3
 potential_abtem = abtem.Potential(
-    atoms,
-    sampling=0.1,
-    gpts=(256, 256),
-    projection='infinite'
+    atoms, sampling=0.1, gpts=(256, 256), projection="infinite"
 )
 V_abtem = np.array(potential_abtem.project().array)
 
@@ -61,7 +58,7 @@ print(f"   σ = {sigma_1:.6e}")
 print(f"   Ratio to needed: {sigma_1/sigma_needed:.2e}")
 
 # Formula 2: Divide by λ instead
-sigma_2 = (2 * np.pi * m_e * e) / (wavelength_m * h**2) * 1e-10  
+sigma_2 = (2 * np.pi * m_e * e) / (wavelength_m * h**2) * 1e-10
 print(f"\n2. (2πme·e)/(λ·h²) × 1e-10:")
 print(f"   σ = {sigma_2:.6e}")
 print(f"   Ratio to needed: {sigma_2/sigma_needed:.2e}")
@@ -72,7 +69,7 @@ print(f"\n3. (2πmeλ)/h² × 1e10 (no e):")
 print(f"   σ = {sigma_3:.6e}")
 print(f"   Ratio to needed: {sigma_3/sigma_needed:.2e}")
 
-# Formula 4: me·e·λ/(h²) 
+# Formula 4: me·e·λ/(h²)
 sigma_4 = (m_e * e * wavelength_m) / (h**2) * 1e10
 print(f"\n4. (me·e·λ)/h² × 1e10:")
 print(f"   σ = {sigma_4:.6e}")
@@ -106,15 +103,18 @@ print(f"CONCLUSION")
 print(f"=" * 70)
 
 best_match = None
-best_ratio = float('inf')
+best_ratio = float("inf")
 
-for i, (sigma, name) in enumerate([
-    (sigma_1, "Formula 1"),
-    (sigma_2, "Formula 2"),
-    (sigma_3, "Formula 3"),  
-    (sigma_4, "Formula 4"),
-    (sigma_6*1e-10, "Formula 6 (Kirkland)")
-], 1):
+for i, (sigma, name) in enumerate(
+    [
+        (sigma_1, "Formula 1"),
+        (sigma_2, "Formula 2"),
+        (sigma_3, "Formula 3"),
+        (sigma_4, "Formula 4"),
+        (sigma_6 * 1e-10, "Formula 6 (Kirkland)"),
+    ],
+    1,
+):
     ratio = abs(np.log10(sigma / sigma_needed))
     if ratio < best_ratio:
         best_ratio = ratio

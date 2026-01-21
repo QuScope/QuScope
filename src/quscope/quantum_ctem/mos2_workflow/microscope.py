@@ -11,8 +11,8 @@ class MicroscopeParams:
 
     def to_abtem_kwargs(self):
         return {
-            'energy': self.acceleration_voltage,
-            'defocus': self.defocus,
-            'cs': self.cs,
-            'aperture': self.aperture
+            "energy": self.acceleration_voltage,
+            "defocus": self.defocus,
+            "cs": self.cs,
+            "aperture": self.aperture,
         }

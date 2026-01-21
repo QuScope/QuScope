@@ -15,7 +15,7 @@ But we need to be careful about units!
 """
 
 import numpy as np
-from scipy.constants import h, m_e, e, c
+from scipy.constants import c, e, h, m_e
 
 voltage = 200e3  # V
 

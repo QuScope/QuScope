@@ -8,9 +8,9 @@ structure to a 2D projected potential and saves a visualization.
 
 from __future__ import annotations
 
-from ase import build
 import os
 
+from ase import build
 from sample_potential_converter import SamplePotentialConverter
 
 
@@ -39,19 +39,25 @@ def main():
     grid_size = 256
     pixel_size = 0.05
     V = converter.atoms_to_potential(atoms, grid_size=grid_size, pixel_size=pixel_size)
-    print(f"✓ Potential calculated — shape: {V.shape}, range: [{V.min():.4e}, {V.max():.4e}] V")
+    print(
+        f"✓ Potential calculated — shape: {V.shape}, range: [{V.min():.4e}, {V.max():.4e}] V"
+    )
 
     # Calculate stats
     print("[4/4] Calculating statistics and saving visualization...")
-    stats = converter.calculate_sample_statistics(atoms, grid_size=grid_size, pixel_size=pixel_size)
+    stats = converter.calculate_sample_statistics(
+        atoms, grid_size=grid_size, pixel_size=pixel_size
+    )
     for k, v in stats.items():
         print(f"  {k}: {v}")
 
     out_png = os.path.join(os.getcwd(), "sample_potential_mos2.png")
-    converter.visualize_potential(atoms, grid_size=grid_size, pixel_size=pixel_size, save_path=out_png)
+    converter.visualize_potential(
+        atoms, grid_size=grid_size, pixel_size=pixel_size, save_path=out_png
+    )
 
     print("\nDone.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,4 +1,17 @@
+"""MoS2 workflow smoke tests.
+
+NOTE: Requires optional dependency 'ase' (Atomic Simulation Environment).
+Install with: pip install quscope[microscopy]
+"""
+
 import numpy as np
+import pytest
+
+# Skip if ASE is not installed (optional dependency)
+pytest.importorskip(
+    "ase", reason="ASE not installed. Install with: pip install quscope[microscopy]"
+)
+
 from quscope.mos2_workflow import run_comparison
 
 
@@ -12,7 +25,9 @@ def test_mos2_smoke_fast():
     res = run_comparison(nx=1, ny=1, grid_size=32, pixel_size=0.2, voltage=200e3)
 
     # Basic contract: expected keys
-    assert set(["atoms", "V_quantum", "V_abtem", "I_classical", "converter"]).issubset(res.keys())
+    assert set(["atoms", "V_quantum", "V_abtem", "I_classical", "converter"]).issubset(
+        res.keys()
+    )
 
     Vq = res["V_quantum"]
     I = res["I_classical"]

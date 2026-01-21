@@ -7,7 +7,8 @@ def get_interaction_constant(voltage: float) -> float:
     """
     # Use a simple approximation for demo purposes
     # σ ≈ 2π / (λ E) with λ in Å and E in eV; a full relativistic formula is available in other modules
-    from scipy.constants import h, m_e, e, c
+    from scipy.constants import c, e, h, m_e
+
     V = voltage
     wavelength_m = h / (np.sqrt(2 * m_e * e * V * (1 + e * V / (2 * m_e * c**2))))
     wavelength_A = wavelength_m * 1e10

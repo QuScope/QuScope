@@ -30,34 +30,28 @@ Modules:
 - [TO BE ADDED] quantum_multislice: Full quantum multislice simulation
 """
 
-from .quantum_wave_function import QuantumWaveFunction
-from .circuit_optimization import (
-    StatePreparationOptimizer,
-    HardwareTranspiler,
-    benchmark_state_preparation,
-)
-from .momentum_space import (
-    MomentumSpaceConverter,
-    ParsevalValidator,
-    MomentumSpaceFilter,
-    analyze_momentum_distribution,
-    demonstrate_uncertainty_principle,
-)
-from .classical_integration import (
-    QuantumClassicalBridge,
-    WPOAQuantumInterface,
-    MultisliceQuantumInterface,
-    benchmark_quantum_classical_integration,
-)
-from .performance_benchmarking import (
-    BenchmarkResult,
-    PerformanceBenchmark,
-    quick_benchmark,
-)
 from .benchmark_visualization import (
     BenchmarkVisualizer,
     create_summary_figure,
 )
+from .circuit_optimization import (
+    HardwareTranspiler,
+    StatePreparationOptimizer,
+    benchmark_state_preparation,
+)
+from .classical_integration import (
+    MultisliceQuantumInterface,
+    QuantumClassicalBridge,
+    WPOAQuantumInterface,
+    benchmark_quantum_classical_integration,
+)
+from .ibm_config import (
+    get_ibm_service,
+    list_available_backends,
+    load_ibm_credentials,
+    validate_ibm_access,
+)
+
 # Note: validation_testing temporarily disabled for refactoring
 # from .validation_testing import (
 #     ComprehensiveValidator,
@@ -65,48 +59,55 @@ from .benchmark_visualization import (
 #     validate_quantum_ctem,
 # )
 from .ibm_hardware_validation import (
-    IBMHardwareValidator,
     IBMDeviceProfile,
+    IBMHardwareValidator,
     validate_ibm_deployment,
 )
-from .ibm_config import (
-    load_ibm_credentials,
-    get_ibm_service,
-    list_available_backends,
-    validate_ibm_access,
+from .momentum_space import (
+    MomentumSpaceConverter,
+    MomentumSpaceFilter,
+    ParsevalValidator,
+    analyze_momentum_distribution,
+    demonstrate_uncertainty_principle,
 )
+from .performance_benchmarking import (
+    BenchmarkResult,
+    PerformanceBenchmark,
+    quick_benchmark,
+)
+from .quantum_wave_function import QuantumWaveFunction
 
 __all__ = [
-    'QuantumWaveFunction',
-    'StatePreparationOptimizer',
-    'HardwareTranspiler',
-    'benchmark_state_preparation',
-    'MomentumSpaceConverter',
-    'ParsevalValidator',
-    'MomentumSpaceFilter',
-    'analyze_momentum_distribution',
-    'demonstrate_uncertainty_principle',
-    'QuantumClassicalBridge',
-    'WPOAQuantumInterface',
-    'MultisliceQuantumInterface',
-    'benchmark_quantum_classical_integration',
-    'BenchmarkResult',
-    'PerformanceBenchmark',
-    'quick_benchmark',
-    'BenchmarkVisualizer',
-    'create_summary_figure',
+    "QuantumWaveFunction",
+    "StatePreparationOptimizer",
+    "HardwareTranspiler",
+    "benchmark_state_preparation",
+    "MomentumSpaceConverter",
+    "ParsevalValidator",
+    "MomentumSpaceFilter",
+    "analyze_momentum_distribution",
+    "demonstrate_uncertainty_principle",
+    "QuantumClassicalBridge",
+    "WPOAQuantumInterface",
+    "MultisliceQuantumInterface",
+    "benchmark_quantum_classical_integration",
+    "BenchmarkResult",
+    "PerformanceBenchmark",
+    "quick_benchmark",
+    "BenchmarkVisualizer",
+    "create_summary_figure",
     # 'ComprehensiveValidator',  # Temporarily disabled
     # 'ValidationReport',
     # 'validate_quantum_ctem',
-    'IBMHardwareValidator',
-    'IBMDeviceProfile',
-    'validate_ibm_deployment',
-    'load_ibm_credentials',
-    'get_ibm_service',
-    'list_available_backends',
-    'validate_ibm_access',
+    "IBMHardwareValidator",
+    "IBMDeviceProfile",
+    "validate_ibm_deployment",
+    "load_ibm_credentials",
+    "get_ibm_service",
+    "list_available_backends",
+    "validate_ibm_access",
 ]
 
-__version__ = '0.1.0'
-__phase__ = 'Phase 1 Week 4: Comprehensive Validation & IBM Deployment'
-__status__ = 'Active Development'
+__version__ = "0.1.0"
+__phase__ = "Phase 1 Week 4: Comprehensive Validation & IBM Deployment"
+__status__ = "Active Development"

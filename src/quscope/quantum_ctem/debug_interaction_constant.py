@@ -3,10 +3,10 @@
 Debug the interaction constant and phase shift calculation.
 """
 
-import numpy as np
-from scipy.constants import h, m_e, e, c
 import abtem
+import numpy as np
 from ase.build import mx2
+from scipy.constants import c, e, h, m_e
 
 # Parameters
 voltage = 200e3  # V
@@ -49,13 +49,15 @@ print("=" * 70)
 # σ in SI: rad/(V·m) = (2πme)/(λh²) but need to include e for V
 # Actually: σ = (2πmeλ)/(h²) gives kg·m/J·s² = kg·m/(kg·m²/s²)·s² = s²/m
 # Then multiply by e to get proper units with Volts
-# σ [rad/(V·m)] = (2πmeλ)/(h²) 
+# σ [rad/(V·m)] = (2πmeλ)/(h²)
 
 # The correct formulation from Kirkland:
 # σ = (2πmeλ)/(h²) where this has units of [rad/(V·m)]
 # To convert to [rad/(V·Å)], multiply by 1e10
 
-sigma_3_SI = (2 * np.pi * m_e * wavelength_m) / (h**2)  # This is actually [1/m] not [rad/(V·m)]
+sigma_3_SI = (2 * np.pi * m_e * wavelength_m) / (
+    h**2
+)  # This is actually [1/m] not [rad/(V·m)]
 # Need to multiply by e to get voltage units
 sigma_3 = sigma_3_SI * e * 1e10  # Now in [rad/(V·Å)]
 
@@ -66,14 +68,11 @@ print("\n" + "=" * 70)
 print("PHASE SHIFT TEST")
 print("=" * 70)
 
-atoms = mx2(formula='MoS2', kind='2H', a=3.18, thickness=3.19, vacuum=2.0)
+atoms = mx2(formula="MoS2", kind="2H", a=3.18, thickness=3.19, vacuum=2.0)
 atoms = abtem.orthogonalize_cell(atoms) * (3, 2, 1)
 
 potential_abtem = abtem.Potential(
-    atoms,
-    sampling=0.1,
-    gpts=(256, 256),
-    projection='infinite'
+    atoms, sampling=0.1, gpts=(256, 256), projection="infinite"
 )
 V_abtem = np.array(potential_abtem.project().array)
 
@@ -83,7 +82,7 @@ print(f"  Mean: {V_abtem.mean():.2f} V·Å")
 
 # Calculate phase shifts with each method
 phase_1 = sigma_1_VA * V_abtem
-phase_2 = sigma_2 * V_abtem  
+phase_2 = sigma_2 * V_abtem
 phase_3 = sigma_3 * V_abtem
 
 print(f"\nPhase shifts (χ = σ · V):")

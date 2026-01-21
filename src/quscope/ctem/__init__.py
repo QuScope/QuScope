@@ -17,16 +17,16 @@ Modules:
 """
 
 from .kirkland_potential import KirklandPotential
-from .wpoa_simulator import WPOASimulator
 from .multislice_simulator import MultisliceSimulator
+from .wpoa_simulator import WPOASimulator
 
 # TODO: Add these modules as we extract them from notebooks
 # from .structures import create_gaas_structure, create_silicon_structure
 
 __all__ = [
-    'KirklandPotential',
-    'WPOASimulator',
-    'MultisliceSimulator',
+    "KirklandPotential",
+    "WPOASimulator",
+    "MultisliceSimulator",
     # 'create_gaas_structure',
     # 'create_silicon_structure',
 ]

@@ -10,21 +10,14 @@ Modules:
 - kirkland: Kirkland atomic potential parameterization
 """
 
-from quscope.utils.constants import (
-    PhysicalConstants
-)
-
-from quscope.utils.kirkland import (
-    KirklandPotential,
-    KIRKLAND_SCATTERING_FACTOR
-)
+from quscope.utils.constants import PhysicalConstants
+from quscope.utils.kirkland import KIRKLAND_SCATTERING_FACTOR, KirklandPotential
 
 __version__ = "0.1.0"
 __all__ = [
     # Classes
     PhysicalConstants,
     KirklandPotential,
-    
     # Constants
-    KIRKLAND_SCATTERING_FACTOR
+    KIRKLAND_SCATTERING_FACTOR,
 ]

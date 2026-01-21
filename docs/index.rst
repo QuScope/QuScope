@@ -4,34 +4,18 @@
 QuScope v0.1.0 Documentation
 ============================
 
-**QuScope** (Quantum Algorithm Microscopy) is a Python framework integrating quantum computing algorithms with electron microscopy data processing and analysis. Version 0.1.0 provides foundational quantum-classical hybrid capabilities for image processing and EELS analysis.
+**QuScope** (Quantum Algorithm Microscopy) is a comprehensive Python package for applying quantum computing algorithms to electron microscopy data processing and analysis.
 
-**Key Features (v0.1.0)**
-==========================
+🔬 **Key Features**
+===================
 
-- **Quantum Image Encoding**: Multiple encoding methods (Amplitude, Basis, Angle, FRQI) for converting images to quantum states
-- **Quantum-Classical Denoising**: Hybrid approach using Grover's algorithm and quantum features to guide adaptive classical filtering (4×4 patches, 16 qubits)
-- **Image Segmentation**: Grover's algorithm with customizable oracles for threshold, edge, and region-based segmentation
-- **EELS Analysis Framework**: 
-  - Classical preprocessing (Richardson-Lucy, Kramers-Kronig)
-  - Quantum feature extraction via parameterized circuits (4-8 qubits)
-  - Element identification (~20 common elements)
-  - Basic property lookup from reference database
-- **Backend Management**: IBM Quantum integration with simulator and hardware support
-- **Documentation & Examples**: Working Jupyter notebooks, API reference, and tutorials
+- **Quantum Image Processing**: Encode and process microscopy images using quantum circuits
+- **EELS Analysis**: Quantum algorithms for Electron Energy Loss Spectroscopy data
+- **Quantum Machine Learning**: ML algorithms optimized for microscopy applications  
+- **Backend Management**: Seamless integration with quantum simulators and hardware
+- **Ready-to-Use Examples**: Comprehensive Jupyter notebooks and tutorials
 
-**Current Scope**
-==================
-
-QuScope v0.1.0 is a **foundational release** demonstrating quantum-classical integration patterns:
-
-✅ **Implemented**: Image encoding, quantum-guided denoising, EELS framework, backend management
-
-⚠️ **Limited**: EELS uses classical preprocessing + quantum features; element database covers ~20 elements
-
-🔮 **Planned**: Electron diffraction, advanced QML, quantum-enhanced preprocessing, expanded databases
-
-**Quick Start**
+🚀 **Quick Start**
 ==================
 
 Install QuScope via pip:
@@ -55,7 +39,7 @@ Basic usage:
    
    print(f"QuScope version: {quscope.__version__}")
 
-**Documentation Structure**
+📚 **Documentation Structure**
 ==============================
 
 .. toctree::
@@ -87,11 +71,11 @@ Basic usage:
    changelog
    license
 
-**Links**
+🔗 **Links**
 ============
 
-- **Repository**: https://github.com/QuScope/QuScope
-- **Issues**: https://github.com/QuScope/QuScope/issues
+- **Repository**: https://github.com/robertoreis/quantum_algo_microscopy
+- **Issues**: https://github.com/robertoreis/quantum_algo_microscopy/issues
 - **PyPI**: https://pypi.org/project/quscope/
 
 📖 **Indices and Tables**

@@ -4,19 +4,19 @@ Contributing
 
 We welcome contributions to QuScope! This guide will help you get started.
 
-**How to Contribute**
+🤝 **How to Contribute**
 ========================
 
 There are many ways to contribute to QuScope:
 
 - 🐛 **Report bugs** via GitHub issues
-- **Suggest features** and enhancements  
-- **Improve documentation**
+- 💡 **Suggest features** and enhancements  
+- 📝 **Improve documentation**
 - 🧪 **Add tests** for better coverage
 - 💻 **Submit code** fixes and features
-- **Create examples** and tutorials
+- 📚 **Create examples** and tutorials
 
-**Getting Started**
+🚀 **Getting Started**
 ======================
 
 1. **Fork the Repository**
@@ -120,7 +120,7 @@ Set up pre-commit hooks to automatically format code:
    make html
    # Open docs/_build/html/index.html
 
-**Submitting Changes**
+📝 **Submitting Changes**
 =========================
 
 1. **Create a Branch**
@@ -162,7 +162,7 @@ When reporting bugs, please include:
 - **Actual behavior**: What actually happens
 - **Error messages**: Full traceback if applicable
 
-**Feature Requests**
+💡 **Feature Requests**
 =======================
 
 For feature requests, please describe:

@@ -6,14 +6,16 @@ and quantum machine learning with microscopy applications.
 """
 
 __version__ = "0.1.0"
-__author__ = "Roberto dos Reis and Sean Lam"
-__email__ = "robertomsreis@gmail.com, seanlam702@gmail.com"
-__description__ = "Quantum Algorithm Microscopy - Advanced quantum computing analysis tools"
+__author__ = "Roberto Reis"
+__email__ = "roberto@example.com"
+__description__ = (
+    "Quantum Algorithm Microscopy - Advanced quantum computing analysis tools"
+)
 
 # Core imports
 try:
-    from .quantum.microscopy import QuantumMicroscopy
     from .config import Config
+    from .quantum.microscopy import QuantumMicroscopy
 except ImportError:
     # Graceful fallback if optional dependencies are missing
     QuantumMicroscopy = None

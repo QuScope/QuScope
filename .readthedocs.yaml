@@ -13,6 +13,16 @@ formats:
   - pdf
   - epub
 
+# Set the Python environment
+python:
+  version: "3.11"
+  install:
+    - requirements: docs/requirements.txt
+    - method: pip
+      path: .
+      extra_requirements:
+        - docs
+
 # Build settings
 build:
   os: ubuntu-22.04
@@ -30,12 +40,3 @@ build:
     pre_build:
       # Commands run before building docs
       - echo "Building QuScope v0.1.0 documentation"
-
-# Set the Python environment
-python:
-  install:
-    - method: pip
-      path: .
-      extra_requirements:
-        - docs
-    - requirements: docs/requirements.txt

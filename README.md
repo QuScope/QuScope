@@ -1,4 +1,4 @@
-# 🔬 QuScope v0.1.0: Quantum Algorithms for Microscopy
+# 🔬 QuScope v0.1.1: Quantum Algorithms for Microscopy
 
 [![PyPI version](https://badge.fury.io/py/quscope.svg)](https://badge.fury.io/py/quscope)
 [![Documentation Status](https://readthedocs.org/projects/quscope/badge/?version=latest)](https://quscope.readthedocs.io/en/latest/?badge=latest)

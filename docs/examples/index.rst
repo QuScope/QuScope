@@ -11,6 +11,7 @@ Collection of practical examples demonstrating QuScope capabilities.
    basic_examples
    advanced_examples
    integration_examples
+   quantum_ctem
 
 🧪 **Basic Examples**
 =====================
@@ -26,6 +27,7 @@ Simple examples to get you started:
 
 More complex applications:
 
+- **Quantum CTEM Simulation**: Simulate Conventional Transmission Electron Microscopy using quantum circuits
 - **Quantum Edge Detection**: Detect edges in images using quantum algorithms
 - **EELS Spectrum Analysis**: Process electron energy loss spectroscopy data
 - **Quantum Machine Learning**: Train quantum models on microscopy data

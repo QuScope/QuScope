@@ -35,20 +35,8 @@ docs/examples/advanced_examples.rst
 docs/examples/basic_examples.rst
 docs/examples/index.rst
 docs/examples/integration_examples.rst
+docs/examples/quantum_ctem.rst
 docs/tutorials/index.rst
-notebooks/classical_validation_graphene.ipynb
-notebooks/complete_quantum_microscopy_examples.ipynb
-notebooks/image_denoising.ipynb
-notebooks/qml_image_encoding_example.ipynb
-notebooks/week3_task1.7_validation.ipynb
-notebooks/sean's testing notebooks/Image Production.ipynb
-notebooks/sean's testing notebooks/MoS2_graphs_dev.ipynb
-notebooks/sean's testing notebooks/QuScope Preprocessing 62425.ipynb
-notebooks/sean's testing notebooks/development_of_image_denoiser.ipynb
-notebooks/sean's testing notebooks/qml stuff going in positive direction_.ipynb
-notebooks/sean's testing notebooks/quantum CTEM development.ipynb
-notebooks/sean's testing notebooks/quantum microscopy image slices and analysis.ipynb
-notebooks/sean's testing notebooks/testing roberto's original quantum encoding.ipynb
 src/quantum/base.py
 src/quantum/microscopy.py
 src/quscope/__init__.py
@@ -62,42 +50,14 @@ src/quscope/ctem/__init__.py
 src/quscope/ctem/kirkland_potential.py
 src/quscope/ctem/multislice_simulator.py
 src/quscope/ctem/wpoa_simulator.py
-src/quscope/eels_analysis/__init__.py
-src/quscope/eels_analysis/analysis.py
-src/quscope/eels_analysis/eels_utils.py
-src/quscope/eels_analysis/preprocessing.py
-src/quscope/eels_analysis/quantum_processing.py
-src/quscope/image_processing/__init__.py
-src/quscope/image_processing/filtering.py
-src/quscope/image_processing/image_denoising.py
-src/quscope/image_processing/preprocessing.py
-src/quscope/image_processing/quantum_encoding.py
-src/quscope/image_processing/quantum_segmentation.py
-src/quscope/mos2_workflow/__init__.py
-src/quscope/mos2_workflow/backend.py
-src/quscope/mos2_workflow/hamiltonian.py
-src/quscope/mos2_workflow/microscope.py
-src/quscope/mos2_workflow/orchestrator.py
-src/quscope/mos2_workflow/viz.py
-src/quscope/qml/__init__.py
-src/quscope/qml/image_encoding.py
 src/quscope/quantum_ctem/__init__.py
 src/quscope/quantum_ctem/benchmark_visualization.py
 src/quscope/quantum_ctem/circuit_optimization.py
 src/quscope/quantum_ctem/classical_integration.py
 src/quscope/quantum_ctem/classical_validation.py
 src/quscope/quantum_ctem/comprehensive_validation.py
-src/quscope/quantum_ctem/correct_sigma_formula.py
 src/quscope/quantum_ctem/ctf_calculator.py
-src/quscope/quantum_ctem/debug_correlation.py
-src/quscope/quantum_ctem/debug_flat_output.py
-src/quscope/quantum_ctem/debug_graphene_view.py
-src/quscope/quantum_ctem/debug_interaction_constant.py
-src/quscope/quantum_ctem/debug_sign_inversion.py
-src/quscope/quantum_ctem/diagnose_potential_scaling.py
 src/quscope/quantum_ctem/end_to_end_workflows.py
-src/quscope/quantum_ctem/find_correct_sigma.py
-src/quscope/quantum_ctem/fix_visualization.py
 src/quscope/quantum_ctem/hamiltonian.py
 src/quscope/quantum_ctem/ibm_config.py
 src/quscope/quantum_ctem/ibm_hardware_validation.py
@@ -108,20 +68,27 @@ src/quscope/quantum_ctem/quantum_encoding.py
 src/quscope/quantum_ctem/quantum_simulation.py
 src/quscope/quantum_ctem/quantum_tomography.py
 src/quscope/quantum_ctem/quantum_wave_function.py
-src/quscope/quantum_ctem/run_mos2_converter.py
 src/quscope/quantum_ctem/sample_potential_converter.py
-src/quscope/quantum_ctem/showcase_graphene.py
 src/quscope/quantum_ctem/test_with_abtem_potential.py
 src/quscope/quantum_ctem/validate_abtem_potential.py
 src/quscope/quantum_ctem/wpoa_validity_analysis.py
-src/quscope/quantum_ctem/figures/generate_graphene_showcase.py
-src/quscope/quantum_ctem/figures/generate_material_comparison.py
-src/quscope/quantum_ctem/figures/generate_voltage_scaling.py
+src/quscope/quantum_ctem/backends/__init__.py
+src/quscope/quantum_ctem/backends/base.py
+src/quscope/quantum_ctem/backends/ibm.py
+src/quscope/quantum_ctem/backends/simulator.py
+src/quscope/quantum_ctem/materials/__init__.py
+src/quscope/quantum_ctem/materials/base.py
+src/quscope/quantum_ctem/materials/graphene.py
+src/quscope/quantum_ctem/materials/mos2.py
 src/quscope/quantum_ctem/mos2_workflow/__init__.py
 src/quscope/quantum_ctem/mos2_workflow/hamiltonian.py
 src/quscope/quantum_ctem/mos2_workflow/microscope.py
 src/quscope/quantum_ctem/mos2_workflow/orchestrator.py
 src/quscope/quantum_ctem/mos2_workflow/viz.py
+src/quscope/quantum_ctem/workflows/__init__.py
+src/quscope/quantum_ctem/workflows/base.py
+src/quscope/quantum_ctem/workflows/graphene.py
+src/quscope/quantum_ctem/workflows/mos2.py
 src/quscope/simulations/__init__.py
 src/quscope/simulations/multislice.py
 src/quscope/simulations/quantum_utils.py
@@ -129,19 +96,18 @@ src/quscope/simulations/wpo.py
 src/quscope/utils/__init__.py
 src/quscope/utils/constants.py
 src/quscope/utils/kirkland.py
-src/utils/validation.py
 tests/test_classical_integration.py
 tests/test_ibm_hardware_validation.py
-tests/test_mos2_smoke.py
 tests/test_performance_benchmarking.py
-tests/test_quantum_microscopy.py
-tests/test_validation_testing.py
 tests/ctem/__init__.py
 tests/ctem/test_kirkland_potential.py
 tests/ctem/test_multislice_simulator.py
 tests/ctem/test_wpoa_graphene.py
 tests/ctem/test_wpoa_simulator.py
 tests/quantum_ctem/__init__.py
+tests/quantum_ctem/test_backends.py
 tests/quantum_ctem/test_circuit_optimization.py
+tests/quantum_ctem/test_materials.py
 tests/quantum_ctem/test_momentum_space.py
 tests/quantum_ctem/test_quantum_wave_function.py
+tests/quantum_ctem/test_workflows.py

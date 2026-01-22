@@ -68,6 +68,9 @@ print(f"Encoded into {circuit.num_qubits} qubits")
 
 ```
 quantum_algo_microscopy/
+├── examples/                       # Example scripts and notebooks
+│   ├── quantum_ctem.ipynb         # Quantum CTEM demonstration notebook
+│   └── quantum_ctem_demonstration.py  # Quantum CTEM Python script
 ├── notebooks/                      # Jupyter notebooks with examples
 │   └── complete_quantum_microscopy_examples.ipynb  # Comprehensive examples
 ├── src/
@@ -84,13 +87,18 @@ quantum_algo_microscopy/
 │       │   ├── __init__.py
 │       │   ├── preprocessing.py
 │       │   └── quantum_processing.py
-│       └── qml/                    # Quantum Machine Learning modules
+│       ├── qml/                    # Quantum Machine Learning modules
+│       │   ├── __init__.py
+│       │   └── image_encoding.py   # (Integrates PiQture/INEQR)
+│       └── quantum_ctem/           # Quantum CTEM simulation modules
 │           ├── __init__.py
-│           └── image_encoding.py   # (Integrates PiQture/INEQR)
+│           ├── hamiltonian.py
+│           ├── quantum_simulation.py
+│           └── microscope.py
 ├── README.md                       # This file
 ├── requirements.txt                # Project dependencies
-├── setup.py                        # Setup script for installation
-└── docs/                           # (Sphinx documentation - to be generated)
+├── pyproject.toml                  # Modern Python project configuration
+└── docs/                           # Sphinx documentation
 ```
 
 ## Installation
@@ -292,7 +300,64 @@ except Exception as e:
 
 ```
 
-For more detailed examples, including data generation, visualization, and advanced usage, please see the Jupyter Notebook: `notebooks/complete_quantum_microscopy_examples.ipynb`.
+### 7. Quantum CTEM (Conventional Transmission Electron Microscopy) Simulation
+
+```python
+from qiskit import QuantumCircuit, transpile
+from qiskit_aer import Aer
+import numpy as np
+
+# Create a synthetic microscopy image
+image_size = 64  # 64x64 image
+synthetic_image = np.random.randint(0, 256, (image_size, image_size), dtype=np.uint8)
+
+# Process pixels through quantum circuits
+def quantum_process_pixels(pixel_chunk):
+    """Process pixels using quantum circuits for CTEM simulation"""
+    processed_pixels = []
+    
+    for pixel_value in pixel_chunk:
+        # Create quantum circuit with 8 qubits (for 8-bit pixel values)
+        qc = QuantumCircuit(8, 8)
+        
+        # Encode pixel value in quantum state
+        binary_pixel = format(pixel_value, '08b')
+        for i, bit in enumerate(binary_pixel):
+            if bit == '1':
+                qc.x(i)
+        
+        # Apply quantum operations for CTEM-inspired transformations
+        for i in range(8):
+            qc.rz(np.pi/8, i)  # Phase shifts (electron-specimen interaction)
+        
+        # Simulate propagation effects
+        qc.h(0)  # Superposition for interference
+        qc.cx(0, 1)  # Entanglement for correlation
+        qc.measure_all()
+        
+        # Execute circuit
+        simulator = Aer.get_backend('qasm_simulator')
+        job = simulator.run(transpile(qc, simulator), shots=100)
+        result = job.result()
+        counts = result.get_counts(qc)
+        
+        # Extract most probable measurement
+        most_probable = max(counts, key=counts.get)
+        processed_value = int(most_probable.replace(' ', ''), 2)
+        processed_pixels.append(processed_value)
+    
+    return np.array(processed_pixels)
+
+# Process the image and visualize results
+processed_image = quantum_process_pixels(synthetic_image.flatten())
+processed_image = processed_image.reshape(image_size, image_size)
+```
+
+For a complete quantum CTEM demonstration with visualizations and analysis, see the notebook: `examples/quantum_ctem.ipynb`.
+
+For more detailed examples, including data generation, visualization, and advanced usage, please see the Jupyter Notebooks:
+- `examples/quantum_ctem.ipynb` - Quantum CTEM demonstration
+- `notebooks/complete_quantum_microscopy_examples.ipynb` - Comprehensive examples
 
 ## API Documentation
 

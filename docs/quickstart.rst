@@ -121,14 +121,35 @@ QuScope includes tools for visualizing quantum circuits and results:
 🚀 **Next Steps**
 =================
 
+- Try the :doc:`examples/quantum_ctem` - Quantum CTEM simulation demonstration
 - Explore the :doc:`tutorials/index` for detailed guides
 - Check out the :doc:`notebooks` for interactive examples
 - Read the :doc:`api` reference for complete documentation
-- Visit our `GitHub repository <https://github.com/robertoreis/quantum_algo_microscopy>`_ for the latest updates
+- Visit our `GitHub repository <https://github.com/QuScope/QuScope>`_ for the latest updates
+
+💡 **Featured Example: Quantum CTEM**
+======================================
+
+For a comprehensive demonstration of quantum circuits applied to electron microscopy, 
+see the Quantum CTEM notebook:
+
+.. code-block:: bash
+
+   jupyter notebook examples/quantum_ctem.ipynb
+
+This example demonstrates:
+
+- Quantum encoding of microscopy image pixels
+- Phase shift operations for electron-specimen interactions  
+- Quantum gates simulating propagation and lens effects
+- Fourier space analysis of quantum-processed images
+- Performance benchmarking and visualization
+
+See :doc:`examples/quantum_ctem` for detailed documentation.
 
 🆘 **Need Help?**
 =================
 
 - Check the :doc:`api` for detailed function documentation
 - Browse the example notebooks in :doc:`notebooks`
-- Open an issue on `GitHub <https://github.com/robertoreis/quantum_algo_microscopy/issues>`_
+- Open an issue on `GitHub <https://github.com/QuScope/QuScope/issues>`_

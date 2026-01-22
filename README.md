@@ -15,54 +15,50 @@ pip install quscope
 
 ```python
 import quscope
-from quscope import EncodingMethod, encode_image_to_circuit
+from quscope.quantum_ctem.backends import get_backend
+from quscope.quantum_ctem.materials import get_material
 import numpy as np
 
-# Create a sample image
-image = np.random.rand(4, 4)
+# Get a quantum simulator backend
+backend = get_backend('simulator')
+print(f"QuScope v{quscope.__version__}")
 
-# Encode into quantum circuit
-circuit = encode_image_to_circuit(image, method=EncodingMethod.AMPLITUDE)
-print(f"Encoded into {circuit.num_qubits} qubits")
+# Load a material (e.g., MoS2)
+material = get_material('mos2')
+print(f"Loaded material: {material.name}")
 ```
 
 ## ✨ **Key Features**
 
-*   **IBM Quantum Integration**:
-    *   Seamless connection to IBM Quantum backends using `QuantumBackendManager`.
-    *   Support for API token authentication (via environment variable `IBMQ_TOKEN` or direct input).
-    *   Execution on simulators (e.g., `aer_simulator`) and real quantum hardware.
-    *   Selection of least busy backends and retrieval of backend properties.
-    *   Noise model integration for realistic simulations.
-*   **Advanced Quantum Image Encoding**:
-    *   Multiple encoding methods: Amplitude, Basis, Angle, Flexible, and FRQI (Flexible Representation of Quantum Images).
-    *   Integration with PiQture for INEQR (Improved Novel Enhanced Quantum Representation) encoding.
-    *   Support for grayscale and multi-channel images.
-    *   Utilities for analyzing encoding resource requirements (qubits, depth, gates).
-*   **Quantum Image Segmentation**:
-    *   Implementation of Grover's algorithm for various segmentation tasks.
-    *   Customizable oracles for:
-        *   Threshold-based segmentation.
-        *   Edge-based segmentation (placeholder for quantum edge detection).
-        *   Region-based segmentation (e.g., quantum region growing).
-        *   Pattern-based segmentation.
-    *   Automatic calculation of optimal Grover iterations.
-    *   Comprehensive `SegmentationResult` class for easy analysis and visualization.
-*   **Quantum EELS Analysis**:
-    *   Preprocessing utilities for EELS spectra (background subtraction, normalization).
-    *   Quantum Fourier Transform (QFT) for frequency analysis and peak detection in EELS data.
-*   **Synthetic Data Generation**:
-    *   Functions to generate synthetic electron microscopy images with particles and noise.
-    *   Functions to generate synthetic EELS spectra with customizable peaks and background.
+*   **Quantum CTEM Simulation**:
+    *   Full quantum circuit simulation of Conventional Transmission Electron Microscopy
+    *   Amplitude encoding of electron wavefunctions into quantum states
+    *   Quantum Fourier Transform (QFT) based momentum space operations
+    *   Weak Phase Object Approximation (WPOA) implementation
+    *   Support for multiple materials (MoS₂, Graphene)
+    *   Contrast Transfer Function (CTF) with aberration modeling
+*   **Quantum Backend Integration**:
+    *   Unified backend abstraction for simulators and IBM Quantum hardware
+    *   Seamless execution on local `AerSimulator` or IBM quantum devices
+    *   Circuit optimization and transpilation for hardware deployment
+    *   Performance benchmarking tools
+*   **Classical-Quantum Integration**:
+    *   Bridge between classical multislice simulations and quantum encoding
+    *   Validation against established microscopy simulators (abTEM)
+    *   Quantum tomography for wavefunction reconstruction
+*   **Material-Specific Workflows**:
+    *   Pre-configured workflows for MoS₂ and Graphene
+    *   Automatic atomic structure generation from lattice parameters
+    *   Kirkland potential calculation for electron scattering
 *   **Professional Code Structure**:
-    *   Modular design with clear separation of concerns (image processing, EELS analysis, QML, backend management).
-    *   Comprehensive docstrings and type hinting.
-    *   Robust error handling and logging.
+    *   Modular design with clear separation of backends, materials, and workflows
+    *   Comprehensive test suite (200+ tests)
+    *   Type hints and detailed docstrings
+    *   Continuous integration with GitHub Actions
 *   **Jupyter Notebook Examples**:
-    *   A detailed example notebook (`notebooks/complete_quantum_microscopy_examples.ipynb`) showcasing all major functionalities, suitable for educational purposes and as a basis for scientific publications.
-*   **Resource Analysis and Optimization**:
-    *   Tools to analyze circuit resources (qubits, depth, gate counts).
-    *   Demonstration of circuit optimization using Qiskit's transpiler.
+    *   Interactive quantum CTEM demonstration (`examples/quantum_ctem.ipynb`)
+    *   Complete visualization and analysis tools
+    *   Reproducible scientific workflows
 
 ## Repository Structure
 
@@ -111,26 +107,26 @@ quantum_algo_microscopy/
 
 ### Setup
 
-1.  **Clone the repository:**
+1.  **Install from PyPI (recommended):**
     ```bash
-    git clone https://github.com/rmsreis/quantum_algo_microscopy.git
-    cd quantum_algo_microscopy
+    pip install quscope
     ```
 
-2.  **Create and activate a virtual environment (recommended):**
+2.  **Or clone the repository for development:**
+    ```bash
+    git clone https://github.com/QuScope/QuScope.git
+    cd QuScope
+    ```
+
+3.  **Create and activate a virtual environment (for development):**
     ```bash
     python -m venv venv
     source venv/bin/activate  # On Windows: venv\Scripts\activate
     ```
 
-3.  **Install dependencies:**
+4.  **Install in editable mode (for development):**
     ```bash
-    pip install -r requirements.txt
-    ```
-
-4.  **Install the QuScope package in editable mode:**
-    ```bash
-    pip install -e .
+    pip install -e ".[all]"  # Install with all optional dependencies
     ```
 
 5.  **Set up IBM Quantum Access (Optional, for running on IBM backends):**

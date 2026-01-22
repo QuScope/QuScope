@@ -38,10 +38,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://quscope.readthedocs.io"
+Homepage = "https://github.com/QuScope/QuScope"
 Documentation = "https://quscope.readthedocs.io"
-Repository = "https://github.com/robertoreis/quantum_algo_microscopy.git"
-"Bug Tracker" = "https://github.com/robertoreis/quantum_algo_microscopy/issues"
+Repository = "https://github.com/QuScope/QuScope.git"
+"Bug Tracker" = "https://github.com/QuScope/QuScope/issues"
+Changelog = "https://github.com/QuScope/QuScope/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 microscopy = [

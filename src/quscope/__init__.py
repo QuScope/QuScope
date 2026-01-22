@@ -30,18 +30,12 @@ except Exception:
     # These names will not be present if the import failed; callers should import
     # directly from submodules if needed.
     _encoding_available = False
-    encode_image_to_circuit = None
-    EncodingMethod = None
-    validate_image_array = None
-    calculate_required_qubits = None
 
 try:
     from .image_processing.preprocessing import preprocess_image, binarize_image  # type: ignore
     _preprocessing_available = True
 except Exception:
     _preprocessing_available = False
-    preprocess_image = None
-    binarize_image = None
 
 # Do not import heavy optional subpackages (qml, eels_analysis) eagerly.
 # Leave them for explicit import by the user or lazy access via __getattr__.

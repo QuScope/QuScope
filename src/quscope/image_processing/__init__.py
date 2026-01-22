@@ -1,48 +1,66 @@
-"""Quantum image process__all__ = [
-    'preprocess_image',
-    'encode_image_to_circuit',
-]
+"""Quantum image processing package for QuScope.
 
-# Add optional exports if available
-if _segmentation_available:
-    __all__.extend(['apply_grovers_algorithm', 'interpret_results'])
+This package exposes core, lightweight helpers (preprocessing, encoding).
+Optional components (segmentation, filtering, denoising) are imported
+lazily / wrapped so importing the package remains safe in minimal
+environments (no heavy optional dependencies installed).
+"""
 
-if _filtering_available:
-    __all__.extend(['quantum_edge_detection'])
+__all__ = []
 
-if _denoising_available:
-    __all__.extend(['image_denoising'])le."""
-
-from .preprocessing import preprocess_image
-from .quantum_encoding import encode_image_to_circuit
-
-# Optional imports that may not be available in all environments
+# Core (lightweight) API
 try:
-    from .quantum_segmentation import apply_grovers_algorithm, interpret_results
+    from .preprocessing import preprocess_image, binarize_image  # type: ignore
+    _preprocessing_available = True
+except Exception:
+    _preprocessing_available = False
 
+try:
+    from .quantum_encoding import (
+        encode_image_to_circuit,
+        EncodingMethod,
+        validate_image_array,
+        calculate_required_qubits,
+    )  # type: ignore
+    _encoding_available = True
+except Exception:
+    _encoding_available = False
+
+# Optional features (may depend on heavy libs). Wrap imports to avoid raising
+# on package import when optional dependencies are absent.
+try:
+    from .quantum_segmentation import apply_grovers_algorithm, interpret_results  # type: ignore
     _segmentation_available = True
-except ImportError:
+except Exception:
     _segmentation_available = False
 
 try:
-    from .filtering import quantum_edge_detection
-
+    from .filtering import quantum_edge_detection  # type: ignore
     _filtering_available = True
-except ImportError:
+except Exception:
     _filtering_available = False
 
 try:
-    from . import image_denoising
-
+    from . import image_denoising  # type: ignore
     _denoising_available = True
-except ImportError:
+except Exception:
     _denoising_available = False
 
-__all__ = [
-    "preprocess_image",
-    "encode_image_to_circuit",
-    "apply_grovers_algorithm",
-    "interpret_results",
-    "quantum_edge_detection",
-    "image_denoising",
-]
+# Build __all__ only from symbols that were successfully imported
+if _preprocessing_available:
+    __all__.extend(["preprocess_image", "binarize_image"])
+if _encoding_available:
+    __all__.extend(
+        [
+            "encode_image_to_circuit",
+            "EncodingMethod",
+            "validate_image_array",
+            "calculate_required_qubits",
+        ]
+    )
+if _segmentation_available:
+    __all__.extend(["apply_grovers_algorithm", "interpret_results"])
+if _filtering_available:
+    __all__.append("quantum_edge_detection")
+if _denoising_available:
+    __all__.append("image_denoising")

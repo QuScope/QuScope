@@ -3,7 +3,7 @@ Name: quscope
 Version: 0.1.0
 Summary: QuScope - Quantum algorithms for microscopy image processing and EELS analysis
 Author-email: Roberto Reis <roberto.reis@northwestern.edu>
-License: MIT
+License-Expression: MIT
 Project-URL: Homepage, https://quscope.readthedocs.io
 Project-URL: Documentation, https://quscope.readthedocs.io
 Project-URL: Repository, https://github.com/robertoreis/quantum_algo_microscopy.git

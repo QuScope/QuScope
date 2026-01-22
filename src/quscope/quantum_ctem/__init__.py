@@ -1,113 +1,213 @@
 """
 QuScope Quantum CTEM Module
+===========================
 
-This module implements pure quantum algorithms for Conventional Transmission
-Electron Microscopy (CTEM) image simulation. Unlike hybrid quantum-classical
-approaches, this is a fully quantum implementation where the electron wave
-function evolution happens entirely on a quantum computer.
+Pure quantum algorithms for Conventional Transmission Electron Microscopy
+(CTEM) image simulation. This module provides a complete framework for
+simulating CTEM image formation on quantum computers.
 
-Phases:
-- Phase 1: Quantum Wave Function Representation (Weeks 1-4)
-- Phase 2: Quantum Phase Grating (Weeks 5-8)
-- Phase 3: Quantum Propagation (Weeks 9-12)
-- Phase 4: Full Quantum Multislice (Weeks 13-16)
-- Phase 5: Optimization & Hardware (Weeks 17-20)
-- Phase 6: Publication (Weeks 21-24)
+Key Features:
+- Amplitude encoding of electron wavefunctions into quantum states
+- Quantum Fourier Transform (QFT) based propagation
+- Weak Phase Object Approximation (WPOA) implementation
+- Contrast Transfer Function (CTF) with aberration support
+- Support for both IBM Quantum hardware and local simulators
+- Material-specific workflows for MoS₂ and Graphene
 
-Current Status: Phase 1 - Week 4
+Quick Start:
+    >>> from quscope.quantum_ctem import get_backend, MoS2Workflow
 
-Modules:
-- quantum_wave_function: Quantum encoding of electron wave functions ✅
-- circuit_optimization: Hardware-ready circuit optimization ✅
-- momentum_space: Enhanced momentum space operations ✅
-- classical_integration: Quantum-classical bridge interfaces ✅
-- performance_benchmarking: Performance analysis and benchmarking suite ✅
-- benchmark_visualization: Visualization tools for benchmark results ✅
-- validation_testing: Comprehensive validation and testing suite 🔄
-- ibm_hardware_validation: IBM Quantum hardware deployment validation 🔄
-- [TO BE ADDED] quantum_phase_grating: Quantum transmission function
-- [TO BE ADDED] quantum_propagator: Quantum Fresnel propagation
-- [TO BE ADDED] quantum_multislice: Full quantum multislice simulation
+    >>> # Run simulation on local simulator
+    >>> backend = get_backend("simulator")
+    >>> workflow = MoS2Workflow(backend=backend, voltage=200e3)
+    >>> result = workflow.run(nx=3, ny=2, grid_size=64)
+    >>> print(result.summary())
+
+    >>> # Run on IBM hardware
+    >>> backend = get_backend("ibm", device_name="ibm_kyoto")
+    >>> result = workflow.run(nx=3, ny=2, grid_size=64, shots=4096)
+
+Architecture:
+    backends/     - Quantum backend abstraction (simulator, IBM)
+    materials/    - Material definitions (MoS2, Graphene)
+    workflows/    - End-to-end simulation workflows
+
+Core Classes:
+    QuantumWaveFunction    - Amplitude encoding of 2D wavefunctions
+    MomentumSpaceConverter - QFT-based real/momentum space transforms
+    CTFCalculator          - Contrast transfer function implementation
 """
 
-from .benchmark_visualization import (
-    BenchmarkVisualizer,
-    create_summary_figure,
-)
-from .circuit_optimization import (
-    HardwareTranspiler,
-    StatePreparationOptimizer,
-    benchmark_state_preparation,
-)
-from .classical_integration import (
-    MultisliceQuantumInterface,
-    QuantumClassicalBridge,
-    WPOAQuantumInterface,
-    benchmark_quantum_classical_integration,
-)
-from .ibm_config import (
-    get_ibm_service,
+__version__ = "0.1.0"
+__author__ = "Roberto dos Reis, Sean D. Lam"
+
+# =============================================================================
+# High-Level API (Recommended for most users)
+# =============================================================================
+
+# Backends
+from .backends import (
+    Backend,
+    BackendConfig,
+    ExecutionResult,
+    SimulatorBackend,
+    IBMBackend,
+    get_backend,
     list_available_backends,
-    load_ibm_credentials,
-    validate_ibm_access,
 )
 
-# Note: validation_testing temporarily disabled for refactoring
-# from .validation_testing import (
-#     ComprehensiveValidator,
-#     ValidationReport,
-#     validate_quantum_ctem,
-# )
-from .ibm_hardware_validation import (
-    IBMDeviceProfile,
-    IBMHardwareValidator,
-    validate_ibm_deployment,
+# Materials
+from .materials import (
+    Material,
+    MoS2,
+    Graphene,
+    get_material,
+    list_materials,
 )
+
+# Workflows
+from .workflows import (
+    CTEMWorkflow,
+    MicroscopeConfig,
+    SimulationResult,
+    MoS2Workflow,
+    GrapheneWorkflow,
+)
+
+# =============================================================================
+# Core Components (For advanced users and custom implementations)
+# =============================================================================
+
+# Quantum wave function encoding
+from .quantum_wave_function import QuantumWaveFunction
+
+# Momentum space operations (QFT-based)
 from .momentum_space import (
     MomentumSpaceConverter,
     MomentumSpaceFilter,
     ParsevalValidator,
     analyze_momentum_distribution,
-    demonstrate_uncertainty_principle,
 )
+
+# Circuit optimization for hardware
+from .circuit_optimization import (
+    StatePreparationOptimizer,
+    HardwareTranspiler,
+    benchmark_state_preparation,
+)
+
+# Classical integration (for validation)
+from .classical_integration import (
+    QuantumClassicalBridge,
+    WPOAQuantumInterface,
+    MultisliceQuantumInterface,
+)
+
+# CTF calculator
+from .ctf_calculator import CTFCalculator
+
+# Hamiltonian components
+from .hamiltonian import (
+    TEMHamiltonian,
+    FreeParticleHamiltonian,
+    SampleHamiltonian,
+    LensHamiltonian,
+    HamiltonianParameters,
+)
+
+# =============================================================================
+# IBM Hardware Integration
+# =============================================================================
+
+from .ibm_hardware_validation import (
+    IBMHardwareValidator,
+    IBMDeviceProfile,
+    validate_ibm_deployment,
+)
+
+# Legacy IBM config (use get_backend("ibm") instead)
+from .ibm_config import (
+    load_ibm_credentials,
+    get_ibm_service,
+    validate_ibm_access,
+)
+
+# =============================================================================
+# Benchmarking and Visualization
+# =============================================================================
+
 from .performance_benchmarking import (
     BenchmarkResult,
     PerformanceBenchmark,
     quick_benchmark,
 )
-from .quantum_wave_function import QuantumWaveFunction
+
+from .benchmark_visualization import (
+    BenchmarkVisualizer,
+    create_summary_figure,
+)
+
+# =============================================================================
+# Public API
+# =============================================================================
 
 __all__ = [
+    # Version
+    "__version__",
+    # High-level API - Backends
+    "get_backend",
+    "list_available_backends",
+    "Backend",
+    "BackendConfig",
+    "ExecutionResult",
+    "SimulatorBackend",
+    "IBMBackend",
+    # High-level API - Materials
+    "get_material",
+    "list_materials",
+    "Material",
+    "MoS2",
+    "Graphene",
+    # High-level API - Workflows
+    "MoS2Workflow",
+    "GrapheneWorkflow",
+    "CTEMWorkflow",
+    "MicroscopeConfig",
+    "SimulationResult",
+    # Core - Quantum encoding
     "QuantumWaveFunction",
+    # Core - Momentum space
+    "MomentumSpaceConverter",
+    "MomentumSpaceFilter",
+    "ParsevalValidator",
+    "analyze_momentum_distribution",
+    # Core - Circuit optimization
     "StatePreparationOptimizer",
     "HardwareTranspiler",
     "benchmark_state_preparation",
-    "MomentumSpaceConverter",
-    "ParsevalValidator",
-    "MomentumSpaceFilter",
-    "analyze_momentum_distribution",
-    "demonstrate_uncertainty_principle",
+    # Core - Classical integration
     "QuantumClassicalBridge",
     "WPOAQuantumInterface",
     "MultisliceQuantumInterface",
-    "benchmark_quantum_classical_integration",
-    "BenchmarkResult",
-    "PerformanceBenchmark",
-    "quick_benchmark",
-    "BenchmarkVisualizer",
-    "create_summary_figure",
-    # 'ComprehensiveValidator',  # Temporarily disabled
-    # 'ValidationReport',
-    # 'validate_quantum_ctem',
+    # Core - CTF
+    "CTFCalculator",
+    # Core - Hamiltonian
+    "TEMHamiltonian",
+    "FreeParticleHamiltonian",
+    "SampleHamiltonian",
+    "LensHamiltonian",
+    "HamiltonianParameters",
+    # IBM Hardware
     "IBMHardwareValidator",
     "IBMDeviceProfile",
     "validate_ibm_deployment",
     "load_ibm_credentials",
     "get_ibm_service",
-    "list_available_backends",
     "validate_ibm_access",
+    # Benchmarking
+    "BenchmarkResult",
+    "PerformanceBenchmark",
+    "quick_benchmark",
+    "BenchmarkVisualizer",
+    "create_summary_figure",
 ]
-
-__version__ = "0.1.0"
-__phase__ = "Phase 1 Week 4: Comprehensive Validation & IBM Deployment"
-__status__ = "Active Development"

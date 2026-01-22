@@ -1,4 +1,3 @@
 notebooks
 quantum
 quscope
-utils

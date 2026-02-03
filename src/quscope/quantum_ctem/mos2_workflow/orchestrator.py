@@ -1,7 +1,7 @@
 import abtem
 import numpy as np
 
-from ..quantum_ctem.sample_potential_converter import SamplePotentialConverter
+from ..sample_potential_converter import SamplePotentialConverter
 from .viz import build_mos2
 
 

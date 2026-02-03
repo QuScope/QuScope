@@ -37,6 +37,11 @@ docs/examples/index.rst
 docs/examples/integration_examples.rst
 docs/examples/quantum_ctem.rst
 docs/tutorials/index.rst
+notebooks/01_getting_started.ipynb
+notebooks/02_quantum_ctem_advanced.ipynb
+notebooks/03_material_workflows.ipynb
+notebooks/04_kirkland_quantum_ctem.ipynb
+notebooks/05_fully_quantum_ctem.ipynb
 src/quantum/base.py
 src/quantum/microscopy.py
 src/quscope/__init__.py
@@ -64,6 +69,7 @@ src/quscope/quantum_ctem/ibm_hardware_validation.py
 src/quscope/quantum_ctem/momentum_space.py
 src/quscope/quantum_ctem/mos2_validation.py
 src/quscope/quantum_ctem/performance_benchmarking.py
+src/quscope/quantum_ctem/quantum_ctem_circuit.py
 src/quscope/quantum_ctem/quantum_encoding.py
 src/quscope/quantum_ctem/quantum_simulation.py
 src/quscope/quantum_ctem/quantum_tomography.py

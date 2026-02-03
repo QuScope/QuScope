@@ -106,6 +106,17 @@ from .classical_integration import (
 # CTF calculator
 from .ctf_calculator import CTFCalculator
 
+# Fully Quantum CTEM Circuit (TRUE quantum implementation)
+from .quantum_ctem_circuit import (
+    QuantumCTEMParameters,
+    QuantumCTEMCircuit,
+    PhaseGratingCircuit,
+    LensCTFCircuit,
+    QuantumClassicalValidator,
+    relativistic_wavelength,
+    interaction_constant,
+)
+
 # Hamiltonian components
 from .hamiltonian import (
     TEMHamiltonian,
@@ -191,6 +202,14 @@ __all__ = [
     "MultisliceQuantumInterface",
     # Core - CTF
     "CTFCalculator",
+    # Core - Fully Quantum CTEM Circuit
+    "QuantumCTEMParameters",
+    "QuantumCTEMCircuit",
+    "PhaseGratingCircuit",
+    "LensCTFCircuit",
+    "QuantumClassicalValidator",
+    "relativistic_wavelength",
+    "interaction_constant",
     # Core - Hamiltonian
     "TEMHamiltonian",
     "FreeParticleHamiltonian",

@@ -113,17 +113,26 @@ class KirklandPotential:
         """
         # Common elements used in Kirkland examples
         Z_TO_SYMBOL = {
-            6: "C",
-            14: "Si",
-            29: "Cu",
-            79: "Au",
-            92: "U",
             1: "H",
+            6: "C",
+            7: "N",
             8: "O",
             13: "Al",
+            14: "Si",
+            16: "S",
+            22: "Ti",
             26: "Fe",
+            29: "Cu",
             31: "Ga",
             33: "As",
+            38: "Sr",
+            42: "Mo",
+            47: "Ag",
+            56: "Ba",
+            57: "La",
+            79: "Au",
+            82: "Pb",
+            92: "U",
         }
 
         symbol = Z_TO_SYMBOL.get(Z)

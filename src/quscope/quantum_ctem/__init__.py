@@ -117,6 +117,14 @@ from .quantum_ctem_circuit import (
     interaction_constant,
 )
 
+# Fully Quantum Multislice Circuit
+from .quantum_multislice_circuit import (
+    QuantumMultisliceParameters,
+    QuantumMultisliceCircuit,
+    FresnelPropagatorCircuit,
+    QuantumClassicalMultisliceValidator,
+)
+
 # Hamiltonian components
 from .hamiltonian import (
     TEMHamiltonian,
@@ -141,6 +149,46 @@ from .ibm_config import (
     load_ibm_credentials,
     get_ibm_service,
     validate_ibm_access,
+)
+
+# =============================================================================
+# Fully Quantum TEM Advanced Modules
+# =============================================================================
+
+# Quantum Frozen Phonon / Thermal Diffuse Scattering (3 approaches)
+from .quantum_frozen_phonon import (
+    DebyeWaller,
+    apply_frozen_phonon_to_potential,
+    QuantumThermalPhaseChannel,
+    QuantumPhononSuperposition,
+    QuantumLindbladChannel,
+    k_grid,
+    fresnel_propagator,
+)
+
+# Quantum Bloch Wave via QPE
+from .quantum_bloch_wave import (
+    MoS2StructureFactors,
+    BlochWaveMatrix,
+    ClassicalBlochWave,
+    QuantumBlochWave,
+    BlochWaveExitWave,
+)
+
+# Quantum Diffraction Modes (SAED, CBED, Kikuchi, nBD, EBSD, WPOA)
+from .quantum_diffraction import (
+    simulate_saed,
+    simulate_cbed,
+    simulate_kikuchi,
+    simulate_nbd,
+    simulate_ebsd,
+    simulate_wpoa,
+)
+
+# Quantum STEM
+from .quantum_stem import (
+    STEMDetectors,
+    run_stem,
 )
 
 # =============================================================================
@@ -210,6 +258,11 @@ __all__ = [
     "QuantumClassicalValidator",
     "relativistic_wavelength",
     "interaction_constant",
+    # Core - Fully Quantum Multislice Circuit
+    "QuantumMultisliceParameters",
+    "QuantumMultisliceCircuit",
+    "FresnelPropagatorCircuit",
+    "QuantumClassicalMultisliceValidator",
     # Core - Hamiltonian
     "TEMHamiltonian",
     "FreeParticleHamiltonian",
@@ -229,4 +282,28 @@ __all__ = [
     "quick_benchmark",
     "BenchmarkVisualizer",
     "create_summary_figure",
+    # Quantum Frozen Phonon
+    "DebyeWaller",
+    "apply_frozen_phonon_to_potential",
+    "QuantumThermalPhaseChannel",
+    "QuantumPhononSuperposition",
+    "QuantumLindbladChannel",
+    "k_grid",
+    "fresnel_propagator",
+    # Quantum Bloch Wave
+    "MoS2StructureFactors",
+    "BlochWaveMatrix",
+    "ClassicalBlochWave",
+    "QuantumBlochWave",
+    "BlochWaveExitWave",
+    # Quantum Diffraction
+    "simulate_saed",
+    "simulate_cbed",
+    "simulate_kikuchi",
+    "simulate_nbd",
+    "simulate_ebsd",
+    "simulate_wpoa",
+    # Quantum STEM
+    "STEMDetectors",
+    "run_stem",
 ]

@@ -10,6 +10,10 @@
 
 v0.2.0 adds five new fully-quantum modules (multislice, diffraction, STEM, frozen phonon, Bloch wave) expanding the coverage from CTEM to the complete TEM technique suite.
 
+**Developed by** [Sean D. Lam](https://arxiv.org/search/quant-ph?searchtype=author&query=Lam,+S+D) and [Roberto dos Reis](https://arxiv.org/search/quant-ph?searchtype=author&query=Reis,+R+d) · Northwestern University
+
+> 📄 **Paper**: [*Quantum Algorithm Framework for Phase-Contrast Transmission Electron Microscopy Image Simulation*](https://arxiv.org/abs/2602.13438) — arXiv:2602.13438 [quant-ph], Feb 2026
+
 ---
 
 ## 🚀 Quick Start
@@ -115,34 +119,68 @@ export IBMQ_TOKEN="YOUR_API_TOKEN"
 ```
 quantum_algo_microscopy/
 ├── src/quscope/
-│   ├── quantum_ctem/
+│   ├── quantum_ctem/                        # Core quantum TEM modules
 │   │   ├── __init__.py                      # 25+ public exports
 │   │   ├── quantum_ctem_circuit.py          # CTEM: QFT + CTF DiagonalGate
 │   │   ├── quantum_multislice_circuit.py    # Multislice: Fresnel + QFT
-│   │   ├── quantum_diffraction.py           # 6 diffraction modes
-│   │   ├── quantum_stem.py                  # 5-channel STEM detectors
+│   │   ├── quantum_diffraction.py           # 6 diffraction modes (SAED/CBED/Kikuchi/…)
+│   │   ├── quantum_stem.py                  # 5-channel STEM (HAADF/ADF/ABF/BF/iDPC)
 │   │   ├── quantum_frozen_phonon.py         # QTPC / QPS / Lindblad phonons
-│   │   ├── quantum_bloch_wave.py            # QPE-based Bloch wave
+│   │   ├── quantum_bloch_wave.py            # QPE-based Bloch wave diagonalisation
+│   │   ├── quantum_encoding.py              # Amplitude encoding utilities
+│   │   ├── quantum_simulation.py            # High-level simulation runner
+│   │   ├── quantum_wave_function.py         # Wavefunction helper
+│   │   ├── quantum_tomography.py            # Quantum state tomography
 │   │   ├── ctf_calculator.py                # CTF + aberration function
 │   │   ├── hamiltonian.py                   # Full TEM Hamiltonian
+│   │   ├── momentum_space.py                # Reciprocal-space utilities
+│   │   ├── classical_integration.py         # abTEM / Kirkland bridge
+│   │   ├── classical_validation.py          # Classical reference implementations
+│   │   ├── circuit_optimization.py          # Gate cancellation & transpilation
+│   │   ├── performance_benchmarking.py      # Benchmark suite
+│   │   ├── sample_potential_converter.py    # Convert potentials to circuit inputs
 │   │   ├── materials/                       # MoS₂, Graphene structure factors
-│   │   ├── mos2_workflow/                   # End-to-end MoS₂ workflow
-│   │   └── backends/                        # IBM / Aer backend wrappers
-│   ├── image_processing/                    # Quantum image encoding / segmentation
-│   ├── eels_analysis/                       # QFT-based EELS processing
-│   └── qml/                                 # Quantum machine learning (INEQR)
+│   │   │   ├── base.py
+│   │   │   ├── mos2.py
+│   │   │   └── graphene.py
+│   │   ├── mos2_workflow/                   # End-to-end MoS₂ orchestration
+│   │   │   ├── orchestrator.py
+│   │   │   ├── microscope.py
+│   │   │   ├── hamiltonian.py
+│   │   │   └── viz.py
+│   │   ├── workflows/                       # Reusable workflow base classes
+│   │   │   ├── base.py
+│   │   │   ├── mos2.py
+│   │   │   └── graphene.py
+│   │   └── backends/                        # IBM Quantum / Aer backend wrappers
+│   │       ├── base.py
+│   │       ├── ibm.py
+│   │       └── simulator.py
+│   ├── ctem/                                # Classical CTEM (reference)
+│   │   ├── kirkland_potential.py
+│   │   ├── multislice_simulator.py
+│   │   └── wpoa_simulator.py
+│   ├── simulations/                         # Shared simulation utilities
+│   │   ├── multislice.py
+│   │   ├── quantum_utils.py
+│   │   └── wpo.py
+│   ├── utils/                               # Constants, Kirkland parameters
+│   │   ├── constants.py
+│   │   └── kirkland.py
+│   └── quantum_backend.py                   # IBM Quantum session manager
 ├── notebooks/
 │   ├── 01_getting_started.ipynb
 │   ├── 02_quantum_ctem_advanced.ipynb
 │   ├── 03_material_workflows.ipynb
 │   ├── 05_fully_quantum_ctem.ipynb          # Quantum CTEM circuit showcase
 │   ├── 06_quantum_ctf_envelope.ipynb
-│   ├── 07_si3n4_quantum_multislice.ipynb
-│   ├── 08_fully_quantum_tem_advanced.ipynb  # All 6 quantum modules
-│   └── 09_quantum_multislice_circuit_test.ipynb
+│   ├── 07_si3n4_quantum_multislice.ipynb    # Si₃N₄ multislice study
+│   ├── 08_fully_quantum_tem_advanced.ipynb  # All 6 quantum modules demo
+│   └── 09_quantum_multislice_circuit_test.ipynb  # Fresnel propagator validation
+├── scripts/                                 # Standalone test / analysis scripts
 ├── kirkland.json                            # Kirkland potential parameters (20 elements)
 ├── pyproject.toml
-└── docs/
+└── docs/                                    # Sphinx documentation source
 ```
 
 ---
@@ -344,9 +382,26 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ## 📜 Citation
 
+If you use QuScope in your research, please cite the companion paper:
+
 ```bibtex
-@software{quscope_reis_2026,
-  author    = {Reis, Roberto},
+@article{lam2026quantum,
+  title     = {{Quantum Algorithm Framework for Phase-Contrast Transmission
+               Electron Microscopy Image Simulation}},
+  author    = {Lam, Sean D. and dos Reis, Roberto},
+  journal   = {arXiv preprint},
+  volume    = {arXiv:2602.13438},
+  year      = {2026},
+  url       = {https://arxiv.org/abs/2602.13438},
+  doi       = {10.48550/arXiv.2602.13438}
+}
+```
+
+For the software itself:
+
+```bibtex
+@software{quscope_lam_reis_2026,
+  author    = {Lam, Sean D. and dos Reis, Roberto},
   title     = {{QuScope: Fully-Quantum Algorithms for Transmission Electron Microscopy}},
   year      = {2026},
   version   = {0.2.0},

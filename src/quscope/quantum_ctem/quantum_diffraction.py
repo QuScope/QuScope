@@ -318,7 +318,7 @@ def simulate_kikuchi(
     # Kikuchi contrast = signed gradient magnitude of TDS background
     grad_x = np.gradient(gaussian_filter(I_tds_raw, sigma=N / 16.0), axis=1)
     grad_y = np.gradient(gaussian_filter(I_tds_raw, sigma=N / 16.0), axis=0)
-    pattern = grad_x + grad_y
+    pattern = np.sqrt(grad_x**2 + grad_y**2)
     scale = max(abs(pattern.max()), abs(pattern.min())) + 1e-12
     pattern /= scale
     log_pat = np.arcsinh(pattern * 5.0) / np.arcsinh(5.0)

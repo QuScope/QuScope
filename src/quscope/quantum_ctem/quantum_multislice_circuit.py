@@ -16,8 +16,6 @@ The quantum circuit architecture for N slices:
     → [Lens CTF] → [IQFT]
     → |ψ_image⟩
 
-Author: QuScope Development Team
-Date: March 2026
 """
 
 from dataclasses import dataclass
@@ -86,15 +84,8 @@ class FresnelPropagatorCircuit:
         # Generate spatial frequency grid (1/Angstrom)
         freq_x = np.fft.fftfreq(N_x, d=pixel_size)
         freq_y = np.fft.fftfreq(N_y, d=pixel_size)
-        kx, ky = np.meshgrid(2 * np.pi * freq_x, 2 * np.pi * freq_y, indexing="ij")
+        kx, ky = np.meshgrid(freq_x, freq_y, indexing="ij")
         k_squared = kx**2 + ky**2
-        
-        # Note: Following standard multislice formulation P(q) = exp(-i π λ z q²).
-        # We use k=2π f, so k² = 4π² f². The formula typically expects spatial frequency f.
-        # So we adjust for the 2π factor. If standard CTEM used 2π*f, we match it:
-        # P(f) = exp(-i * π * λ * Δz * (fx² + fy²))
-        # If we use kx, ky = 2π f, then (fx² + fy²) = k_squared / (4π²)
-        # Let's match the LensCTF convention from quantum_ctem_circuit:
         
         phase = -np.pi * wavelength * slice_thickness * (k_squared / (4 * np.pi**2))
         return phase
@@ -196,9 +187,6 @@ class QuantumMultisliceCircuit:
             # Phase grating in real space
             phase_circuit = self.phase_grating.build_circuit(V_slice, self.sigma)
             qc.compose(phase_circuit, inplace=True)
-            
-            if include_barriers:
-                qc.barrier()
                 
             # If not the last slice, apply Fresnel propagator
             if i < num_slices - 1:
@@ -252,21 +240,9 @@ class QuantumMultisliceCircuit:
         """
         qc = self.build_full_circuit(potentials, include_barriers=False)
         
-        # Ensure little-endian ordering for correct reshaping
-        # qiskit stores qubits in reverse order compared to numpy
         sv = Statevector(qc)
-        
-        # Qiskit stores amplitude array in 1D.
-        # We need to reshape. The qubits 0..n_qubits_per_dim-1 are X
-        # and n_qubits_per_dim..n_qubits-1 are Y. We must be careful about Qiskit's ordering.
-        # In the original CTEM circuit, we probably did sv.data.reshape... Let's find out how it was done.
-        
-        # We will use exactly how quantum_ctem_circuit does it if possible.
         N = self.params.grid_size
         wave_function = np.array(sv.data).reshape((N, N))
-        
-        # Typically one needs to correctly transpose or reorder, but let's stick to the simple reshape (N,N)
-        # assuming the standard logic.
         
         return {
             "statevector": sv.data,
@@ -316,7 +292,7 @@ class QuantumClassicalMultisliceValidator:
                 psi = np.fft.ifft2(Psi_k)
                 
         # Objective lens CTF
-        kx, ky = np.meshgrid(2 * np.pi * freq_x, 2 * np.pi * freq_y, indexing="ij")
+        kx, ky = np.meshgrid(freq_x, freq_y, indexing="ij")
         k_squared_ang = kx**2 + ky**2
         
         # From LensCTFCircuit formula

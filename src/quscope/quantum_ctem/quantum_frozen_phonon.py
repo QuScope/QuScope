@@ -2,24 +2,19 @@
 Quantum Frozen Phonon & Thermal Diffuse Scattering
 ===================================================
 
-Three TRUE quantum approaches to frozen-phonon / thermal-diffuse scattering (TDS):
+Three quantum approaches to frozen-phonon / thermal-diffuse scattering (TDS):
 
   Approach 1 — QTPC  : Quantum Thermal Phase Channel
-    Encodes Debye-Waller dephasing via ancilla + CRZ gates.
-    Statevector of the electron register gives the thermally attenuated exit wave.
+    DiagonalGate in k-space (after QFT) that encodes Debye-Waller attenuation as a 
+    phase rotation on the full n_q-qubit register.
 
   Approach 2 — QPS   : Quantum Phonon Superposition
-    Phonon displacement configurations encoded in superposition in n_ph ancilla qubits.
-    Partial trace over phonon register → electron reduced density matrix.
-    I_thermal = diagonal of ρ_el (in real space).
-
+    Multi-controlled gates using all n_ph phonon qubits, with X-flip
+    padding to condition on the specific basis state |ci>_ph.
+    
   Approach 3 — Lindblad : Open quantum system per multislice slice
-    Each propagation step applies Kraus operators to a DensityMatrix:
-        ρ → K_el ρ K_el† + K_tds ρ K_tds†
-    K_el = sqrt(1−γΔz) · I      (elastic channel)
-    K_tds = sqrt(γΔz)  · DW_k   (TDS channel, DW_k = Debye-Waller diagonal)
-
-All three approaches are FULLY QUANTUM: they use Qiskit QuantumCircuit,
+    
+All three approaches are fully quantum: they use Qiskit QuantumCircuit,
 Statevector, and/or DensityMatrix throughout. Classical numpy fallbacks
 are provided only for grids too large for statevector simulation (n_q > 14).
 
@@ -118,19 +113,13 @@ class QuantumThermalPhaseChannel:
     """
     Approach 1 — Quantum Thermal Phase Channel.
 
-    Debye-Waller dephasing is represented by a controlled-RZ channel on an
-    ancilla qubit:
-
-        for each k-mode with dephasing angle θ_k = arccos(DW(k)):
-            H|0⟩_anc · CRZ(2θ, anc→tgt) · H|0⟩_anc · Reset
-
-    This maps the electron wave to:
-        ψ_k → ψ_k · cos(θ_k) = ψ_k · DW(k)
-
-    i.e. a Debye-Waller attenuation in k-space.
-
-    The Statevector is run on the electron + ancilla register; only the
-    electron amplitudes are retained for the diffraction pattern.
+    After the QFT (electron state in k-space), apply a DiagonalGate whose
+        j-th entry is exp(-i·arccos(DW(k_j))). This applies a phase shift to
+        each computational basis state |j⟩_el (= k-mode j) that encodes the
+        Debye-Waller factor DW(k_j) as the closest unitary transformation.
+        
+    Circuit (n_q qubits, no ancilla):
+        |ψ_0⟩ exp(iσV) → QFT → DiagGate(DW_phases) → IQFT → |ψ_tds⟩
     """
     MAX_SV_QUBITS = 14
 
@@ -153,57 +142,54 @@ class QuantumThermalPhaseChannel:
         self.K = np.sqrt(KX ** 2 + KY ** 2)
         self.dw_k = dw.factor(self.K)
 
-    def _dephasing_angles(self) -> np.ndarray:
-        """θ_k = arccos(DW(k)) — dephasing angle per k-mode."""
-        return np.arccos(np.clip(self.dw_k.flatten(), 0.0, 1.0))
+    def _dw_diagonal(self) -> np.ndarray:
+        """
+        Diagonal entries for the k-space DW phase gate.
+ 
+        exp(-i·arccos(DW(k_j))) : j = 0..2^n_q - 1
+        Padded to 2^n_q (extra states get DW=1, i.e. phase=0).
+        """
+        dw_flat = self.dw_k.flatten()
+        dw_padded = np.ones(2 ** self.n_q)
+        dw_padded[:len(dw_flat)] = dw_flat
+        phases = -np.arccos(np.clip(dw_padded, 0.0, 1.0))
+        return np.exp(1j * phases)
 
-    def build_circuit(
-        self, V: np.ndarray, n_dephasing_modes: int = 8
-    ) -> QuantumCircuit:
+    def build_circuit(self, V: np.ndarray, n_dephasing_modes: int = 8) -> QuantumCircuit:
         """
         Build the QTPC circuit.
 
-        The n_dephasing_modes k-modes with the largest dephasing angles are
-        included; the rest are below numerical threshold.
+        Steps:
+            1. Initialise electron register with phase-grating exit wave
+            2. QFT → k-space
+            3. Apply DiagonalGate encoding DW attenuation as phase
+            4. IQFT → real space
         """
         N, n_q = self.N, self.n_q
         n_half = n_q // 2
-        ancilla = n_q   # extra qubit index
+        qc = QuantumCircuit(n_q, name="QTPC")
 
-        qc = QuantumCircuit(n_q + 1, name="QTPC")
-
-        # Initialise with the phase-grating exit wave: exp(iσV)|ψ_inc⟩
+        # 1. Initialise with the phase-grating exit wave: exp(iσV)|ψ_inc⟩
         t_flat = np.exp(1j * self.sigma * V).flatten()
-        t_flat = t_flat / np.linalg.norm(t_flat)
+        norm = np.linalg.norm(t_flat)
+        if norm > 1e-20:
+            t_flat = t_flat / norm
         qc.initialize(t_flat.tolist(), range(n_q))
 
-        # QFT → k-space
+        # 2. QFT → k-space
         qc.append(QFTGate(n_half), range(n_half))
         qc.append(QFTGate(n_half), range(n_half, n_q))
 
-        # Apply dephasing gates for the strongest n_dephasing_modes modes
-        angles = self._dephasing_angles()
-        top_modes = np.argsort(angles)[::-1][:n_dephasing_modes]
-        for idx in top_modes:
-            theta = float(angles[idx])
-            if theta < 1e-6:
-                continue
-            tgt = int(idx) % n_q
-            # Ancilla Hadamard → CRZ → Hadamard → Reset
-            # Net effect on electron: amplitude × cos(θ)
-            qc.h(ancilla)
-            qc.crz(2.0 * theta, ancilla, tgt)
-            qc.h(ancilla)
-            qc.reset(ancilla)
+        # 3. DiagonalGate in k-space encoding DW as phase
+        dw_diag = self._dw_diagonal()
+        qc.append(DiagonalGate(dw_diag.tolist()), range(n_q))
 
-        # IQFT back to real space
+        # 4. IQFT back to real space
         qc.append(QFTGate(n_half).inverse(), range(n_half))
         qc.append(QFTGate(n_half).inverse(), range(n_half, n_q))
         return qc
 
-    def simulate(
-        self, V: np.ndarray, n_dephasing_modes: int = 8
-    ) -> Dict:
+    def simulate(self, V: np.ndarray, n_dephasing_modes: int = 8) -> Dict:
         """
         Run QTPC simulation.
 
@@ -212,23 +198,17 @@ class QuantumThermalPhaseChannel:
         """
         N = self.N
         qc = self.build_circuit(V, n_dephasing_modes)
-
-        if self.n_q + 1 <= self.MAX_SV_QUBITS:
-            # Fully quantum: run Statevector on the (electron + ancilla) circuit
+        fully_quantum = self.n_q <= self.MAX_SV_QUBITS
+        
+        if fully_quantum:
             sv = Statevector.from_instruction(qc)
-            # Marginalise over the ancilla qubit (last qubit = index n_q)
-            # DensityMatrix partial trace over ancilla
-            rho_total = DensityMatrix(sv)
-            # qiskit partial_trace: qubits_to_trace is in Qiskit qubit ordering
-            # ancilla is qubit index n_q; in Qiskit little-endian: qubit 0 = leftmost
-            rho_el = partial_trace_ancilla(rho_total, [self.n_q])
-            psi_out = extract_dominant_pure_state(rho_el, N)
+            psi_out = sv.data.reshape(N, N)
         else:
-            # Classical numpy fallback (mathematically equivalent)
+            # Classical numpy: exact DW amplitude attenuation in k-space
             t = np.exp(1j * self.sigma * V)
             psi_k = np.fft.fft2(t / N)
             psi_out = np.fft.ifft2(psi_k * self.dw_k)
-
+ 
         I_diff = np.abs(np.fft.fftshift(np.fft.fft2(psi_out))) ** 2
         I_diff_norm = I_diff / (I_diff.max() + 1e-20)
 
@@ -238,12 +218,11 @@ class QuantumThermalPhaseChannel:
             "circuit":     qc,
             "dw_k":        self.dw_k,
             "metrics": {
-                "n_qubits":    self.n_q + 1,
+                "n_qubits":    self.n_q,
                 "depth":       qc.depth(),
-                "n_dephasing": n_dephasing_modes,
                 "gate_counts": dict(qc.count_ops()),
                 "approach":    "QTPC",
-                "fully_quantum": self.n_q + 1 <= self.MAX_SV_QUBITS,
+                "fully_quantum": fully_quantum,
             },
         }
 
@@ -254,20 +233,16 @@ class QuantumPhononSuperposition:
     """
     Approach 2 — Quantum Phonon Superposition.
 
-    n_ph ancilla ("phonon") qubits are placed in a uniform superposition.
-    Each computational basis state |i⟩_ph encodes a different frozen-phonon
-    displacement via controlled-DiagonalGate operations on the electron register.
-
-    Circuit structure:
-        H⊗n_ph |0⟩_ph ⊗ |ψ_0⟩_el
-        → Σ_i |i⟩_ph ⊗ exp(iσ δV_i) |ψ_0⟩_el     (controlled phase perturbations)
-
-    After Statevector execution, partial trace over phonon register gives
-    the reduced electron density matrix:
-        ρ_el = Tr_ph[|Ψ⟩⟨Ψ|]
-
-    The thermal average intensity is:
-        I_thermal(r) = ρ_el[r,r]  (diagonal elements)
+    For phonon config ci (ci = 1..2^n_ph - 1), the displacement is
+        controlled on all n_ph phonon qubits being in state |ci⟩_ph.
+        This is implemented as:
+            - X-flip qubit b if bit b of ci is 0  (to convert |ci⟩→|1…1⟩)
+            - Apply n_ph-controlled DiagonalGate on electron register
+            - X-flip back to restore phonon state
+ 
+        Result: each phonon config occupies an orthogonal subspace of
+        the phonon register, giving the intended thermal superposition:
+            |Ψ⟩ = Σ_{ci=0}^{N_ph-1} |ci⟩_ph ⊗ exp(iσ(V+δV_ci))|ψ₀⟩_el
     """
     MAX_SV_QUBITS = 16  # n_ph + n_q ≤ 16
 
@@ -304,26 +279,46 @@ class QuantumPhononSuperposition:
         n_total = n_ph + n_q
         qc = QuantumCircuit(n_total, name="QPS")
 
-        # Phonon register: uniform superposition
+        # Phonon register: uniform superposition over all N_ph configs
         for i in range(n_ph):
             qc.h(i)
 
         # Electron register: base exit wave exp(iσV)|flat⟩
         psi0 = np.exp(1j * self.sigma * V).flatten()
-        psi0 = psi0 / np.linalg.norm(psi0)
+        norm = np.linalg.norm(psi0)
+        psi0 = psi0 / (norm + 1e-20)
         qc.initialize(psi0.tolist(), range(n_ph, n_ph + n_q))
 
-        # Controlled phase perturbations for each phonon basis state
-        # |i⟩_ph controls exp(iσ δV_i) on the electron register
+        # n_ph-qubit multi-controlled phase perturbations
+        # For config ci, flip qubits where bit is 0, apply n_ph-ctrl gate, flip back.
         n_configs_circuit = min(self.N_ph, 2 ** n_ph)
         for ci in range(1, n_configs_circuit):
             delta_phi = self.sigma * self._phonon_delta(ci * 137, V)
             phase_diag = np.exp(1j * delta_phi).flatten()
-            # Find the single control qubit corresponding to bit decomposition of ci
-            # Use Gray-code-like selection: apply to bit 0 of ci
-            ctrl_q = int(np.floor(np.log2(ci))) % n_ph
-            dg = DiagonalGate(phase_diag.tolist())
-            qc.append(dg.control(1), [ctrl_q] + list(range(n_ph, n_ph + n_q)))
+ 
+            # Pad to 2^n_q
+            full_diag = np.ones(2 ** n_q, dtype=complex)
+            full_diag[:len(phase_diag)] = phase_diag
+ 
+            # Build the n_ph-qubit controlled DiagonalGate
+            dg = DiagonalGate(full_diag.tolist())
+            ctrl_dg = dg.control(n_ph)
+ 
+            # Compute which phonon qubits need X-flip (0-bits of ci)
+            ctrl_bits = [(ci >> b) & 1 for b in range(n_ph)]
+ 
+            # X-flip 0-bit phonon qubits so the control fires on |ci⟩_ph
+            for b, bit in enumerate(ctrl_bits):
+                if bit == 0:
+                    qc.x(b)
+ 
+            # Apply n_ph-controlled DiagonalGate on electron register
+            qc.append(ctrl_dg, list(range(n_ph)) + list(range(n_ph, n_ph + n_q)))
+ 
+            # Restore phonon qubit state
+            for b, bit in enumerate(ctrl_bits):
+                if bit == 0:
+                    qc.x(b)
 
         return qc
 
@@ -353,10 +348,9 @@ class QuantumPhononSuperposition:
             diag = np.real(np.diag(rho_el.data))
             diag = np.clip(diag, 0.0, None)
             I_thermal = diag.reshape(N, N)
-
-            # Elastic component: pure base state
-            V_k = np.fft.fftshift(np.fft.fft2(np.exp(1j * self.sigma * V))) / N
-            I_elastic = np.abs(V_k) ** 2
+            
+            psi_el = np.exp(1j * self.sigma * V) / N
+            I_elastic = np.abs(np.fft.fftshift(np.fft.fft2(psi_el))) ** 2
             I_tds = I_thermal - I_elastic / (I_elastic.max() + 1e-20) * I_thermal.max()
         else:
             # Classical frozen-phonon average (mathematically equivalent)
@@ -367,11 +361,10 @@ class QuantumPhononSuperposition:
                 psi = np.exp(1j * self.sigma * (V + dV)) / N
                 I_thermal += np.abs(np.fft.fftshift(np.fft.fft2(psi.reshape(N, N)))) ** 2
             I_thermal /= n_use
-
             psi_el = np.exp(1j * self.sigma * V) / N
             I_elastic = np.abs(np.fft.fftshift(np.fft.fft2(psi_el))) ** 2
             I_tds = I_thermal - I_elastic
-
+ 
         safe_max = lambda a: a / (a.max() + 1e-20)
         return {
             "I_thermal":  safe_max(I_thermal),
@@ -397,7 +390,7 @@ class QuantumLindbladChannel:
     """
     Approach 3 — Open Quantum System Multislice (Lindblad / Kraus).
 
-    Each multislice step applies TWO Kraus operators to the electron
+    Each multislice step applies two Kraus operators to the electron
     density matrix ρ (a DensityMatrix object):
 
         ρ_{n+1} = K_el ρ_n K_el† + K_tds ρ_n K_tds†
@@ -416,7 +409,7 @@ class QuantumLindbladChannel:
     DensityMatrix.evolve():
         ρ → U_t ρ U_t† → U_P ρ U_P†  (phase grating, Fresnel propagator)
 
-    This is FULLY QUANTUM: DensityMatrix evolves under unitary gates and
+    This is fully quantum: DensityMatrix evolves under unitary gates and
     non-unitary Kraus maps at every step.
     """
     MAX_DM_QUBITS = 12  # 2^12 × 2^12 DM ≈ 512 MB at complex128
@@ -496,7 +489,7 @@ class QuantumLindbladChannel:
             psi0 /= np.linalg.norm(psi0)
             rho = DensityMatrix(np.outer(psi0, psi0.conj()))
 
-            I_el_stack, I_tds_stack = [], []
+            I_el_stack = []
 
             for _ in range(n_slices):
                 # 1. Phase grating: unitary U_t = diag(exp(iσV/n))
@@ -504,41 +497,27 @@ class QuantumLindbladChannel:
                 U_t = Operator(np.diag(t_flat))
                 rho = rho.evolve(U_t)
 
-                # 2. Fresnel propagation in k-space: U_P via QFT · diag(P) · IQFT
-                # Implemented as: reshape → FFT → multiply → IFFT → reshape
-                arr = np.array(rho.data)  # (dim, dim) complex
-                # Apply U_P via explicit matrix construction
-                # For large N this is expensive; we use FFT-based equivalence
-                psi_flat = arr.diagonal()  # use diagonal as "effective wavefunction"
-                psi_2d = psi_flat.reshape(N, N)
-                psi_k = np.fft.fft2(psi_2d) * prop
-                psi_r = np.fft.ifft2(psi_k).flatten()
-                # Reconstruct DM from propagated diagonal (outer-product update)
-                rho_data = arr.copy()
-                # Full unitary propagation on rho: U P rho P† U†
-                # Build U_P as N²×N² unitary matrix explicitly
-                # For tractability, apply row-by-row using FFT
+                # 2. Fresnel propagation via explicit U_P
+                arr = np.array(rho.data)
                 U_P = _build_propagation_unitary(N, prop)
-                rho_data_new = U_P @ arr @ U_P.conj().T
-                rho = DensityMatrix(rho_data_new)
-
+                rho = DensityMatrix(U_P @ arr @ U_P.conj().T)
+ 
                 # 3. Kraus channel: ρ → K_el ρ K_el† + K_tds ρ K_tds†
                 rho_data = np.array(rho.data)
                 rho_new = (K_el @ rho_data @ K_el.conj().T +
                            K_tds @ rho_data @ K_tds.conj().T)
                 rho = DensityMatrix(rho_new)
-
-                # Track intensities (diagonal = probability distribution)
+ 
                 diag = np.real(np.diag(np.array(rho.data)))
                 I_el = np.clip(diag, 0.0, None).reshape(N, N)
                 I_el_stack.append(I_el / (I_el.mean() + 1e-20))
-
-            # Final diffraction patterns
-            rho_data = np.array(rho.data)
-            psi_exit = np.sqrt(np.clip(np.real(np.diag(rho_data)), 0, None)).reshape(N, N)
+ 
+            # Extract exit wave as leading eigenvector of ρ
+            rho_exit_dm = DensityMatrix(np.array(rho.data))
+            psi_exit = extract_dominant_pure_state(rho_exit_dm, N)
+ 
             I_final_el = np.abs(np.fft.fftshift(np.fft.fft2(psi_exit))) ** 2
-            # TDS: incoherent (1 - DW_k) component
-            psi_tds_k = np.fft.fft2(psi_exit) * (1.0 - self.dw_k)
+            psi_tds_k  = np.fft.fft2(psi_exit) * (1.0 - self.dw_k)
             I_final_tds = np.abs(np.fft.fftshift(psi_tds_k)) ** 2
 
         else:
@@ -614,7 +593,7 @@ def extract_dominant_pure_state(
     eigenvalues, eigenvectors = np.linalg.eigh(np.array(rho.data))
     # Leading eigenvector (largest eigenvalue)
     psi = eigenvectors[:, -1]
-    psi *= np.sqrt(eigenvalues[-1])  # weight by occupation
+    psi *= np.sqrt(max(eigenvalues[-1], 0.0))  # weight by occupation
     return psi.reshape(N, N)
 
 

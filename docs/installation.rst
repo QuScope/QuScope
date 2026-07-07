@@ -20,8 +20,8 @@ For development or to get the latest features:
 
 .. code-block:: bash
 
-   git clone https://github.com/robertoreis/quantum_algo_microscopy.git
-   cd quantum_algo_microscopy
+   git clone https://github.com/QuScope/QuScope.git
+   cd quscope
    pip install -e ".[dev,docs]"
 
 ⚙️ **Requirements**
@@ -31,7 +31,7 @@ For development or to get the latest features:
 - Python >= 3.9
 
 **Core Dependencies**
-- qiskit >= 0.45.0
+- qiskit >= 2.0.0
 - qiskit-aer >= 0.13.0
 - numpy >= 1.21.0
 - pillow >= 8.0.0

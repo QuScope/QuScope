@@ -60,9 +60,10 @@ print(f"Quantum–classical fidelity: {comparison['fidelity']:.6f}")   # → 1.0
 | Module | Technique | Quantum Engine |
 |--------|-----------|----------------|
 | `quantum_ctem_circuit` | Bright-field CTEM (WPOA + CTF) | QFT on amplitude-encoded wavefunction |
-| `quantum_multislice_circuit` | Multislice propagation | Fresnel DiagonalGate + QFT |
+| `quantum_multislice_circuit` | CTEM Multislice propagation | Fresnel DiagonalGate + QFT |
 | `quantum_diffraction` | WPOA / SAED / CBED / Kikuchi / nBD / EBSD | Phase grating + diffraction QFT |
 | `quantum_stem` | HAADF / ADF / ABF / BF / iDPC STEM | Angular-range annular detectors |
+| `quantum_stem_multislice` | STEM Multislice propagation | Based on CTEM Multislice circuit |
 | `quantum_frozen_phonon` | Thermal diffuse scattering | QTPC & QPS phonon superposition + Lindblad |
 | `quantum_bloch_wave` | Bloch wave diagonalisation | Quantum Phase Estimation (QPE) |
 | `ctf_calculator` | CTF / aberration function | Analytical + GPU-ready |
@@ -125,6 +126,7 @@ quantum_algo_microscopy/
 │   │   ├── quantum_multislice_circuit.py    # Multislice: Fresnel + QFT
 │   │   ├── quantum_diffraction.py           # 6 diffraction modes (SAED/CBED/Kikuchi/…)
 │   │   ├── quantum_stem.py                  # 5-channel STEM (HAADF/ADF/ABF/BF/iDPC)
+│   │   ├── quantum_stem_multislice.py       # 5-channel STEM Multislice (HAADF/ADF/ABF/BF/iDPC)
 │   │   ├── quantum_frozen_phonon.py         # QTPC / QPS / Lindblad phonons
 │   │   ├── quantum_bloch_wave.py            # QPE-based Bloch wave diagonalisation
 │   │   ├── quantum_encoding.py              # Amplitude encoding utilities
@@ -311,6 +313,10 @@ All simulations run on `StatevectorSimulator` (exact) and are ready for transpil
 | [07_si3n4_quantum_multislice](notebooks/07_si3n4_quantum_multislice.ipynb) | Si₃N₄ multislice quantum simulation |
 | [08_fully_quantum_tem_advanced](notebooks/08_fully_quantum_tem_advanced.ipynb) | **All 6 quantum modules** — full demonstration |
 | [09_quantum_multislice_circuit_test](notebooks/09_quantum_multislice_circuit_test.ipynb) | Fresnel propagator circuit validation |
+| [10_quantum_ctem](notebooks/10_quantum_ctem.ipynb) | Simple quantum circuit CTEM demonstration - WPOA & Multislice |
+| [11_quantum_stem](notebooks/11_quantum_stem.ipynb) | Simple quantum circuit STEM demonstration - WPOA & Multislice |
+| [12_quantum_diffraction](notebooks/12_quantum_diffraction.ipynb) | Quantum diffraction patterns demonstration |
+| [13_quantum_bloch_wave_and_frozen_phonon](notebooks/13_bloch_wave_and_frozen_phonon.ipynb) | Dynamical diffraction and thermal diffuse scattering |
 
 ---
 
@@ -348,6 +354,7 @@ from quscope.quantum_ctem import (
     QuantumDiffractionSimulator,
     # STEM
     QuantumSTEMSimulator, STEMDetectors,
+    # STEM Multislice
     # Frozen phonon
     QuantumThermalPhaseCode, QuantumPhononSuperposition,
     DebyeWaller, LindbladFrozenPhonon,

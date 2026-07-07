@@ -25,8 +25,8 @@ There are many ways to contribute to QuScope:
    
    .. code-block:: bash
    
-      git clone https://github.com/YOUR_USERNAME/quantum_algo_microscopy.git
-      cd quantum_algo_microscopy
+      git clone https://github.com/QuScope/QuScope.git
+      cd quscope
 
 2. **Set Up Development Environment**
    

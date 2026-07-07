@@ -38,7 +38,7 @@ Core Classes:
     CTFCalculator          - Contrast transfer function implementation
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "Roberto dos Reis, Sean D. Lam"
 
 # =============================================================================
@@ -191,6 +191,13 @@ from .quantum_stem import (
     run_stem,
 )
 
+# Quantum STEM Multislice
+from .quantum_stem_multislice import (
+    fresnel_propagator_phase,
+    build_probe_circuit,
+    run_stem_multislice
+)
+
 # =============================================================================
 # Benchmarking and Visualization
 # =============================================================================
@@ -306,4 +313,8 @@ __all__ = [
     # Quantum STEM
     "STEMDetectors",
     "run_stem",
+    # STEM Multislice
+    "fresnel_propagator_phase",
+    "build_probe_circuit",
+    "run_stem_multislice",
 ]

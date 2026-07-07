@@ -178,7 +178,11 @@ quantum_algo_microscopy/
 │   ├── 06_quantum_ctf_envelope.ipynb
 │   ├── 07_si3n4_quantum_multislice.ipynb    # Si₃N₄ multislice study
 │   ├── 08_fully_quantum_tem_advanced.ipynb  # All 6 quantum modules demo
-│   └── 09_quantum_multislice_circuit_test.ipynb  # Fresnel propagator validation
+│   ├── 09_quantum_multislice_circuit_test.ipynb  # Fresnel propagator validation
+│   ├── 10_quantum_ctem.ipynb
+│   ├── 11_quantum_stem.ipynb
+│   ├── 12_quantum_diffraction.ipynb
+│   └── 13_bloch_wave_and_frozen_phonon.ipynb
 ├── scripts/                                 # Standalone test / analysis scripts
 ├── kirkland.json                            # Kirkland potential parameters (20 elements)
 ├── pyproject.toml

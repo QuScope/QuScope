@@ -11,6 +11,7 @@ requires-python = ">=3.9"
 license = "MIT"
 authors = [
     {name = "Roberto Reis", email = "roberto.reis@northwestern.edu"},
+    {name = "Sean D. Lam", email = "s_lam2023@coloradocollege.edu"},
 ]
 keywords = ["quantum", "computing", "microscopy", "EELS", "image-processing", "qiskit", "quantum-ml"]
 classifiers = [
@@ -27,7 +28,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
-    "qiskit>=1.0.0",
+    "qiskit>=2.0.0",
     "qiskit-aer>=0.14.0",
     "qiskit-algorithms>=0.3.0",
     "qiskit-machine-learning>=0.7.0",

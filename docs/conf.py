@@ -75,7 +75,7 @@ source_suffix = {
     '.md': 'markdown',
 }
 if NBS_PHINX_AVAILABLE:
-    source_suffix['.ipynb'] = 'nbsphinx'
+    source_suffix['.ipynb'] = 'jupyter_notebook'
 
 templates_path = ['_templates']
 exclude_patterns = [

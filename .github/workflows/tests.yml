@@ -86,7 +86,7 @@ jobs:
         # Install docs dependencies first
         pip install sphinx sphinx-rtd-theme myst-parser nbsphinx
         # Install only minimal dependencies needed for docs (no heavy quantum/ML libs)
-        pip install numpy matplotlib scipy scikit-learn Pillow
+        pip install numpy matplotlib scipy scikit-learn Pillow psutil
         
     - name: Install package without heavy dependencies
       run: |

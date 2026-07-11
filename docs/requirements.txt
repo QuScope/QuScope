@@ -12,3 +12,4 @@ pillow>=8.2.0 # Likely needed by notebooks
 numpy<2 # Pin numpy to avoid ABI issues with v2
 scikit-learn>=1.0.0 # Required for image_denoising module
 scipy>=1.7.0 # Required for signal processing and filtering
+psutil>=5.9.0 # Required by performance_benchmarking module

@@ -14,11 +14,11 @@ if os.path.isdir(SRC_PATH) and SRC_PATH not in sys.path:
 # -- Project information -----------------------------------------------------
 
 project = 'QuScope'
-copyright = '2025, Roberto dos Reis and Sean Lam'
-author = 'Roberto dos Reis and Sean Lam'
+copyright = '2026, Roberto dos Reis and Sean D. Lam'
+author = 'Roberto dos Reis and Sean D. Lam'
 
-version = '0.1.0'
-release = '0.1.0'
+version = '0.2.0'
+release = '0.2.0'
 
 # -- General configuration ---------------------------------------------------
 
@@ -91,7 +91,9 @@ autodoc_mock_imports = [
     "qiskit",
     "qiskit_aer",
     "qiskit_ibm_provider",
+    "qiskit_ibm_runtime",
     "qiskit_algorithms",
+    "qiskit_machine_learning",
     "matplotlib",
     "sklearn",
     "sklearn.cluster",
@@ -104,6 +106,9 @@ autodoc_mock_imports = [
     "scipy.stats",
     "PIL",
     "Pillow",
+    "ase",
+    "abtem",
+    "dotenv",
 ]
 
 # -- Options for HTML output -------------------------------------------------

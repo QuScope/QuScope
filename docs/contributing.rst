@@ -45,7 +45,6 @@ There are many ways to contribute to QuScope:
    .. code-block:: bash
    
       pytest tests/
-      python -m doctest src/quscope/image_processing/quantum_encoding.py
 
 📋 **Development Guidelines**
 =============================
@@ -85,11 +84,8 @@ There are many ways to contribute to QuScope:
    # Run with coverage
    pytest tests/ --cov=src/quscope --cov-report=html
    
-   # Run specific test file
-   pytest tests/test_quantum_encoding.py
-   
-   # Run doctests
-   python -m doctest src/quscope/image_processing/quantum_encoding.py -v
+   # Run a specific test file
+   pytest tests/test_classical_integration.py
 
 🔧 **Development Tools**
 ========================
@@ -177,10 +173,10 @@ For feature requests, please describe:
 
 For maintainers:
 
-1. Update version in ``src/__init__.py`` and ``pyproject.toml``
-2. Update ``CHANGELOG.md`` with new features and fixes  
-3. Create a git tag: ``git tag -a v0.1.0 -m "Release v0.1.0"``
-4. Push tag: ``git push origin v0.1.0``
+1. Update version in ``src/quscope/quantum_ctem/__init__.py`` and ``pyproject.toml``
+2. Update ``CHANGELOG.md`` with new features and fixes
+3. Create a git tag: ``git tag -a v0.2.0 -m "Release v0.2.0"``
+4. Push tag: ``git push origin v0.2.0``
 5. Build and upload to PyPI: ``python -m build && twine upload dist/*``
 
 📞 **Getting Help**

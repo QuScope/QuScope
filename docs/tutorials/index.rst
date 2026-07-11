@@ -2,63 +2,44 @@
 Tutorials
 =========
 
-Welcome to the QuScope tutorials! These guides will walk you through the key features and capabilities of QuScope.
+QuScope doesn't maintain separate hand-written tutorial pages — the notebooks
+themselves *are* the tutorials, kept in sync with the code because they
+import and run the real ``quscope.quantum_ctem`` API. This page is a short
+guided path through them; the full gallery (with every notebook) lives at
+:doc:`../notebooks`.
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Getting Started:
-   
-   basic_quantum_encoding
-   working_with_backends
-   image_preprocessing
+🎯 **1. Start Here**
+=====================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Advanced Topics:
-   
-   quantum_machine_learning
-   eels_analysis
-   custom_algorithms
+- :doc:`../notebooks/01_getting_started` — install check, backends, materials, and a first quantum amplitude encoding
+- :doc:`../notebooks/03_material_workflows` — full MoS₂/graphene workflows from structure to CTEM image
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Real-World Applications:
-   
-   microscopy_workflows
-   performance_optimization
-   hardware_deployment
+🚀 **2. Core Quantum CTEM**
+=============================
 
-🎯 **Tutorial Overview**
-=======================
+- :doc:`../notebooks/10_quantum_ctem` — the single-circuit WPOA/multislice CTEM pipeline
+- :doc:`../notebooks/06_quantum_ctf_envelope` — Contrast Transfer Function and envelope functions in depth
+- :doc:`../notebooks/07_si3n4_quantum_multislice` — multislice on a real crystal structure, validated classically
 
-**Basic Tutorials**
-- :doc:`basic_quantum_encoding` - Learn the fundamentals of quantum image encoding
-- :doc:`working_with_backends` - Set up and use different quantum backends  
-- :doc:`image_preprocessing` - Preprocess images for quantum algorithms
+🌀 **3. STEM, Diffraction, and Dynamical Scattering**
+========================================================
 
-**Advanced Tutorials**
-- :doc:`quantum_machine_learning` - Implement QML algorithms for microscopy
-- :doc:`eels_analysis` - Analyze EELS data with quantum techniques
-- :doc:`custom_algorithms` - Create your own quantum microscopy algorithms
-
-**Applications**
-- :doc:`microscopy_workflows` - Complete workflows for real microscopy data
-- :doc:`performance_optimization` - Optimize your quantum algorithms
-- :doc:`hardware_deployment` - Deploy on real quantum hardware
+- :doc:`../notebooks/11_quantum_stem` — scanning-probe imaging with multi-detector channels
+- :doc:`../notebooks/12_quantum_diffraction` — WPOA, SAED, CBED, and nano-beam diffraction
+- :doc:`../notebooks/13_bloch_wave_and_frozen_phonon` — dynamical diffraction (Bloch wave / QPE) and thermal diffuse scattering
 
 📚 **Prerequisites**
-===================
+=====================
 
-Before starting these tutorials, you should have:
+Before starting these notebooks, you should have:
 
-- Basic understanding of Python programming
-- Familiarity with NumPy and image processing concepts
-- Basic knowledge of quantum computing (helpful but not required)
-- QuScope installed (see :doc:`../installation`)
+- Basic understanding of Python and NumPy
+- Basic knowledge of TEM/STEM imaging concepts (helpful but not required — each notebook explains the physics it uses)
+- QuScope installed (see :doc:`../installation`), plus ``jupyter`` to run the notebooks locally
 
 🔗 **Additional Resources**
-===========================
+=============================
 
-- :doc:`../notebooks` - Interactive Jupyter notebooks
-- :doc:`../api` - Complete API reference
-- `Qiskit Textbook <https://qiskit.org/textbook/>`_ - Learn quantum computing fundamentals
+- :doc:`../notebooks` — the full notebook gallery, including advanced and reference-copy notebooks
+- :doc:`../api` — complete API reference
+- `Qiskit documentation <https://docs.quantum.ibm.com/api/qiskit/>`_ — for the underlying quantum circuit primitives

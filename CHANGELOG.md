@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0] - 2026-07-10
+## [0.2.0] - 2026-07-11
 
 ### Added
 - Demonstration notebooks 10-13 for example usage for CTEM, STEM, and diffraction patterns
@@ -25,8 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed repository clone commands
 
 ### Documentation
-- Removing old files due to removal of analysis scripts until further updated and explored
-- Updating readthedocs to properly demonstrate applications and usage code from QuScope
+- Major documentation restructuring for v0.2.0: quantum_ctem-focused API and notebook gallery
+- Removed deprecated analysis, processing, and QML docs (will be reimplemented in future versions)
+- Updated tutorials, notebooks, guides, and API docs
 
 ## [0.2.0] - 2026-03-12
 

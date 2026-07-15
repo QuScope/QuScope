@@ -15,7 +15,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
+      with:
+        lfs: true
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
@@ -68,7 +70,9 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
-    
+      with:
+        lfs: true
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -85,7 +89,7 @@ jobs:
         # Install docs dependencies first
         pip install sphinx sphinx-rtd-theme myst-parser nbsphinx
         # Install only minimal dependencies needed for docs (no heavy quantum/ML libs)
-        pip install numpy matplotlib scipy scikit-learn Pillow
+        pip install numpy matplotlib scipy scikit-learn Pillow psutil
         
     - name: Install package without heavy dependencies
       run: |

@@ -26,12 +26,11 @@ jobs:
         python -m pip install --upgrade pip
         # Install basic dependencies first
         pip install pytest pytest-cov flake8 numpy matplotlib
-        # Try to install package dependencies, continue if some fail
-        pip install qiskit qiskit-aer scipy scikit-learn Pillow || echo "Some quantum dependencies failed to install"
-        
+        pip install qiskit qiskit-aer scipy scikit-learn Pillow
+
     - name: Install package in development mode
       run: |
-        pip install -e . || echo "Package installation failed, will test source files directly"
+        pip install -e .
     
     - name: Lint with flake8
       run: |
@@ -44,7 +43,7 @@ jobs:
       run: |
         # Add src to Python path for testing
         export PYTHONPATH="${PYTHONPATH}:${GITHUB_WORKSPACE}/src"
-        python -m pytest tests/ -v --cov=src --cov-report=xml || echo "Tests completed with some failures"
+        python -m pytest tests/ -v --cov=src --cov-report=xml
     
     - name: Check basic package functionality
       run: |

@@ -68,7 +68,7 @@ class FresnelPropagatorCircuit:
         slice_thickness: float
     ) -> np.ndarray:
         """
-        Calculate Fresnel propagator phase function: -π·λ·Δz·k²
+        Calculate Fresnel propagator phase function: -π·λ·Δz·k² - Kirkland (2020) Eq. 6.65
 
         Args:
             wavelength: Electron wavelength (Å)
@@ -87,7 +87,7 @@ class FresnelPropagatorCircuit:
         kx, ky = np.meshgrid(freq_x, freq_y, indexing="ij")
         k_squared = kx**2 + ky**2
         
-        phase = -np.pi * wavelength * slice_thickness * (k_squared / (4 * np.pi**2))
+        phase = -np.pi * wavelength * slice_thickness * k_squared
         return phase
 
     def build_circuit(self, phase_k: np.ndarray) -> QuantumCircuit:

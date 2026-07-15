@@ -5,8 +5,10 @@ Quantum Frozen Phonon & Thermal Diffuse Scattering
 Three quantum approaches to frozen-phonon / thermal-diffuse scattering (TDS):
 
   Approach 1 — QTPC  : Quantum Thermal Phase Channel
-    DiagonalGate in k-space (after QFT) that encodes Debye-Waller attenuation as a 
-    phase rotation on the full n_q-qubit register.
+    Amplitude-damping channel in k-space: after the QFT, a uniformly-controlled
+    RY on one ancilla rotates by arccos(DW(k)) per k-mode, so the ancilla-|0⟩
+    branch carries the exact Debye-Waller attenuated wave DW(k)·ψ_k and the
+    ancilla-|1⟩ branch the complementary thermal-diffuse component.
 
   Approach 2 — QPS   : Quantum Phonon Superposition
     Multi-controlled gates using all n_ph phonon qubits, with X-flip
@@ -33,7 +35,7 @@ import numpy as np
 import scipy.constants as const
 
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import DiagonalGate, QFTGate
+from qiskit.circuit.library import DiagonalGate, QFTGate, UCRYGate
 from qiskit.quantum_info import Statevector, DensityMatrix, Operator
 
 from quscope.quantum_ctem.quantum_ctem_circuit import (
@@ -111,17 +113,28 @@ def apply_frozen_phonon_to_potential(
 
 class QuantumThermalPhaseChannel:
     """
-    Approach 1 — Quantum Thermal Phase Channel.
+    Approach 1 — Quantum Thermal Phase Channel (k-space Debye-Waller damping).
 
-    After the QFT (electron state in k-space), apply a DiagonalGate whose
-        j-th entry is exp(-i·arccos(DW(k_j))). This applies a phase shift to
-        each computational basis state |j⟩_el (= k-mode j) that encodes the
-        Debye-Waller factor DW(k_j) as the closest unitary transformation.
-        
-    Circuit (n_q qubits, no ancilla):
-        |ψ_0⟩ exp(iσV) → QFT → DiagGate(DW_phases) → IQFT → |ψ_tds⟩
+    Debye-Waller attenuation ψ_k → DW(k)·ψ_k is non-unitary, so it cannot be
+    realised by a diagonal phase on the electron register alone. QTPC
+    implements it as a genuine amplitude-damping channel with one ancilla:
+    after the QFT, a uniformly-controlled RY rotates the ancilla by
+    θ_j = arccos(DW(k_j)), conditioned on the electron register being in
+    k-mode |j⟩:
+
+        |j⟩_el |0⟩_anc → |j⟩_el ( DW(k_j)|0⟩ + √(1−DW(k_j)²)|1⟩ )_anc
+
+    The ancilla-|0⟩ branch carries the coherently attenuated (elastic) wave
+    DW(k)·ψ_k — mathematically identical to the classical operation — and
+    the ancilla-|1⟩ branch carries the complementary thermal-diffuse
+    component √(1−DW²)·ψ_k.
+
+    Circuit (n_q electron qubits + 1 ancilla):
+        |ψ_0⟩ = exp(iσV)|flat⟩ → QFT → UC-RY(2·arccos DW) → IQFT
+        elastic wave  = ⟨0|_anc Ψ   (unnormalised: ‖·‖² = Σ_k DW²|ψ_k|²)
+        diffuse wave  = ⟨1|_anc Ψ
     """
-    MAX_SV_QUBITS = 14
+    MAX_SV_QUBITS = 14   # electron register + ancilla
 
     def __init__(
         self,
@@ -142,32 +155,32 @@ class QuantumThermalPhaseChannel:
         self.K = np.sqrt(KX ** 2 + KY ** 2)
         self.dw_k = dw.factor(self.K)
 
-    def _dw_diagonal(self) -> np.ndarray:
+    def _dw_angles(self) -> np.ndarray:
         """
-        Diagonal entries for the k-space DW phase gate.
- 
-        exp(-i·arccos(DW(k_j))) : j = 0..2^n_q - 1
-        Padded to 2^n_q (extra states get DW=1, i.e. phase=0).
+        UC-RY rotation angles 2·arccos(DW(k_j)) : j = 0..2^n_q - 1.
+
+        Padded to 2^n_q (extra states get DW=1, i.e. angle 0 — no damping).
         """
         dw_flat = self.dw_k.flatten()
         dw_padded = np.ones(2 ** self.n_q)
         dw_padded[:len(dw_flat)] = dw_flat
-        phases = -np.arccos(np.clip(dw_padded, 0.0, 1.0))
-        return np.exp(1j * phases)
+        return 2.0 * np.arccos(np.clip(dw_padded, 0.0, 1.0))
 
     def build_circuit(self, V: np.ndarray, n_dephasing_modes: int = 8) -> QuantumCircuit:
         """
-        Build the QTPC circuit.
+        Build the QTPC circuit (n_dephasing_modes retained for API
+        compatibility; the channel damps every k-mode exactly).
 
         Steps:
             1. Initialise electron register with phase-grating exit wave
             2. QFT → k-space
-            3. Apply DiagonalGate encoding DW attenuation as phase
-            4. IQFT → real space
+            3. UC-RY amplitude damping: ancilla ← arccos(DW(k)) per k-mode
+            4. IQFT → real space (ancilla branches stay separable)
         """
         N, n_q = self.N, self.n_q
         n_half = n_q // 2
-        qc = QuantumCircuit(n_q, name="QTPC")
+        ancilla = n_q
+        qc = QuantumCircuit(n_q + 1, name="QTPC")
 
         # 1. Initialise with the phase-grating exit wave: exp(iσV)|ψ_inc⟩
         t_flat = np.exp(1j * self.sigma * V).flatten()
@@ -180,9 +193,10 @@ class QuantumThermalPhaseChannel:
         qc.append(QFTGate(n_half), range(n_half))
         qc.append(QFTGate(n_half), range(n_half, n_q))
 
-        # 3. DiagonalGate in k-space encoding DW as phase
-        dw_diag = self._dw_diagonal()
-        qc.append(DiagonalGate(dw_diag.tolist()), range(n_q))
+        # 3. Amplitude damping: uniformly-controlled RY on the ancilla,
+        #    controlled by the electron register (angle 2·arccos(DW) per k-mode)
+        qc.append(UCRYGate(self._dw_angles().tolist()),
+                  [ancilla] + list(range(n_q)))
 
         # 4. IQFT back to real space
         qc.append(QFTGate(n_half).inverse(), range(n_half))
@@ -197,28 +211,36 @@ class QuantumThermalPhaseChannel:
         Falls back to numpy when n_q > MAX_SV_QUBITS.
         """
         N = self.N
+        fully_quantum = (self.n_q + 1) <= self.MAX_SV_QUBITS
         qc = self.build_circuit(V, n_dephasing_modes)
-        fully_quantum = self.n_q <= self.MAX_SV_QUBITS
-        
+
         if fully_quantum:
             sv = Statevector.from_instruction(qc)
-            psi_out = sv.data.reshape(N, N)
+            # Ancilla is the highest qubit: rows = ancilla value
+            branches = sv.data.reshape(2, 2 ** self.n_q)
+            psi_out = branches[0].reshape(N, N)      # elastic: DW(k)·ψ_k
+            psi_diffuse = branches[1].reshape(N, N)  # diffuse: √(1−DW²)·ψ_k
         else:
             # Classical numpy: exact DW amplitude attenuation in k-space
             t = np.exp(1j * self.sigma * V)
             psi_k = np.fft.fft2(t / N)
             psi_out = np.fft.ifft2(psi_k * self.dw_k)
- 
+            psi_diffuse = np.fft.ifft2(psi_k * np.sqrt(1.0 - self.dw_k ** 2))
+
         I_diff = np.abs(np.fft.fftshift(np.fft.fft2(psi_out))) ** 2
         I_diff_norm = I_diff / (I_diff.max() + 1e-20)
+        I_tds = np.abs(np.fft.fftshift(np.fft.fft2(psi_diffuse))) ** 2
+        I_tds_norm = I_tds / (I_tds.max() + 1e-20)
 
         return {
             "psi_exit":    psi_out,
+            "psi_diffuse": psi_diffuse,
             "diffraction": I_diff_norm,
+            "I_tds":       I_tds_norm,
             "circuit":     qc,
             "dw_k":        self.dw_k,
             "metrics": {
-                "n_qubits":    self.n_q,
+                "n_qubits":    self.n_q + 1,
                 "depth":       qc.depth(),
                 "gate_counts": dict(qc.count_ops()),
                 "approach":    "QTPC",

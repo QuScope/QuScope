@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quscope"
-version = "0.1.2"
-description = "QuScope - Quantum algorithms for microscopy image processing and EELS analysis"
+version = "0.2.0"
+description = "QuScope - Quantum algorithms for electron microscopy"
 readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"

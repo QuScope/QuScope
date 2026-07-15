@@ -28,7 +28,6 @@ from quscope.quantum_ctem.quantum_stem import (
     _probe_real,
     _propagate_to_detector,
 )
-from quscope.quantum_ctem.quantum_frozen_phonon import apply_frozen_phonon_to_potential
 
 MAX_SV_QUBITS = 16    # array-multiply diagonals push this higher than the
                       # circuit-synthesis-bound MAX_SV_QUBITS=14 in quantum_stem.py
@@ -107,51 +106,32 @@ def run_stem_multislice(
     detectors: Optional[STEMDetectors] = None,
     scan_step_px: int = 1,
     max_qubits: int = MAX_SV_QUBITS,
-    use_frozen_phonons: bool = False,
-    dw=None,
-    n_phonon_configs: int = 8,
-    rng_seed: int = 0,
 ) -> Dict:
     """
     Fully quantum multislice STEM image.
- 
+
     Splits `V_total` evenly into `n_slices` slices (pass a list directly via
     `V_total` already pre-split if you want a physically layered structure
     instead of a uniform split -- just pass a 3D array of shape
     (n_slices, N, N) and it will be used as-is).
- 
+
     Parameters mirror quantum_stem.run_stem() plus the slice geometry.
     Note: choose `pixel_size`/grid such that Nyquist k_max = 1/(2*pixel_size)
     comfortably exceeds your detector angles in 1/Angstrom
     (k = mrad*1e-3/wavelength).
- 
-    Set `use_frozen_phonons=True` with a `DebyeWaller` instance in `dw` to
-    average over `n_phonon_configs` independent thermal displacements of
-    the whole potential (each config displaces the full structure once,
-    then is re-split into slices). This sidesteps the upstream
-    apply_frozen_phonon_to_potential(seed=...) vs rng_seed= keyword
-    mismatch in quantum_stem.run_stem() by calling with the correct kwarg.
     """
     if detectors is None:
         detectors = STEMDetectors()
- 
+
     if V_total.ndim == 3:
         N = V_total.shape[1]
         base_slices = [V_total[i] for i in range(V_total.shape[0])]
-        V_flat_for_phonon = np.sum(V_total, axis=0)
     else:
         N = V_total.shape[0]
         base_slices = [V_total / n_slices] * n_slices
-        V_flat_for_phonon = V_total
- 
-    if use_frozen_phonons and dw is not None:
-        phonon_totals = apply_frozen_phonon_to_potential(
-            V_flat_for_phonon, dw, n_phonon_configs, rng_seed=rng_seed
-        )
-        config_slice_sets = [[Vc / n_slices] * n_slices for Vc in phonon_totals]
-    else:
-        config_slice_sets = [base_slices]
- 
+
+    config_slice_sets = [base_slices]
+
     n_q = 2 * int(np.log2(N))
     n_half = n_q // 2
     if n_q > max_qubits:
@@ -211,8 +191,7 @@ def run_stem_multislice(
         },
         "metrics": {
             "fully_quantum": True,
-            "approach": f"Quantum multislice STEM ({n_slices} slices"
-                        + (f", {n_configs} frozen-phonon configs" if use_frozen_phonons and dw is not None else "")
-                        + ", diagonal-as-array-multiply + QFT-via-circuit)",
+            "approach": f"Quantum multislice STEM ({n_slices} slices, "
+                        "diagonal-as-array-multiply + QFT-via-circuit)",
         },
     }

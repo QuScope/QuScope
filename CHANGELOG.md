@@ -5,28 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0] - 2026-07-11
+## [0.2.0] - 2026-07-15
+
+v0.2.0 focuses on four validated quantum imaging pipelines: CTEM (WPOA),
+CTEM multislice, STEM (WPOA), and STEM multislice.
 
 ### Added
-- Demonstration notebooks 10-13 for example usage for CTEM, STEM, and diffraction patterns
-- Quantum STEM Multislice implementation
+- Quantum STEM Multislice implementation (`run_stem_multislice`, `build_probe_circuit`)
+- Demonstration notebooks 10 (quantum CTEM) and 11 (quantum STEM)
 
 ### Changed
-- Update README.md with CTEM+STEM details and notebooks
+- Scope: quantum diffraction modes, frozen-phonon/TDS channels, and the
+  Bloch-wave QPE eigensolver moved to the `dev` branch for a future release
+- Rewrote README around the four available pipelines with verified examples
 - Bump versions in packaging files to v0.2.0 and add quantum STEM imports
-- Update authors, qiskit version, dependencies, and installation instructions in packaging files
+- Update authors, qiskit version (>= 2.0), dependencies, and installation instructions
 
 ### Fixed
-- Corrected formulas, DiagonalGate usage, and documentation for quantum CTEM circuit script
-- Fixed documentation and minor circuitry for quantum Bloch Wave
-- Corrected Kikuchi pattern to use gradient magnitude instead of linear sum
-- Major refactor of Quantum Frozen Phonons script due to troubleshooting errors found
-- Fixed frequency grid usage, documentation, and classes within Quantum Multislice Circuit script
+- Relativistic wavelength: corrected gamma factor to 1 + eV/(2·m0·c²)
+  (was off by −4% to −10% at 100–300 kV); interaction constant now matches
+  literature values to <0.1%
+- Fresnel propagator phase: corrected to −π·λ·Δz·k² with spatial-frequency
+  grid (quantum vs classical multislice fidelity now 1.000000)
+- Corrected formulas, DiagonalGate usage, and documentation for quantum CTEM circuit
+- Fixed frequency grid usage (raw spatial frequencies, Kirkland convention)
+  in CTF and propagator
 - Fixed repository clone commands
 
 ### Documentation
 - Major documentation restructuring for v0.2.0: quantum_ctem-focused API and notebook gallery
 - Removed deprecated analysis, processing, and QML docs (will be reimplemented in future versions)
+- Notebook sources ship without outputs; pre-executed reference copies retained
 - Updated tutorials, notebooks, guides, and API docs
 
 ## [0.2.0] - 2026-03-12

@@ -43,34 +43,18 @@ Fully Quantum CTEM
    structure via abTEM, validated against a classical multislice reference,
    including an optional IBM Quantum hardware deployment section.
 
-:doc:`notebooks/09_quantum_multislice_circuit_test`
-   Focused unit-style walkthrough of
-   :class:`~quscope.quantum_ctem.QuantumMultisliceCircuit` — circuit
-   architecture, gate counts, and a fidelity/RMSE convergence study vs.
-   number of slices.
-
-Quantum STEM, Diffraction, and Dynamical Scattering
------------------------------------------------------
+Quantum STEM
+------------
 
 :doc:`notebooks/11_quantum_stem`
    Scanning-probe imaging — one quantum circuit per probe position, HAADF /
-   ADF / ABF / BF / iDPC detector channels, frozen-phonon averaging, and the
-   qubit-vs-field-of-view tradeoff for matching CTEM's field of view.
+   ADF / ABF / BF / iDPC detector channels, and the qubit-vs-field-of-view
+   tradeoff for matching CTEM's field of view.
 
-:doc:`notebooks/12_quantum_diffraction`
-   WPOA, SAED, CBED, and nano-beam diffraction (nBD) patterns, including the
-   quantum-multislice nBD variant.
-
-:doc:`notebooks/13_bloch_wave_and_frozen_phonon`
-   Dynamical (multiple-scattering) diffraction via the Bloch-wave formalism
-   (Bethe eigenvalues through Quantum Phase Estimation), plus thermal diffuse
-   scattering — Kikuchi lines and EBSD — from the quantum frozen-phonon
-   modules.
-
-:doc:`notebooks/08_fully_quantum_tem_advanced`
-   A single-notebook tour across all of the advanced modules above (frozen
-   phonon, Bloch wave, diffraction, STEM) on one MoS₂ specimen — useful as a
-   quick reference for how the modules compose together.
+.. note::
+   Quantum diffraction modes, frozen-phonon/thermal-diffuse-scattering
+   channels, and the Bloch-wave QPE eigensolver are under development on the
+   ``dev`` branch and planned for a future release.
 
 Executed Reference Copies
 ---------------------------
@@ -90,10 +74,6 @@ readers can see results without re-running them:
    notebooks/10_quantum_ctem
    notebooks/06_quantum_ctf_envelope
    notebooks/07_si3n4_quantum_multislice
-   notebooks/09_quantum_multislice_circuit_test
    notebooks/11_quantum_stem
-   notebooks/12_quantum_diffraction
-   notebooks/13_bloch_wave_and_frozen_phonon
-   notebooks/08_fully_quantum_tem_advanced
    notebooks/02_quantum_ctem_advanced.executed
    notebooks/05_fully_quantum_ctem.executed

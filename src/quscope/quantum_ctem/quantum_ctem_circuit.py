@@ -3,7 +3,7 @@ Fully Quantum CTEM Simulation Circuit
 
 This module implements a complete quantum TEM simulation pipeline using Qiskit
 quantum circuits. Unlike classical FFT-based approaches, this implementation
-uses true quantum gates for all operations:
+uses quantum gates for all operations:
 
     |ψ₀⟩ → [Phase Grating] → [QFT] → [CTF] → [IQFT] → |ψ_image⟩
 
@@ -14,15 +14,12 @@ Physical Framework:
     4. Lens CTF: exp(iχ(k)) via DiagonalGate (aberration function)
     5. IQFT: Transform back to real space
 
-This is a TRUE quantum implementation suitable for publication-quality
+This is a quantum implementation suitable for publication-quality
 demonstrations of quantum advantage in electron microscopy simulation.
 
 References:
-    - Kirkland, E. J. (2010). Advanced Computing in Electron Microscopy.
+    - Kirkland, E. J. (2020). Advanced Computing in Electron Microscopy.
     - Nielsen & Chuang (2010). Quantum Computation and Quantum Information.
-
-Author: QuScope Development Team
-Date: January 2026
 """
 
 from dataclasses import dataclass
@@ -68,7 +65,7 @@ def relativistic_wavelength(voltage: float) -> float:
     """
     Calculate relativistic electron wavelength.
 
-    λ = h / √(2·m₀·e·V·(1 + e·V/(2·m₀·c²)))
+    λ = h / √(2·m₀·e·V·(1 + e·V/(2·m₀·c²))) - equivalent to Kirkland (2020) - Eq. 2.5
 
     Args:
         voltage: Acceleration voltage (V)
@@ -81,8 +78,7 @@ def relativistic_wavelength(voltage: float) -> float:
     h = const.Planck
     c = const.speed_of_light
 
-    gamma = 1 + e * voltage / (m0 * c**2)
-    lambda_m = h / np.sqrt(2 * m0 * e * voltage * gamma)
+    lambda_m = h / np.sqrt(2 * m0 * e * voltage * (1 + e * voltage / (2 * m0 * c**2)))
 
     return lambda_m * 1e10  # Convert to Angstroms
 
@@ -91,7 +87,7 @@ def interaction_constant(voltage: float, wavelength: float) -> float:
     """
     Calculate interaction constant σ for WPOA.
 
-    σ = 0.00335 × γ / (λ × V_keV)
+    σ = 2π·γ / (λ·V)  — Kirkland (2020) Eq. 5.6
 
     where γ is the relativistic correction factor.
 
@@ -104,8 +100,7 @@ def interaction_constant(voltage: float, wavelength: float) -> float:
     """
     M0C2 = 511.0e3  # Electron rest mass energy in eV
     gamma = (M0C2 + voltage) / (2 * M0C2 + voltage)
-    V_keV = voltage / 1000.0
-    return 0.00335 * gamma / (wavelength * V_keV)
+    return 2 * np.pi * gamma / (wavelength * voltage)
 
 
 class PhaseGratingCircuit:
@@ -147,8 +142,7 @@ class PhaseGratingCircuit:
 
         # Build circuit with DiagonalGate
         qc = QuantumCircuit(self.n_qubits, name="Phase_Grating")
-        diag_gate = DiagonalGate(diagonal_elements.tolist())
-        qc.append(diag_gate, range(self.n_qubits))
+        qc.append(DiagonalGate(diagonal_elements.tolist()), range(self.n_qubits))
 
         return qc
 
@@ -177,7 +171,7 @@ class LensCTFCircuit:
 
         χ(k) = π·λ·Δf·k² + 0.5·π·λ³·Cs·k⁴ + ...
 
-    This must be applied AFTER the QFT transforms to momentum space.
+    This must be applied after the QFT transforms to momentum space.
     """
 
     def __init__(self, n_qubits: int, n_qubits_x: int, n_qubits_y: int):
@@ -223,7 +217,7 @@ class LensCTFCircuit:
         # k = 2π × frequency, frequency = index / (N × pixel_size)
         freq_x = np.fft.fftfreq(N_x, d=pixel_size)
         freq_y = np.fft.fftfreq(N_y, d=pixel_size)
-        kx, ky = np.meshgrid(2 * np.pi * freq_x, 2 * np.pi * freq_y, indexing="ij")
+        kx, ky = np.meshgrid(freq_x, freq_y, indexing="ij")
         k_squared = kx**2 + ky**2
 
         # Convert Cs from mm to Angstroms
@@ -275,7 +269,7 @@ class QuantumCTEMCircuit:
 
         |ψ₀⟩ → [Hadamards] → [Phase Grating] → [QFT] → [CTF] → [IQFT] → |ψ_image⟩
 
-    This is a TRUE quantum implementation where all operations are
+    This is a true quantum implementation where all operations are
     performed using quantum gates, not classical FFT.
 
     Example:

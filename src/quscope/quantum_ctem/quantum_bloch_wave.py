@@ -3,7 +3,7 @@ Quantum Bloch Wave Theory via Quantum Phase Estimation (QPE)
 =============================================================
 
 Implements the Bethe (1928) Bloch wave formalism for electron diffraction
-using a FULLY QUANTUM approach: Quantum Phase Estimation (QPE) extracts the
+using a fully quantum approach: Quantum Phase Estimation (QPE) extracts the
 Bloch wave excitation errors (eigenvalues of the scattering matrix A).
 
 Physical background
@@ -25,15 +25,6 @@ QPE Circuit
 
 All γ_j are extracted in a single circuit execution. The phase register
 readout gives φ = γ_j · t_evo / (2^n_prec) mod 1.
-
-Classes
--------
-MoS2StructureFactors   — Kirkland-parametrised scattering factors for MoS₂
-GenericStructureFactors — placeholder for custom structure factors
-BlochWaveMatrix         — scattering matrix A
-ClassicalBlochWave      — scipy.linalg.eigh eigensolve (for comparison)
-QuantumBlochWave        — QPE-based eigenvalue extraction (TRUE quantum)
-BlochWaveExitWave       — real-space exit wave from Bloch coefficients
 
 References
 ----------
@@ -57,7 +48,6 @@ from qiskit.quantum_info import Statevector
 from quscope.quantum_ctem.quantum_ctem_circuit import (
     relativistic_wavelength,
     interaction_constant,
-    relativistic_wavelength,
 )
 
 
@@ -234,7 +224,7 @@ class ClassicalBlochWave:
 
 class QuantumBlochWave:
     """
-    QPE-based Bloch wave eigenvalue extraction — TRUE quantum implementation.
+    QPE-based Bloch wave eigenvalue extraction.
 
     Circuit structure (n_total = n_prec + n_sys qubits):
 
@@ -339,6 +329,8 @@ class QuantumBlochWave:
         # Build circuit without measurement for Statevector
         n_prec, n_sys, n_total = self.n_prec, self.n_sys, self.n_total
         qc_sv = QuantumCircuit(n_total, name="QPE_BlochWave_SV")
+        
+        # Precision: Hadamard
         for i in range(n_prec):
             qc_sv.h(i)
         try:
@@ -349,6 +341,7 @@ class QuantumBlochWave:
             if (g0_idx >> bit) & 1:
                 qc_sv.x(n_prec + bit)
 
+        # Controlled-U^(2^k)
         n_ctrl = min(n_prec, self.max_ctrl)
         for ki in range(n_ctrl):
             t_k = self.t_evo * (2 ** ki)
@@ -365,7 +358,7 @@ class QuantumBlochWave:
         phases = np.arange(2 ** n_prec) / (2 ** n_prec)
 
         # Convert phase bins to eigenvalues
-        eigenvalues_approx = phases / self.t_evo * (2 ** n_prec)
+        eigenvalues_approx = phases / self.t_evo
 
         return {
             "phases":             phases,

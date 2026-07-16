@@ -5,6 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-07-11
+
+### Added
+- Demonstration notebooks 10-13 for example usage for CTEM, STEM, and diffraction patterns
+- Quantum STEM Multislice implementation
+
+### Changed
+- Update README.md with CTEM+STEM details and notebooks
+- Bump versions in packaging files to v0.2.0 and add quantum STEM imports
+- Update authors, qiskit version, dependencies, and installation instructions in packaging files
+
+### Fixed
+- Corrected formulas, DiagonalGate usage, and documentation for quantum CTEM circuit script
+- Fixed documentation and minor circuitry for quantum Bloch Wave
+- Corrected Kikuchi pattern to use gradient magnitude instead of linear sum
+- Major refactor of Quantum Frozen Phonons script due to troubleshooting errors found
+- Fixed frequency grid usage, documentation, and classes within Quantum Multislice Circuit script
+- Fixed repository clone commands
+
+### Documentation
+- Major documentation restructuring for v0.2.0: quantum_ctem-focused API and notebook gallery
+- Removed deprecated analysis, processing, and QML docs (will be reimplemented in future versions)
+- Updated tutorials, notebooks, guides, and API docs
+
+## [0.2.0] - 2026-03-12
+
+### Added
+- Quantum Bloch Wave implementation implementation using QPE
+- Quantum Diffraction (WPOA, SAED, CBED, Kikuchi, nBD, EBSD modes)
+- Quantum Frozen Phonons experimental implementation with 3 different executions
+- Quantum STEM with HAADF/ADF/BF/iDPC multi-detectors
+- Quantum Multislice Circuit using Fresnel propagator gates
+- Demonstration notebooks 05-09 for new quantum implementations
+- Test script for Si3N4
+
+### Changed
+- Updated quantum_ctem/__init__.py for all new modules
+- Updated README.md to reflect v0.2.0 in title, documentation, developer credits, and arXiv paper
+
+### Fixed
+- Qiskit 2.x partial_trace API (standalone qiskit.quantum_info.partial_trace)
+- QPE beam-count guard (MAX_SV_BEAMS=16) to prevent UnitaryGate hang
+- ClassicalBlochWave.amplitude() returns complex (eliminates ComplexWarning)
+
 ## [0.1.2] - 2026-01-22
 
 ### Changed

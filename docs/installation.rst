@@ -20,8 +20,8 @@ For development or to get the latest features:
 
 .. code-block:: bash
 
-   git clone https://github.com/robertoreis/quantum_algo_microscopy.git
-   cd quantum_algo_microscopy
+   git clone https://github.com/QuScope/QuScope.git
+   cd quscope
    pip install -e ".[dev,docs]"
 
 ⚙️ **Requirements**
@@ -31,16 +31,20 @@ For development or to get the latest features:
 - Python >= 3.9
 
 **Core Dependencies**
-- qiskit >= 0.45.0
-- qiskit-aer >= 0.13.0
-- numpy >= 1.21.0
-- pillow >= 8.0.0
-- scipy >= 1.7.0
+- qiskit >= 2.0.0
+- qiskit-aer >= 0.14.0
+- qiskit-algorithms >= 0.3.0
+- qiskit-machine-learning >= 0.7.0
+- numpy >= 1.24.0
+- scipy >= 1.10.0
+- pillow >= 9.0.0
+- scikit-learn >= 1.3.0
 
 **Optional Dependencies**
-- matplotlib >= 3.5.0 (for visualization)
-- jupyter >= 1.0.0 (for notebook examples)
-- pandas >= 1.3.0 (for data analysis)
+- matplotlib (for the visualization used throughout the notebooks)
+- jupyter (to run the notebooks in ``docs/notebooks/``)
+- ase, abtem (for building real crystal structures — used by the Si₃N₄ multislice notebook)
+- qiskit-ibm-runtime, python-dotenv (only needed for the optional IBM Quantum hardware sections)
 
 🧪 **Verify Installation**
 ==========================
@@ -51,10 +55,13 @@ Test your installation:
 
    import quscope
    print(f"QuScope version: {quscope.__version__}")
-   
+
    # Test basic functionality
-   from quscope import EncodingMethod
-   print("✅ QuScope installed successfully!")
+   from quscope.quantum_ctem import QuantumCTEMParameters, QuantumCTEMCircuit
+
+   params = QuantumCTEMParameters(acceleration_voltage=200e3, grid_size=8, pixel_size=0.5)
+   circuit = QuantumCTEMCircuit(params)
+   print("QuScope installed successfully!")
 
 🐛 **Troubleshooting**
 ======================

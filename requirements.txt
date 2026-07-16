@@ -2,7 +2,7 @@
 # For the full package, install with: pip install quscope[all]
 
 # Core quantum computing
-qiskit>=1.0.0
+qiskit>=2.0.0
 qiskit-aer>=0.14.0
 qiskit-algorithms>=0.3.0
 qiskit-machine-learning>=0.7.0

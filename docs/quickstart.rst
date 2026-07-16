@@ -2,154 +2,104 @@
 Quick Start
 ===========
 
-This guide will get you up and running with QuScope in just a few minutes.
+This guide gets you running QuScope's fully-quantum TEM pipeline in a few
+minutes. For deeper, runnable walkthroughs of every technique below, see the
+:doc:`notebooks`.
 
-🎯 **Basic Quantum Image Encoding**
-===================================
-
-Let's start with a simple example of encoding an image into a quantum circuit:
+🎯 **Quantum CTEM in Five Lines**
+==================================
 
 .. code-block:: python
 
    import numpy as np
-   from quscope.image_processing.quantum_encoding import encode_image_to_circuit, EncodingMethod
-   
-   # Create a simple 4x4 test image
-   test_image = np.array([
-       [0.8, 0.6, 0.4, 0.2],
-       [0.7, 0.9, 0.3, 0.1], 
-       [0.5, 0.8, 0.6, 0.4],
-       [0.3, 0.2, 0.7, 0.9]
-   ])
-   
-   # Encode the image using amplitude encoding
-   circuit = encode_image_to_circuit(test_image, method=EncodingMethod.AMPLITUDE)
-   
-   print(f"Circuit has {circuit.num_qubits} qubits")
-   print(f"Circuit depth: {circuit.depth()}")
+   from quscope.quantum_ctem import QuantumCTEMParameters, QuantumCTEMCircuit
 
-🔧 **Quantum Backend Setup**
-============================
+   params = QuantumCTEMParameters(
+       acceleration_voltage=200e3,   # 200 kV
+       grid_size=8,                  # 8x8 grid -> 6 qubits
+       pixel_size=0.5,               # Angstrom/pixel
+       defocus=-659.7,               # Scherzer defocus at 200 kV, Cs=1.3 mm
+       cs=1.3,                       # mm
+   )
+   sim = QuantumCTEMCircuit(params)
 
-Set up a quantum backend for circuit execution:
+   V = np.random.rand(8, 8) * 100    # toy projected potential (V*Angstrom)
+   result = sim.simulate(V)
 
-.. code-block:: python
+   print("qubits:", result["circuit_info"]["n_qubits"] if "circuit_info" in result else sim.qc.num_qubits)
+   print("intensity range:", result["intensity"].min(), "-", result["intensity"].max())
 
-   from quscope.quantum_backend import QuantumBackendManager
-   from qiskit_aer import AerSimulator
-   
-   # Initialize backend manager
-   backend_manager = QuantumBackendManager()
-   
-   # Use local simulator
-   simulator = AerSimulator()
-   result = backend_manager.execute_circuit(circuit, simulator, shots=1024)
-   
-   print("Measurement results:", result.get_counts())
+Every quantity here — grid size, voltage, defocus, Cs — maps directly onto
+real microscope parameters, and the same ``simulate()`` call works whether
+``sim`` is backed by a statevector simulator or (via ``qiskit-ibm-runtime``)
+real IBM Quantum hardware.
 
-📊 **Quantum Machine Learning Example**
-=======================================
+🔧 **Validating Against a Classical Reference**
+=================================================
 
-Use QuScope for quantum machine learning on image data:
+Every quantum module in QuScope ships with a classical validator so you can
+check fidelity before trusting a quantum-hardware run:
 
 .. code-block:: python
 
-   from quscope.qml.image_encoding import QuantumImageEncoder
-   
-   # Create encoder
-   encoder = QuantumImageEncoder(encoding_method=EncodingMethod.ANGLE)
-   
-   # Encode multiple image patches
-   image_patches = [test_image, test_image * 0.5, test_image * 1.5]
-   
-   encoded_circuits = []
-   for patch in image_patches:
-       circuit = encoder.encode(patch)
-       encoded_circuits.append(circuit)
-   
-   print(f"Encoded {len(encoded_circuits)} image patches")
+   from quscope.quantum_ctem import QuantumClassicalValidator
 
-🔬 **EELS Analysis Example**
-============================
+   validator = QuantumClassicalValidator(params)
+   comparison = validator.compare(V)
+   print(f"fidelity: {comparison['fidelity']:.6f}")   # -> 1.000000 for statevector sim
 
-Process electron energy loss spectroscopy data:
+🧬 **Material Workflows**
+==========================
+
+QuScope ships built-in structures for MoS₂ and graphene, plus a backend
+abstraction so the same workflow runs on a simulator or IBM hardware:
 
 .. code-block:: python
 
-   from quscope.eels_analysis.quantum_processing import quantum_eels_filter
-   from quscope.eels_analysis.preprocessing import normalize_spectrum
-   
-   # Simulate EELS spectrum data
-   energy_range = np.linspace(0, 1000, 256)  # eV
-   spectrum = np.exp(-energy_range/100) + 0.1*np.random.normal(size=256)
-   
-   # Preprocess the spectrum
-   normalized_spectrum = normalize_spectrum(spectrum)
-   
-   # Apply quantum filtering (this would create a quantum circuit for processing)
-   filtered_circuit = quantum_eels_filter(normalized_spectrum)
-   
-   print(f"EELS quantum filter circuit depth: {filtered_circuit.depth()}")
+   from quscope.quantum_ctem import get_backend, get_material, MoS2Workflow
 
-📈 **Visualization and Analysis**
-=================================
+   backend = get_backend("simulator")
+   mos2 = get_material("mos2")
 
-QuScope includes tools for visualizing quantum circuits and results:
+   workflow = MoS2Workflow(backend=backend)
+   result = workflow.run_simulation({
+       "grid_size": 64,
+       "pixel_size": 0.1,
+       "voltage": 200e3,
+       "defocus": -659.7,
+       "Cs": 1.3e-3,
+       "supercell": (3, 3, 1),
+   })
+   print("circuit qubits:", result["circuit_info"]["n_qubits"])
+
+🌀 **Beyond CTEM: STEM, Diffraction, and Dynamical Scattering**
+==================================================================
 
 .. code-block:: python
 
-   import matplotlib.pyplot as plt
-   from quscope.image_processing.preprocessing import normalize_image
-   
-   # Visualize original and processed images
-   fig, axes = plt.subplots(1, 2, figsize=(10, 4))
-   
-   # Original image
-   axes[0].imshow(test_image, cmap='gray')
-   axes[0].set_title('Original Image')
-   axes[0].axis('off')
-   
-   # Normalized image
-   normalized = normalize_image(test_image)
-   axes[1].imshow(normalized, cmap='gray') 
-   axes[1].set_title('Normalized Image')
-   axes[1].axis('off')
-   
-   plt.tight_layout()
-   plt.show()
+   from quscope.quantum_ctem import run_stem, STEMDetectors, simulate_saed
+
+   # Quantum STEM with HAADF/ADF/ABF/BF/iDPC detectors
+   stem_result = run_stem(V, pixel_size=0.5, voltage=200e3, detectors=STEMDetectors())
+
+   # Selected-area electron diffraction (WPOA engine)
+   saed_result = simulate_saed(V, pixel_size=0.5, voltage=200e3, use_bloch_wave=False)
+
+Dynamical (Bloch-wave) diffraction, thermal diffuse scattering (Kikuchi/EBSD
+via the quantum frozen-phonon modules), and multislice propagation are all
+covered step by step in the notebook gallery below.
 
 🚀 **Next Steps**
 =================
 
-- Try the :doc:`examples/quantum_ctem` - Quantum CTEM simulation demonstration
-- Explore the :doc:`tutorials/index` for detailed guides
-- Check out the :doc:`notebooks` for interactive examples
-- Read the :doc:`api` reference for complete documentation
-- Visit our `GitHub repository <https://github.com/QuScope/QuScope>`_ for the latest updates
-
-💡 **Featured Example: Quantum CTEM**
-======================================
-
-For a comprehensive demonstration of quantum circuits applied to electron microscopy, 
-see the Quantum CTEM notebook:
-
-.. code-block:: bash
-
-   jupyter notebook examples/quantum_ctem.ipynb
-
-This example demonstrates:
-
-- Quantum encoding of microscopy image pixels
-- Phase shift operations for electron-specimen interactions  
-- Quantum gates simulating propagation and lens effects
-- Fourier space analysis of quantum-processed images
-- Performance benchmarking and visualization
-
-See :doc:`examples/quantum_ctem` for detailed documentation.
+- Work through :doc:`notebooks/01_getting_started` for backends, materials, and basic encoding
+- Browse the full :doc:`notebooks` gallery for CTEM, STEM, diffraction, and Bloch-wave demonstrations
+- Read the :doc:`api` reference for complete class and function documentation
+- Visit the `GitHub repository <https://github.com/QuScope/QuScope>`_ for the latest updates
 
 🆘 **Need Help?**
 =================
 
 - Check the :doc:`api` for detailed function documentation
-- Browse the example notebooks in :doc:`notebooks`
+- Browse the notebook gallery in :doc:`notebooks`
 - Open an issue on `GitHub <https://github.com/QuScope/QuScope/issues>`_

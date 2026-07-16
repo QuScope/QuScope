@@ -1,19 +1,25 @@
 .. QuScope documentation master file
 
 ============================
-QuScope v0.1.0 Documentation
+QuScope v0.2.0 Documentation
 ============================
 
-**QuScope** (Quantum Algorithm Microscopy) is a comprehensive Python package for applying quantum computing algorithms to electron microscopy data processing and analysis.
+**QuScope** is a Python package for applying quantum computing algorithms to
+Transmission Electron Microscopy (TEM) simulation. Built on Qiskit, it
+provides fully-quantum circuit implementations of every stage of the TEM
+imaging pipeline — from specimen interaction to detector readout — validated
+against classical reference implementations with fidelity ≥ 0.9999.
 
 🔬 **Key Features**
 ===================
 
-- **Quantum Image Processing**: Encode and process microscopy images using quantum circuits
-- **EELS Analysis**: Quantum algorithms for Electron Energy Loss Spectroscopy data
-- **Quantum Machine Learning**: ML algorithms optimized for microscopy applications  
-- **Backend Management**: Seamless integration with quantum simulators and hardware
-- **Ready-to-Use Examples**: Comprehensive Jupyter notebooks and tutorials
+- **Quantum CTEM**: Single-slice (WPOA) and multislice conventional TEM image simulation as one quantum circuit (state prep -> QFT -> diagonal-gate phase grating/lens CTF -> IQFT)
+- **Quantum STEM**: Per-probe-position quantum circuits with HAADF / ADF / ABF / BF / iDPC detector channels
+- **Quantum Diffraction**: WPOA, SAED, CBED, nano-beam diffraction (nBD), Kikuchi, and EBSD patterns
+- **Dynamical Scattering**: Bloch-wave formalism with eigenvalues extracted via Quantum Phase Estimation
+- **Thermal Diffuse Scattering**: Quantum frozen-phonon modules (QTPC, QPS, Lindblad channel) for Debye-Waller-parameterized thermal effects
+- **Backend Management**: Local Qiskit Aer simulators and real IBM Quantum hardware via Qiskit Runtime
+- **Ready-to-Use Notebooks**: A full notebook gallery demonstrating every module above on real materials (MoS₂, graphene, Si₃N₄)
 
 🚀 **Quick Start**
 ==================
@@ -24,20 +30,41 @@ Install QuScope via pip:
 
    pip install quscope
 
-Basic usage:
+Basic usage — simulate a quantum CTEM image and validate it against a classical reference:
 
 .. code-block:: python
 
-   import quscope
-   from quscope import QuantumImageEncoder, EncodingMethod
-   
-   # Create a quantum image encoder
-   encoder = QuantumImageEncoder()
-   
-   # Encode an image using amplitude encoding
-   circuit = encoder.encode_image(image_array, method=EncodingMethod.AMPLITUDE)
-   
-   print(f"QuScope version: {quscope.__version__}")
+   from quscope.quantum_ctem import (
+       QuantumCTEMCircuit,
+       QuantumCTEMParameters,
+       QuantumClassicalValidator,
+   )
+   import numpy as np
+
+   # 8x8 grid (6 qubits), 200 kV, Scherzer condition
+   params = QuantumCTEMParameters(
+       acceleration_voltage=200e3,
+       grid_size=8,
+       pixel_size=0.5,       # Angstrom/pixel
+       defocus=-659.7,       # Angstrom (Scherzer defocus)
+       cs=1.3,               # mm
+   )
+   sim = QuantumCTEMCircuit(params)
+
+   # Simulate a random projected potential
+   V = np.random.rand(8, 8) * 100          # projected potential in V*Angstrom
+
+   result = sim.simulate(V)
+   print("Wave function shape:", result["wave_function"].shape)   # (8, 8)
+   print("Intensity range   :", result["intensity"].min(), "-", result["intensity"].max())
+
+   # Validate against classical implementation
+   validator = QuantumClassicalValidator(params)
+   comparison = validator.compare(V)
+   print(f"Quantum-classical fidelity: {comparison['fidelity']:.6f}")   # -> 1.000000
+
+See the :doc:`notebooks` for the full set of runnable demonstrations (CTEM,
+STEM, diffraction, Bloch wave, and frozen phonons).
 
 📚 **Documentation Structure**
 ==============================
@@ -74,8 +101,8 @@ Basic usage:
 🔗 **Links**
 ============
 
-- **Repository**: https://github.com/robertoreis/quantum_algo_microscopy
-- **Issues**: https://github.com/robertoreis/quantum_algo_microscopy/issues
+- **Repository**: https://github.com/QuScope/QuScope
+- **Issues**: https://github.com/QuScope/QuScope/issues
 - **PyPI**: https://pypi.org/project/quscope/
 
 📖 **Indices and Tables**

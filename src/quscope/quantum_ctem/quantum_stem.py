@@ -44,12 +44,6 @@ from quscope.quantum_ctem.quantum_ctem_circuit import (
     relativistic_wavelength,
     interaction_constant,
 )
-from quscope.quantum_ctem.quantum_frozen_phonon import (
-    DebyeWaller,
-    QuantumThermalPhaseChannel,
-    apply_frozen_phonon_to_potential,
-)
-
 MAX_SV_QUBITS = 14  # Statevector feasible up to this qubit count
 
 
@@ -202,10 +196,6 @@ def run_stem(
     defocus_ang: float = 0.0,
     cs_mm: float = 0.0,
     detectors: Optional[STEMDetectors] = None,
-    engine: str = "wpoa",
-    use_frozen_phonons: bool = False,
-    n_phonon_configs: int = 8,
-    dw: Optional[DebyeWaller] = None,
     scan_step_px: int = 1,
     store_4d: bool = False,
 ) -> Dict:
@@ -228,15 +218,6 @@ def run_stem(
         Spherical aberration coefficient [mm].
     detectors : STEMDetectors or None
         Detector configuration. Uses defaults if None.
-    engine : str
-        'wpoa' (default) — single-slice quantum WPOA per position.
-        'frozen_phonon'  — frozen phonon quantum average.
-    use_frozen_phonons : bool
-        If True and dw is given, applies quantum thermal phase channel.
-    n_phonon_configs : int
-        Number of phonon configurations to average (frozen_phonon engine).
-    dw : DebyeWaller or None
-        Debye-Waller factor.  Required for frozen phonon.
     scan_step_px : int
         Scan step in pixels (1 = Nyquist, 2 = half-Nyquist, etc.).
     store_4d : bool
@@ -277,52 +258,24 @@ def run_stem(
     idpc_y = np.zeros((n_scan, n_scan))
     data4d = np.zeros((n_scan, n_scan, N, N)) if store_4d else None
 
-    # Prepare frozen phonon potentials if requested
-    if use_frozen_phonons and dw is not None:
-        fp_configs = apply_frozen_phonon_to_potential(
-            V, dw, n_phonon_configs, seed=0)
-    else:
-        fp_configs = [V]
-
     fully_quantum = n_q <= MAX_SV_QUBITS
 
     for si, ix in enumerate(scan_coords):
         for sj, iy in enumerate(scan_coords):
             probe_r = _probe_real(probe_k, shift_x=ix - N // 2,
                                   shift_y=iy - N // 2)
-            # Accumulate over phonon configs
-            sigs_acc = {name: 0.0 for name in det_masks}
-            I_k_acc = np.zeros((N, N))
-            k_x_acc = 0.0
-            k_y_acc = 0.0
+            psi_exit = _quantum_dwf_exit_wave(probe_r, V, sigma, n_q, N)
 
-            for V_disp in fp_configs:
-                if engine == "frozen_phonon" and use_frozen_phonons:
-                    psi_exit = _quantum_dwf_exit_wave(probe_r, V_disp, sigma,
-                                                      n_q, N)
-                else:
-                    psi_exit = _quantum_dwf_exit_wave(probe_r, V, sigma, n_q, N)
-
-                sigs, I_k, psi_bfp = _propagate_to_detector(
-                    psi_exit, det_masks)
-                for name in det_masks:
-                    sigs_acc[name] += sigs[name]
-                I_k_acc += I_k
-
-                # iDPC: first moments of BF disc
-                bf_mask = det_masks["BF"]
-                kx_c = np.sum(KX * I_k * bf_mask) / (np.sum(I_k * bf_mask) + 1e-20)
-                ky_c = np.sum(KY * I_k * bf_mask) / (np.sum(I_k * bf_mask) + 1e-20)
-                k_x_acc += kx_c
-                k_y_acc += ky_c
-
-            n_avg = len(fp_configs)
+            sigs, I_k, psi_bfp = _propagate_to_detector(psi_exit, det_masks)
             for name in det_masks:
-                imgs[name][si, sj] = sigs_acc[name] / n_avg
-            idpc_x[si, sj] = k_x_acc / n_avg
-            idpc_y[si, sj] = k_y_acc / n_avg
+                imgs[name][si, sj] = sigs[name]
+
+            # iDPC: first moments of BF disc
+            bf_mask = det_masks["BF"]
+            idpc_x[si, sj] = np.sum(KX * I_k * bf_mask) / (np.sum(I_k * bf_mask) + 1e-20)
+            idpc_y[si, sj] = np.sum(KY * I_k * bf_mask) / (np.sum(I_k * bf_mask) + 1e-20)
             if store_4d:
-                data4d[si, sj] = I_k_acc / n_avg
+                data4d[si, sj] = I_k
 
     # iDPC: divergence of the centre-of-mass field
     idpc = np.gradient(idpc_x, axis=0) + np.gradient(idpc_y, axis=1)
@@ -348,8 +301,7 @@ def run_stem(
             "convergence_mrad": convergence_mrad,
             "defocus_ang":      defocus_ang,
             "cs_mm":            cs_mm,
-            "engine":           engine,
-            "n_phonon_configs": n_phonon_configs if use_frozen_phonons else 1,
+            "engine":           "wpoa",
             "scan_step_px":     scan_step_px,
             "N":                N,
             "n_qubits_total":   n_q,

@@ -10,6 +10,7 @@ Appendix C - Atomic Potentials and Scattering Factors
 """
 
 import json
+import os
 
 import numpy as np
 from scipy.special import kn
@@ -20,7 +21,10 @@ KIRKLAND_SCATTERING_FACTOR = 14.4  # eV⋅Å
 class KirklandPotential:
     """Calculate atomic potentials using Kirkland parametrization."""
 
-    def __init__(self, params_file="kirkland.json"):
+    def __init__(self, params_file=None):
+        if params_file is None:
+            # Packaged copy (ships in wheels); pass a path to override.
+            params_file = os.path.join(os.path.dirname(__file__), "kirkland.json")
         self.params_file = params_file
         self.parameters = self.load_parameters() or {}
 

@@ -72,22 +72,23 @@ abstraction so the same workflow runs on a simulator or IBM hardware:
    })
    print("circuit qubits:", result["circuit_info"]["n_qubits"])
 
-🌀 **Beyond CTEM: STEM, Diffraction, and Dynamical Scattering**
-==================================================================
+🌀 **Beyond CTEM: Quantum STEM**
+==================================
 
 .. code-block:: python
 
-   from quscope.quantum_ctem import run_stem, STEMDetectors, simulate_saed
+   from quscope.quantum_ctem import run_stem, run_stem_multislice, STEMDetectors
 
-   # Quantum STEM with HAADF/ADF/ABF/BF/iDPC detectors
+   # Quantum STEM with HAADF/ADF/ABF/BF/iDPC detectors (single-slice WPOA)
    stem_result = run_stem(V, pixel_size=0.5, voltage=200e3, detectors=STEMDetectors())
 
-   # Selected-area electron diffraction (WPOA engine)
-   saed_result = simulate_saed(V, pixel_size=0.5, voltage=200e3, use_bloch_wave=False)
+   # Full multislice STEM (thick specimens)
+   stem_ms = run_stem_multislice(V, pixel_size=0.5, voltage=200e3,
+                                 n_slices=4, slice_thickness=6.5)
 
-Dynamical (Bloch-wave) diffraction, thermal diffuse scattering (Kikuchi/EBSD
-via the quantum frozen-phonon modules), and multislice propagation are all
-covered step by step in the notebook gallery below.
+Quantum diffraction modes, frozen-phonon/thermal-diffuse scattering, and the
+Bloch-wave QPE eigensolver are under development on the ``dev`` branch and
+planned for a future release.
 
 🚀 **Next Steps**
 =================

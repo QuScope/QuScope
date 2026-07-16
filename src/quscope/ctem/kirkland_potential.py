@@ -51,7 +51,9 @@ class KirklandPotential:
     """
 
     # Default Kirkland parameters file location
-    DEFAULT_PARAMS_FILE = Path(__file__).parent.parent.parent.parent / "kirkland.json"
+    # Packaged copy (ships in wheels); the repo root holds the same file for
+    # backwards compatibility with source checkouts.
+    DEFAULT_PARAMS_FILE = Path(__file__).parent / "kirkland.json"
 
     # Physical constant: scaling factor for potential (eV)
     V_SCALING = 14.4

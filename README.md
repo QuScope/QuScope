@@ -1,4 +1,4 @@
-# 🔬 QuScope v0.2.0: Quantum Algorithms for Electron Microscopy
+# QuScope v0.2.0: Quantum Algorithms for Electron Microscopy
 
 [![PyPI version](https://badge.fury.io/py/quscope.svg)](https://badge.fury.io/py/quscope)
 [![Documentation Status](https://readthedocs.org/projects/quscope/badge/?version=latest)](https://quscope.readthedocs.io/en/latest/?badge=latest)
@@ -12,11 +12,11 @@ v0.2.0 provides four fully-quantum imaging pipelines: **CTEM (WPOA)**, **CTEM mu
 
 **Developed by** [Sean D. Lam](https://arxiv.org/search/quant-ph?searchtype=author&query=Lam,+S+D) and [Roberto dos Reis](https://arxiv.org/search/quant-ph?searchtype=author&query=Reis,+R+d) · Northwestern University
 
-> 📄 **Paper**: [*Quantum Algorithm Framework for Phase-Contrast Transmission Electron Microscopy Image Simulation*](https://arxiv.org/abs/2602.13438) — arXiv:2602.13438 [quant-ph], Feb 2026
+> **Paper**: [*Quantum Algorithm Framework for Phase-Contrast Transmission Electron Microscopy Image Simulation*](https://arxiv.org/abs/2602.13438) — arXiv:2602.13438 [quant-ph], Feb 2026
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 pip install quscope
@@ -55,7 +55,7 @@ print(f"Quantum–classical fidelity: {comparison['fidelity']:.6f}")   # → 1.0
 
 ---
 
-## ✨ Available Modules (v0.2.0)
+## Available Modules (v0.2.0)
 
 | Module | Technique | Quantum Engine |
 |--------|-----------|----------------|
@@ -75,7 +75,8 @@ Supporting infrastructure: `ctf_calculator` (aberration function), `hamiltonian`
 | BF | 0 | 10 | Phase |
 | iDPC | — | — | From BF centre-of-mass |
 
-### 🛣 Roadmap
+### Roadmap
+
 Quantum diffraction modes (SAED, CBED, nBD, Kikuchi, EBSD), frozen-phonon /
 thermal-diffuse-scattering channels, and the Bloch-wave QPE eigensolver are
 under development on the [`dev`](https://github.com/QuScope/QuScope/tree/dev)
@@ -83,7 +84,7 @@ branch and planned for a future release.
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### From PyPI (recommended)
 ```bash
@@ -104,7 +105,7 @@ export IBMQ_TOKEN="YOUR_API_TOKEN"
 
 ---
 
-## 🗂 Repository Structure
+## Repository Structure
 
 ```
 quantum_algo_microscopy/
@@ -133,14 +134,14 @@ quantum_algo_microscopy/
 │   ├── simulations/                         # Shared simulation utilities
 │   ├── utils/                               # Constants, Kirkland parameters
 │   └── quantum_backend.py                   # IBM Quantum session manager
-├── notebooks/                               # Executable documentation
 ├── pyproject.toml
 └── docs/                                    # Sphinx documentation source
+    └── notebooks/                           # Pre-executed notebooks used by the docs build
 ```
 
 ---
 
-## 💡 Usage Examples
+## Usage Examples
 
 ### 1. Quantum CTEM (bright-field imaging, WPOA)
 
@@ -217,7 +218,7 @@ result = run_stem_multislice(
 
 ---
 
-## ✅ Validated Results
+## Validated Results
 
 Every quantum pipeline is validated against a classical twin implementation:
 
@@ -233,22 +234,14 @@ All simulations run on Qiskit `Statevector` (exact) and are ready for transpilat
 
 ---
 
-## 📓 Notebooks
+## Examples
 
-| Notebook | Description |
-|----------|-------------|
-| [01_getting_started](notebooks/01_getting_started.ipynb) | Package overview, CTEM basics, Scherzer defocus |
-| [02_quantum_ctem_advanced](notebooks/02_quantum_ctem_advanced.ipynb) | Advanced CTEM: aberrations, CTF envelopes |
-| [03_material_workflows](notebooks/03_material_workflows.ipynb) | MoS₂ and Graphene end-to-end workflows |
-| [05_fully_quantum_ctem](notebooks/05_fully_quantum_ctem.executed.ipynb) | Quantum circuit CTEM showcase (pre-executed) |
-| [06_quantum_ctf_envelope](notebooks/06_quantum_ctf_envelope.ipynb) | CTF envelope & damping functions |
-| [07_si3n4_quantum_multislice](notebooks/07_si3n4_quantum_multislice.ipynb) | Si₃N₄ multislice quantum simulation |
-| [10_quantum_ctem](notebooks/10_quantum_ctem.ipynb) | Quantum circuit CTEM demonstration — WPOA & multislice |
-| [11_quantum_stem](notebooks/11_quantum_stem.ipynb) | Quantum circuit STEM demonstration — WPOA & multislice |
+Example notebooks and end-to-end applications live in a separate repository:
+[QuScope/examples-applications](https://github.com/QuScope/examples-applications).
 
 ---
 
-## ⚙️ Circuit Architectures
+## Circuit Architectures
 
 ### CTEM (WPOA)
 ```
@@ -268,7 +261,7 @@ All simulations run on Qiskit `Statevector` (exact) and are ready for transpilat
 
 ---
 
-## 📋 API Reference
+## API Reference
 
 ```python
 from quscope.quantum_ctem import (
@@ -292,7 +285,7 @@ Full Sphinx documentation: [quscope.readthedocs.io](https://quscope.readthedocs.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/my-feature`)
@@ -302,13 +295,13 @@ Full Sphinx documentation: [quscope.readthedocs.io](https://quscope.readthedocs.
 
 ---
 
-## 📄 License
+## License
 
 MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-## 📜 Citation
+## Citation
 
 If you use QuScope in your research, please cite the companion paper:
 

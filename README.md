@@ -73,7 +73,6 @@ Supporting infrastructure: `ctf_calculator` (aberration function), `hamiltonian`
 | ADF | 25 | 60 | Mixed |
 | ABF | 10 | 25 | Light elements |
 | BF | 0 | 10 | Phase |
-| iDPC | — | — | From BF centre-of-mass |
 
 ### Roadmap
 

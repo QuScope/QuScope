@@ -17,25 +17,20 @@ Test Structure:
 4. Thickness series validation (vs Kirkland figures/tables)
 """
 
-from pathlib import Path
-
 import numpy as np
 import pytest
 
+from quscope.ctem.kirkland_potential import KirklandPotential
 from quscope.ctem.multislice_simulator import MultisliceSimulator
 
 
 @pytest.fixture
 def kirkland_path():
     """Get path to kirkland.json parameters file."""
-    # Navigate to project root and find kirkland.json
-    current = Path(__file__).parent
-    for _ in range(5):
-        kirkland_file = current / "kirkland.json"
-        if kirkland_file.exists():
-            return str(kirkland_file)
-        current = current.parent
-    pytest.skip("kirkland.json not found")
+    kirkland_file = KirklandPotential.DEFAULT_PARAMS_FILE
+    if not kirkland_file.exists():
+        pytest.skip("kirkland.json not found")
+    return str(kirkland_file)
 
 
 @pytest.fixture
@@ -268,7 +263,6 @@ class TestTransmissionFunction:
         edge_phase = phase[0, 0]
         assert abs(center_phase) > abs(edge_phase)
 
-    @pytest.mark.xfail(reason="Pre-existing failure, tracked in issue #21", strict=False)
     def test_multiple_atoms_superposition(self, basic_simulator):
         """Test transmission for multiple atoms."""
         atoms = [{"position": [-5, 0, 5], "Z": 14}, {"position": [5, 0, 5], "Z": 14}]

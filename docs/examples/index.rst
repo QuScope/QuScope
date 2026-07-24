@@ -14,15 +14,11 @@ complete, ordered list.
 - :doc:`../notebooks/10_quantum_ctem` — single-slice (WPOA) and multislice CTEM as one quantum circuit
 - :doc:`../notebooks/06_quantum_ctf_envelope` — Contrast Transfer Function and envelope-function analysis
 - :doc:`../notebooks/07_si3n4_quantum_multislice` — multislice on a real Si₃N₄ crystal structure, with an optional IBM hardware section
-- :doc:`../notebooks/09_quantum_multislice_circuit_test` — circuit architecture and quantum/classical convergence study
 
-🚀 **Quantum STEM and Diffraction**
-=====================================
+🚀 **Quantum STEM**
+=====================
 
 - :doc:`../notebooks/11_quantum_stem` — HAADF / ADF / ABF / BF / iDPC scanning-probe imaging
-- :doc:`../notebooks/12_quantum_diffraction` — WPOA, SAED, CBED, and nano-beam diffraction (nBD)
-- :doc:`../notebooks/13_bloch_wave_and_frozen_phonon` — dynamical (Bloch-wave) diffraction and thermal diffuse scattering (Kikuchi, EBSD)
-- :doc:`../notebooks/08_fully_quantum_tem_advanced` — all of the above modules together on one MoS₂ specimen
 
 🔧 **Running the Notebooks**
 ==============================

@@ -21,12 +21,10 @@ guided path through them; the full gallery (with every notebook) lives at
 - :doc:`../notebooks/06_quantum_ctf_envelope` — Contrast Transfer Function and envelope functions in depth
 - :doc:`../notebooks/07_si3n4_quantum_multislice` — multislice on a real crystal structure, validated classically
 
-🌀 **3. STEM, Diffraction, and Dynamical Scattering**
-========================================================
+🌀 **3. Quantum STEM**
+========================
 
 - :doc:`../notebooks/11_quantum_stem` — scanning-probe imaging with multi-detector channels
-- :doc:`../notebooks/12_quantum_diffraction` — WPOA, SAED, CBED, and nano-beam diffraction
-- :doc:`../notebooks/13_bloch_wave_and_frozen_phonon` — dynamical diffraction (Bloch wave / QPE) and thermal diffuse scattering
 
 📚 **Prerequisites**
 =====================

@@ -186,8 +186,10 @@ class GrapheneWorkflow(CTEMWorkflow):
             atoms, grid_size=grid_size, pixel_size=pixel_size
         )
 
-        # Build and run circuit
-        circuit = self.build_quantum_circuit(transmission, apply_ctf=apply_ctf)
+        # Build and run circuit (genuine WPOA -> QFT -> CTF -> IQFT)
+        circuit = self.build_quantum_circuit(
+            V_proj, grid_size=grid_size, pixel_size=pixel_size, apply_ctf=apply_ctf
+        )
         from ..backends.base import BackendConfig
 
         config = BackendConfig(shots=shots)
@@ -197,6 +199,7 @@ class GrapheneWorkflow(CTEMWorkflow):
         if backend_result.statevector is not None:
             wavefunction = backend_result.get_statevector_2d(grid_size, grid_size)
             intensity = np.abs(wavefunction) ** 2
+            intensity = intensity / intensity.mean()
             phase = np.angle(wavefunction)
         else:
             wavefunction = None
@@ -267,7 +270,9 @@ class GrapheneWorkflow(CTEMWorkflow):
         V_proj, transmission = self.setup_quantum_state(
             atoms, grid_size=grid_size, pixel_size=pixel_size
         )
-        circuit = self.build_quantum_circuit(transmission, apply_ctf=True)
+        circuit = self.build_quantum_circuit(
+            V_proj, grid_size=grid_size, pixel_size=pixel_size, apply_ctf=True
+        )
 
         from ..backends.base import BackendConfig
 
@@ -277,6 +282,7 @@ class GrapheneWorkflow(CTEMWorkflow):
         if backend_result.statevector is not None:
             wavefunction = backend_result.get_statevector_2d(grid_size, grid_size)
             intensity = np.abs(wavefunction) ** 2
+            intensity = intensity / intensity.mean()
             phase = np.angle(wavefunction)
         else:
             wavefunction = None

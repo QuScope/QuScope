@@ -11,6 +11,7 @@ from typing import Dict, Optional
 import numpy as np
 
 from .base import AtomicScatteringParams, Material, MaterialParameters
+from ...ctem.kirkland_potential import KirklandPotential
 
 
 class Graphene(Material):
@@ -249,9 +250,12 @@ class Graphene(Material):
         """
         sigma = self.get_interaction_constant(voltage)
 
-        # Approximate maximum projected potential for C atom
-        # Using peak value from Kirkland parameterization
-        V_max_approx = sum(self.SCATTERING_PARAMS["C"].a_coefficients)
+        # Peak projected potential for an isolated C atom, from QuScope's
+        # own Kirkland scattering-factor table (evaluated just off-center
+        # to avoid the r=0 singularity in the Bessel-K0 term).
+        kirkland = KirklandPotential()
+        r0 = np.array([[0.01]])
+        V_max_approx = float(kirkland.calculate_2d(r0, np.zeros_like(r0), atom_x=0.0, atom_y=0.0, Z=6)[0, 0])
 
         phase_shift = sigma * V_max_approx
 

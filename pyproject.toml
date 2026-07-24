@@ -81,6 +81,10 @@ all = [
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+"quscope.ctem" = ["*.json"]
+"quscope.utils" = ["*.json"]
+
 [tool.black]
 line-length = 88
 target-version = ['py39', 'py310', 'py311']

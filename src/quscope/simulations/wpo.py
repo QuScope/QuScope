@@ -32,7 +32,7 @@ class ThinCTEM:
         image_size=50.0,
         n_qubits=8,
         beam_energy=200e3,
-        kirkland_params_file="kirkland.json",
+        kirkland_params_file=None,
     ):
         """
         Initialize thin specimen simulator.

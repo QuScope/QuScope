@@ -201,12 +201,21 @@ class CTFCalculator:
         """
         ctf_values = self.ctf(self.k_radial)
 
-        # Find sign changes
-        sign_changes = np.diff(np.sign(ctf_values))
+        # chi(k=0) = 0 for any aberration function built from even powers of
+        # k, so ctf[0] = sin(0) = 0 identically -- np.sign(0) == 0 makes the
+        # k=0 endpoint itself look like a "sign change" against the next
+        # point, which would spuriously report a first zero at k=0. Search
+        # from the first strictly-nonzero sample instead.
+        nonzero = np.flatnonzero(ctf_values != 0)
+        if len(nonzero) == 0:
+            return self.max_k
+        start = nonzero[0]
+
+        sign_changes = np.diff(np.sign(ctf_values[start:]))
         zeros = np.where(sign_changes != 0)[0]
 
         if len(zeros) > 0:
-            return self.k_radial[zeros[0]]
+            return self.k_radial[start + zeros[0]]
         return self.max_k
 
     def calculate_information_limit(self) -> float:

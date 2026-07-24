@@ -10,7 +10,6 @@ Appendix C - Atomic Potentials and Scattering Factors
 """
 
 import json
-import os
 
 import numpy as np
 from scipy.special import kn
@@ -23,8 +22,13 @@ class KirklandPotential:
 
     def __init__(self, params_file=None):
         if params_file is None:
-            # Packaged copy (ships in wheels); pass a path to override.
-            params_file = os.path.join(os.path.dirname(__file__), "kirkland.json")
+            # Single source of truth for Kirkland Appendix-C data; pass a
+            # path to override.
+            from quscope.ctem.kirkland_potential import (
+                KirklandPotential as _CanonicalKirklandPotential,
+            )
+
+            params_file = _CanonicalKirklandPotential.DEFAULT_PARAMS_FILE
         self.params_file = params_file
         self.parameters = self.load_parameters() or {}
 

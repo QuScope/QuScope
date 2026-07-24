@@ -11,6 +11,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
+from ...ctem.kirkland_potential import KirklandPotential
+
 
 @dataclass
 class AtomicScatteringParams:
@@ -138,45 +140,76 @@ class Material(ABC):
         grid_size: int = 256,
         pixel_size: float = 0.1,
         padding: float = 2.0,
+        supersample: int = 4,
+        thermal_sigma: float = 0.08,
     ) -> np.ndarray:
         """
         Calculate 2D projected potential for the structure.
 
+        Uses QuScope's own Kirkland scattering-factor tables
+        (quscope.ctem.KirklandPotential, Kirkland Appendix C, full
+        Bessel-K0-plus-Gaussian parametrization) rather than an ad hoc
+        per-material approximation, so results are consistent with the
+        rest of the package (quantum_ctem_circuit, the paper figures, etc).
+
         Args:
             atoms: ASE Atoms object
             grid_size: Number of pixels (grid_size × grid_size)
-            pixel_size: Pixel size in Ångströms
-            padding: Padding around structure in Å
+            pixel_size: Pixel size in Ångströms -- this fixes the field of
+                view to grid_size * pixel_size; it does not depend on the
+                ASE cell size, so the physical sampling here always matches
+                what any downstream CTF/QFT frequency grid assumes.
+            padding: unused (kept for backward-compatible signature);
+                atoms outside the field of view are still included via a
+                one-cell periodic margin so their potential tails aren't
+                abruptly clipped at the boundary.
+            supersample: evaluate the (near-singular, log-divergent at the
+                atom core) potential on a supersample*grid_size grid and
+                average-pool down to grid_size, so peak heights don't alias
+                depending on exactly where an atom center falls relative to
+                a pixel. supersample=1 disables this (raw point sampling).
+            thermal_sigma: Gaussian (Debye-Waller-like) smearing width in
+                Angstrom, representing thermal atomic vibration -- a real
+                specimen at finite temperature, not a mathematical point
+                charge. Without this the Kirkland potential's log-divergent
+                core makes sigma*V wrap through many multiples of 2*pi
+                within a single pixel step, aliasing the WPOA transmission
+                function into speckle. 0.08 A is a typical light/mid-Z RMS
+                thermal displacement; set to 0 to disable.
 
         Returns:
             2D numpy array of projected potential in V·Å
         """
         positions = atoms.get_positions()
-        symbols = atoms.get_chemical_symbols()
-        scattering = self.get_scattering_params()
+        atomic_numbers = atoms.get_atomic_numbers()
+        kirkland = KirklandPotential()
 
-        # Determine grid bounds
-        cell = atoms.get_cell()
-        Lx = cell[0, 0] if cell[0, 0] > 0 else positions[:, 0].max() + padding
-        Ly = cell[1, 1] if cell[1, 1] > 0 else positions[:, 1].max() + padding
+        # Pixel-center coordinates (Angstrom) at the supersampled resolution
+        # -- grid_size * pixel_size is the actual field of view, matching
+        # QuantumCTEMCircuit's convention.
+        Ns = grid_size * supersample
+        coords = (np.arange(Ns) + 0.5) * (pixel_size / supersample)
+        X, Y = np.meshgrid(coords, coords, indexing="ij")
+        L = grid_size * pixel_size
 
-        # Create coordinate grids
-        x = np.linspace(0, Lx, grid_size)
-        y = np.linspace(0, Ly, grid_size)
-        X, Y = np.meshgrid(x, y)
+        V_super = np.zeros((Ns, Ns))
+        margin = 3.0  # A; Kirkland potentials fall off quickly beyond a few A
+        for pos, Z in zip(positions, atomic_numbers):
+            if not (-margin <= pos[0] < L + margin and -margin <= pos[1] < L + margin):
+                continue
+            V_super += kirkland.calculate_2d(X, Y, atom_x=pos[0], atom_y=pos[1], Z=int(Z))
 
-        # Calculate projected potential
-        V_proj = np.zeros((grid_size, grid_size))
+        if thermal_sigma > 0:
+            from scipy.ndimage import gaussian_filter
 
-        for pos, symbol in zip(positions, symbols):
-            if symbol not in scattering:
-                raise ValueError(f"No scattering parameters for element: {symbol}")
+            V_super = gaussian_filter(V_super, sigma=thermal_sigma / (pixel_size / supersample))
 
-            params = scattering[symbol]
-            r = np.sqrt((X - pos[0]) ** 2 + (Y - pos[1]) ** 2)
-            V_proj += params.projected_potential(r)
+        if supersample > 1:
+            V_super = V_super.reshape(
+                grid_size, supersample, grid_size, supersample
+            ).mean(axis=(1, 3))
 
-        return V_proj
+        return V_super
 
     def get_interaction_constant(self, voltage: float) -> float:
         """

@@ -598,7 +598,7 @@ def relativistic_wavelength(voltage: float) -> float:
     c = const.speed_of_light  # m/s
 
     # Relativistic correction factor
-    gamma = 1 + e * voltage / (m0 * c**2)
+    gamma = 1 + e * voltage / (2 * m0 * c**2)
 
     # Wavelength in meters
     lambda_m = h / np.sqrt(2 * m0 * e * voltage * gamma)

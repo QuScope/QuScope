@@ -20,7 +20,15 @@ KIRKLAND_SCATTERING_FACTOR = 14.4  # eV⋅Å
 class KirklandPotential:
     """Calculate atomic potentials using Kirkland parametrization."""
 
-    def __init__(self, params_file="kirkland.json"):
+    def __init__(self, params_file=None):
+        if params_file is None:
+            # Single source of truth for Kirkland Appendix-C data; pass a
+            # path to override.
+            from quscope.ctem.kirkland_potential import (
+                KirklandPotential as _CanonicalKirklandPotential,
+            )
+
+            params_file = _CanonicalKirklandPotential.DEFAULT_PARAMS_FILE
         self.params_file = params_file
         self.parameters = self.load_parameters() or {}
 

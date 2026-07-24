@@ -50,8 +50,11 @@ class KirklandPotential:
         >>> V_total = pot.calculate_multiple_atoms(x_grid, y_grid, positions)
     """
 
-    # Default Kirkland parameters file location
-    DEFAULT_PARAMS_FILE = Path(__file__).parent.parent.parent.parent / "kirkland.json"
+    # Default Kirkland parameters file location -- single source of truth for
+    # the whole package (quscope.utils.kirkland.KirklandPotential and
+    # quscope.ctem.multislice_simulator.MultisliceSimulator both default to
+    # this same file rather than keeping their own copies).
+    DEFAULT_PARAMS_FILE = Path(__file__).parent / "kirkland.json"
 
     # Physical constant: scaling factor for potential (eV)
     V_SCALING = 14.4
@@ -62,7 +65,7 @@ class KirklandPotential:
 
         Args:
             params_file: Path to JSON file with Kirkland parameters.
-                        If None, uses default kirkland.json in project root.
+                        If None, uses DEFAULT_PARAMS_FILE.
 
         Raises:
             FileNotFoundError: If params file doesn't exist

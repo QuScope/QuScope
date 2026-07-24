@@ -124,6 +124,10 @@ def setup(app):
 
 # -- Options for nbsphinx ----------------------------------------------------
 
-nbsphinx_execute = 'auto'
+# Never execute notebooks at docs-build time: the docs environments (CI and
+# Read the Docs) intentionally exclude heavy quantum dependencies and register
+# no Jupyter kernel, so 'auto' dies with NoSuchKernel on any notebook without
+# stored outputs. Render stored outputs only (.executed copies carry them).
+nbsphinx_execute = 'never'
 nbsphinx_allow_errors = True
 # nbsphinx_timeout = 180

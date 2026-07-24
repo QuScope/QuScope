@@ -110,18 +110,14 @@ class MultisliceSimulator:
 
         # Load Kirkland parameters
         if kirkland_params_path is None:
-            # Try to find kirkland.json in parent directories
-            current_dir = Path(__file__).parent
-            for _ in range(5):  # Search up to 5 levels up
-                kirkland_path = current_dir / "kirkland.json"
-                if kirkland_path.exists():
-                    kirkland_params_path = str(kirkland_path)
-                    break
-                current_dir = current_dir.parent
+            from quscope.ctem.kirkland_potential import KirklandPotential
 
-        if kirkland_params_path is None or not Path(kirkland_params_path).exists():
+            kirkland_params_path = str(KirklandPotential.DEFAULT_PARAMS_FILE)
+
+        if not Path(kirkland_params_path).exists():
             raise FileNotFoundError(
-                "kirkland.json not found. Please provide kirkland_params_path parameter."
+                f"Kirkland parameters file not found: {kirkland_params_path}. "
+                "Please provide kirkland_params_path parameter."
             )
 
         with open(kirkland_params_path, "r") as f:

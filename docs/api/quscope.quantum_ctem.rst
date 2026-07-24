@@ -78,30 +78,6 @@ Hamiltonian
    :undoc-members:
    :show-inheritance:
 
-Quantum Frozen Phonon / Thermal Diffuse Scattering
------------------------------------------------------
-
-.. automodule:: quscope.quantum_ctem.quantum_frozen_phonon
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Quantum Bloch Wave (Dynamical Diffraction via QPE)
------------------------------------------------------
-
-.. automodule:: quscope.quantum_ctem.quantum_bloch_wave
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Quantum Diffraction (WPOA / SAED / CBED / Kikuchi / nBD / EBSD)
---------------------------------------------------------------------
-
-.. automodule:: quscope.quantum_ctem.quantum_diffraction
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Quantum STEM
 ------------
 

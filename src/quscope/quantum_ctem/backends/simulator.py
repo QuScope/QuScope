@@ -120,6 +120,11 @@ class SimulatorBackend(Backend):
                 sv_circuit = circuit.copy()
                 sv_circuit.save_statevector()
 
+                # Transpile first: high-level library instructions (QFTGate,
+                # DiagonalGate, ...) aren't natively recognized by Aer's run()
+                # until decomposed to its supported basis.
+                sv_circuit = transpile(sv_circuit, backend=self._simulator)
+
                 job = self._simulator.run(
                     sv_circuit,
                     seed_simulator=config.seed_simulator or self.seed,
@@ -138,6 +143,8 @@ class SimulatorBackend(Backend):
                     for instr in meas_circuit.data
                 ):
                     meas_circuit.measure_all()
+
+                meas_circuit = transpile(meas_circuit, backend=self._simulator)
 
                 job = self._simulator.run(
                     meas_circuit,

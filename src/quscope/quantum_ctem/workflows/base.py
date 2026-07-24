@@ -13,6 +13,7 @@ import numpy as np
 
 from ..backends.base import Backend, BackendConfig, ExecutionResult
 from ..materials.base import Material
+from ..quantum_ctem_circuit import QuantumCTEMParameters, QuantumCTEMCircuit
 
 
 @dataclass
@@ -229,123 +230,51 @@ class CTEMWorkflow(ABC):
 
     def build_quantum_circuit(
         self,
-        transmission_function: np.ndarray,
+        V_proj: np.ndarray,
+        grid_size: int,
+        pixel_size: float,
         apply_ctf: bool = True,
     ):
         """
         Build quantum circuit for CTEM simulation.
 
-        The quantum circuit encodes the exit wave function, which is the
-        product of the incident plane wave and the transmission function.
-        For WPOA with unit incident wave: exit_wave ≈ transmission_function
-
-        If CTF is applied, it modifies the wave in momentum space.
+        Delegates to QuantumCTEMCircuit, which implements the full
+        WPOA -> QFT -> CTF -> IQFT pipeline as quantum gates (phase
+        grating and lens aberration as DiagonalGates, conjugated by a
+        real quantum Fourier transform) -- the same validated circuit
+        used throughout the rest of the package, rather than computing
+        the CTF classically (FFT) and only amplitude-encoding the
+        already-finished image.
 
         Args:
-            transmission_function: Complex 2D transmission function
-            apply_ctf: Whether to apply contrast transfer function
+            V_proj: Projected potential V(x,y) in V*A, shape (N, N)
+            grid_size: N for the N x N grid (must be power of 2)
+            pixel_size: Real-space pixel size (Angstrom)
+            apply_ctf: Whether to apply the lens aberration function;
+                if False, the circuit still runs the CTF stage but with
+                an aberration-free lens (defocus = cs = c5 = 0), which is
+                the identity unitary -- physically equivalent to skipping
+                it, and keeps a single code path.
 
         Returns:
             Qiskit QuantumCircuit
         """
-        from ..quantum_wave_function import QuantumWaveFunction
+        params = QuantumCTEMParameters(
+            acceleration_voltage=self.microscope.voltage,
+            grid_size=grid_size,
+            pixel_size=pixel_size,
+            defocus=self.microscope.defocus if apply_ctf else 0.0,
+            cs=self.microscope.cs if apply_ctf else 0.0,
+            c5=self.microscope.c5 if apply_ctf else 0.0,
+        )
+        qctem = QuantumCTEMCircuit(params)
+        circuit = qctem.build_full_circuit(V_proj, include_barriers=False)
 
-        ny, nx = transmission_function.shape
-        n_qubits_x = int(np.ceil(np.log2(nx)))
-        n_qubits_y = int(np.ceil(np.log2(ny)))
-
-        # Pad to power of 2 if needed
-        padded_nx = 2**n_qubits_x
-        padded_ny = 2**n_qubits_y
-
-        # Exit wave = incident wave * transmission function
-        # For unit incident plane wave: exit_wave = transmission_function
-        exit_wave = transmission_function.copy()
-
-        # Pad if needed
-        if exit_wave.shape != (padded_ny, padded_nx):
-            padded_wave = np.ones((padded_ny, padded_nx), dtype=complex)
-            padded_wave[:ny, :nx] = exit_wave
-            exit_wave = padded_wave
-
-        # Apply CTF if requested (in momentum space)
-        if apply_ctf:
-            exit_wave = self._apply_ctf_classical(exit_wave)
-
-        # Initialize quantum wave function encoder
-        qwf = QuantumWaveFunction(n_qubits_x, n_qubits_y)
-
-        # Encode exit wave as quantum state using amplitude encoding
-        circuit = qwf.prepare_arbitrary_wave(exit_wave)
-
-        # Store the QWF for later extraction
-        self._last_qwf = qwf
+        # Stash for anything downstream that wants the resolved physics
+        # parameters (e.g. the actual wavelength/sigma used).
+        self._last_qctem = qctem
 
         return circuit
-
-    def _apply_ctf_classical(self, wave: np.ndarray) -> np.ndarray:
-        """
-        Apply Contrast Transfer Function in momentum space.
-
-        CTF operation: wave_ctf = IFFT(CTF * FFT(wave))
-
-        Args:
-            wave: Complex wave function in real space
-
-        Returns:
-            Wave function after CTF application
-        """
-        ny, nx = wave.shape
-
-        # Transform to momentum space
-        wave_k = np.fft.fft2(wave)
-        wave_k = np.fft.fftshift(wave_k)
-
-        # Compute CTF
-        ctf = self._compute_ctf(nx, ny)
-
-        # Apply CTF
-        wave_k_ctf = wave_k * ctf
-
-        # Transform back to real space
-        wave_k_ctf = np.fft.ifftshift(wave_k_ctf)
-        wave_ctf = np.fft.ifft2(wave_k_ctf)
-
-        return wave_ctf
-
-    def _compute_ctf(self, nx: int, ny: int) -> np.ndarray:
-        """
-        Compute the Contrast Transfer Function.
-
-        CTF(k) = sin(χ(k)) for phase contrast
-        χ(k) = π λ Δf k² + 0.5 π λ³ Cs k⁴
-
-        Args:
-            nx, ny: Grid dimensions
-
-        Returns:
-            2D CTF array
-        """
-        # Create frequency grid (centered)
-        kx = np.fft.fftfreq(nx)
-        ky = np.fft.fftfreq(ny)
-        KX, KY = np.meshgrid(kx, ky)
-        KX = np.fft.fftshift(KX)
-        KY = np.fft.fftshift(KY)
-        K2 = KX**2 + KY**2
-
-        # Microscope parameters
-        lambda_e = self.microscope.wavelength  # Å
-        df = self.microscope.defocus  # Å
-        Cs = self.microscope.cs * 1e7  # mm to Å
-
-        # CTF phase aberration function
-        chi = np.pi * lambda_e * df * K2 + 0.5 * np.pi * lambda_e**3 * Cs * K2**2
-
-        # CTF = sin(χ) for phase contrast
-        ctf = np.sin(chi)
-
-        return ctf
 
     def run(
         self,
@@ -387,8 +316,10 @@ class CTEMWorkflow(ABC):
             atoms, grid_size=grid_size, pixel_size=pixel_size
         )
 
-        # 3. Build quantum circuit
-        circuit = self.build_quantum_circuit(transmission, apply_ctf=apply_ctf)
+        # 3. Build quantum circuit (genuine WPOA -> QFT -> CTF -> IQFT)
+        circuit = self.build_quantum_circuit(
+            V_proj, grid_size=grid_size, pixel_size=pixel_size, apply_ctf=apply_ctf
+        )
 
         # 4. Execute on backend
         config = BackendConfig(shots=shots)
@@ -398,6 +329,9 @@ class CTEMWorkflow(ABC):
         if backend_result.statevector is not None:
             wavefunction = backend_result.get_statevector_2d(grid_size, grid_size)
             intensity = np.abs(wavefunction) ** 2
+            # Mean-normalize (mean=1), matching QuantumCTEMCircuit.simulate()'s
+            # convention, so intensity is directly comparable to classical_intensity.
+            intensity = intensity / intensity.mean()
             phase = np.angle(wavefunction)
         else:
             wavefunction = None
@@ -408,7 +342,9 @@ class CTEMWorkflow(ABC):
         classical_intensity = None
         correlation = None
         if compare_classical and intensity is not None:
-            classical_intensity = self._run_classical(atoms, grid_size, pixel_size)
+            classical_intensity = self._run_classical(
+                V_proj, grid_size, pixel_size, apply_ctf
+            )
             if classical_intensity is not None:
                 correlation = np.corrcoef(
                     intensity.flatten(), classical_intensity.flatten()
@@ -443,22 +379,30 @@ class CTEMWorkflow(ABC):
 
     def _run_classical(
         self,
-        atoms,
+        V_proj: np.ndarray,
         grid_size: int,
         pixel_size: float,
+        apply_ctf: bool = True,
     ) -> Optional[np.ndarray]:
-        """Run classical WPOA simulation for comparison."""
-        try:
-            from ..classical_integration import WPOAQuantumInterface
+        """
+        Run the classical FFT-based WPOA+CTF twin for comparison, using the
+        SAME QuantumClassicalValidator (and therefore the same physics
+        constants and CTF convention) as the quantum circuit above, so the
+        comparison is apples-to-apples rather than two independently
+        re-derived formulas drifting apart.
+        """
+        from ..quantum_ctem_circuit import QuantumClassicalValidator
 
-            interface = WPOAQuantumInterface(
-                voltage=self.microscope.voltage,
-                defocus=self.microscope.defocus,
-                cs=self.microscope.cs,
-            )
-            return interface.simulate(atoms, grid_size, pixel_size)
-        except Exception:
-            return None
+        params = QuantumCTEMParameters(
+            acceleration_voltage=self.microscope.voltage,
+            grid_size=grid_size,
+            pixel_size=pixel_size,
+            defocus=self.microscope.defocus if apply_ctf else 0.0,
+            cs=self.microscope.cs if apply_ctf else 0.0,
+            c5=self.microscope.c5 if apply_ctf else 0.0,
+        )
+        validator = QuantumClassicalValidator(params)
+        return validator.classical_simulation(V_proj)["intensity"]
 
     def run_defocus_series(
         self,

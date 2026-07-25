@@ -7,7 +7,7 @@ QuScope is released under the MIT License.
 MIT License
 ===========
 
-Copyright (c) 2025 Roberto Reis
+Copyright (c) 2026 Roberto dos Reis and Sean D. Lam
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

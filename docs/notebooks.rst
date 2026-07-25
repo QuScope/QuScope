@@ -1,10 +1,11 @@
 Notebook Gallery
 ================
 
-QuScope's documentation is built around runnable Jupyter notebooks rather than
-hand-written prose — each notebook below imports the real ``quscope.quantum_ctem``
-API and produces the figures shown. Start at the top and work down, or jump
-straight to the technique you need.
+This page indexes pre-rendered output copies of QuScope's core pipeline
+notebooks, kept in this repository so their results are visible without
+running anything. For the full, runnable example set (and anything not
+listed here), see `QuScope/examples-applications
+<https://github.com/QuScope/examples-applications>`_.
 
 Getting Started
 ----------------
@@ -54,7 +55,7 @@ Quantum STEM
 .. note::
    Quantum diffraction modes, frozen-phonon/thermal-diffuse-scattering
    channels, and the Bloch-wave QPE eigensolver are under development on the
-   ``dev`` branch and planned for a future release.
+   ``dev`` branch and not yet part of a release.
 
 Executed Reference Copies
 ---------------------------
@@ -71,6 +72,7 @@ readers can see results without re-running them:
 
    notebooks/01_getting_started
    notebooks/03_material_workflows
+   notebooks/02_quantum_ctem_advanced
    notebooks/10_quantum_ctem
    notebooks/06_quantum_ctf_envelope
    notebooks/07_si3n4_quantum_multislice

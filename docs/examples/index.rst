@@ -2,42 +2,46 @@
 Examples
 ========
 
-QuScope's examples live as runnable Jupyter notebooks in
-``docs/notebooks/`` rather than as standalone scripts — each one imports the
-real ``quscope.quantum_ctem`` API and reproduces the figures shown. This page
-groups the notebook gallery by technique; see :doc:`../notebooks` for the
-complete, ordered list.
+Full runnable examples live in a separate repository,
+`QuScope/examples-applications <https://github.com/QuScope/examples-applications>`_,
+so they can evolve independently of the package release cycle. Clone it and
+follow its own setup instructions to run any of them locally.
 
-🧪 **Quantum CTEM**
-=====================
+For a guided, conceptual walkthrough of each technique with short
+API-verified snippets, see :doc:`../tutorials/index` instead — this page is
+just a quick index by technique:
 
-- :doc:`../notebooks/10_quantum_ctem` — single-slice (WPOA) and multislice CTEM as one quantum circuit
-- :doc:`../notebooks/06_quantum_ctf_envelope` — Contrast Transfer Function and envelope-function analysis
-- :doc:`../notebooks/07_si3n4_quantum_multislice` — multislice on a real Si₃N₄ crystal structure, with an optional IBM hardware section
+Quantum CTEM
+===============
 
-🚀 **Quantum STEM**
-=====================
+- Single-slice (WPOA) and multislice CTEM as one quantum circuit
+- Contrast Transfer Function and envelope-function analysis
+- Multislice on a real crystal structure, validated against a classical reference
 
-- :doc:`../notebooks/11_quantum_stem` — HAADF / ADF / ABF / BF / iDPC scanning-probe imaging
+Quantum STEM
+===============
 
-🔧 **Running the Notebooks**
-==============================
+- HAADF / ADF / ABF / BF / iDPC scanning-probe imaging
+
+Material Workflows
+======================
+
+- End-to-end MoS₂ and graphene workflows, from structure to image
+
+Running the Examples
+========================
 
 .. code-block:: bash
 
    pip install quscope jupyter matplotlib
+   git clone https://github.com/QuScope/examples-applications.git
 
-   # optional, for the Si3N4 multislice notebook's classical reference
-   pip install ase abtem
+See that repository's own README for which optional dependencies (e.g.
+``ase``, ``abtem`` for real crystal structures) each example needs.
 
-   jupyter notebook docs/notebooks/10_quantum_ctem.ipynb
+Pre-rendered Output
+=======================
 
-📥 **Source**
-==============
-
-All notebooks are tracked in the `GitHub repository <https://github.com/QuScope/QuScope/tree/main/docs/notebooks>`_:
-
-.. code-block:: bash
-
-   git clone https://github.com/QuScope/QuScope.git
-   cd QuScope/docs/notebooks
+If you just want to see the output of the core pipeline notebooks without
+running anything, :doc:`../notebooks` has pre-rendered copies kept in this
+repository for reference.

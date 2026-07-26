@@ -71,11 +71,11 @@ readers can see results without re-running them:
    :maxdepth: 1
 
    notebooks/01_getting_started
-   notebooks/03_material_workflows
    notebooks/02_quantum_ctem_advanced
-   notebooks/10_quantum_ctem
+   notebooks/02_quantum_ctem_advanced.executed
+   notebooks/03_material_workflows
+   notebooks/05_fully_quantum_ctem.executed
    notebooks/06_quantum_ctf_envelope
    notebooks/07_si3n4_quantum_multislice
+   notebooks/10_quantum_ctem
    notebooks/11_quantum_stem
-   notebooks/02_quantum_ctem_advanced.executed
-   notebooks/05_fully_quantum_ctem.executed

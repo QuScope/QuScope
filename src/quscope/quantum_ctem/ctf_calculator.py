@@ -111,7 +111,7 @@ class CTFCalculator:
         Calculate wave aberration function χ(k).
 
         For axially symmetric aberrations (no astigmatism/coma):
-            χ(k) = π·λ·k²·C₁ + π/2·(λk)⁴·C₃ + π/3·(λk)⁶·C₅
+            χ(k) = π·λ·k²·C₁ + π/2·λ³·k⁴·C₃ + π/3·λ⁵·k⁶·C₅
 
         Args:
             k: Spatial frequency (1/Angstrom), scalar or array
@@ -121,7 +121,6 @@ class CTFCalculator:
             χ(k) in radians
         """
         lam = self.wavelength
-        lam_k = lam * k
 
         # Defocus term
         chi = np.pi * lam * k**2 * self.params.defocus
@@ -129,12 +128,12 @@ class CTFCalculator:
         # Spherical aberration C₃
         if self.params.cs != 0:
             cs_angstrom = self.params.cs * 1e7  # mm to Angstrom
-            chi += 0.5 * np.pi * cs_angstrom * lam_k**4
+            chi += 0.5 * np.pi * cs_angstrom * lam**3 * k**4
 
         # 5th order spherical aberration C₅
         if self.params.c5 != 0:
             c5_angstrom = self.params.c5 * 1e7
-            chi += (np.pi / 3) * c5_angstrom * lam_k**6
+            chi += (np.pi / 3) * c5_angstrom * lam**5 * k**6
 
         return chi
 

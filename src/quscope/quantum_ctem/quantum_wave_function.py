@@ -85,8 +85,10 @@ class QuantumWaveFunction:
         self._stored_norm = 1.0
 
         # Qubit registers for clarity
-        self.x_qubits = list(range(n_qubits_x))
-        self.y_qubits = list(range(n_qubits_x, self.total_qubits))
+        # psi[x, y] is flattened in C order to basis index x * pixels_y + y, so with Qiskit's
+        # little-endian ordering y occupies the low qubits and x the high qubits.
+        self.y_qubits = list(range(n_qubits_y))
+        self.x_qubits = list(range(n_qubits_y, self.total_qubits))
 
     def prepare_incident_wave(self) -> QuantumCircuit:
         """

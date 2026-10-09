@@ -68,25 +68,13 @@ class HamiltonianParameters:
     def __post_init__(self):
         """Calculate interaction constant if not provided."""
         if self.interaction_constant is None:
-            # σ = interaction constant for WPOA: χ = σ·V
-            # From Kirkland "Advanced Computing in Electron Microscopy":
-            # σ [rad/(V·Å)] = me·e/(2π·ℏ²) × λ
-            # Simplified: σ ≈ 0.01 × λ[Å] / (acceleration_voltage[kV])
-            #
-            # For 200 kV: σ ≈ 3.2e-4 rad/(V·Å)
-            # For 300 kV: σ ≈ 2.1e-4 rad/(V·Å)
-
-            m_e = const.electron_mass  # kg
-            e = const.elementary_charge  # C
-            h = const.Planck  # J·s
-            hbar = h / (2 * np.pi)
-            lambda_m = self.wavelength * 1e-10  # Convert Å to m
-
-            # Correct formula: σ = (me·e)/(2π·ℏ²) × λ
-            # Units: [kg·C]/[J·s]² × [m] = [kg·C·m]/[kg²·m⁴/s²·s²] = [C]/[kg·m³/s²] = 1/(V·m)
-            self.interaction_constant = (m_e * e * lambda_m) / (2 * np.pi * hbar**2)
-            # Convert from 1/(V·m) to 1/(V·Å)
-            self.interaction_constant *= 1e-10
+            # Relativistic interaction constant (Kirkland): sigma = 2 pi gamma m0 e lambda / h^2,
+            # phase = sigma * projected potential, sigma in rad/(V A). At 200 kV: 7.288e-4.
+            m0 = const.electron_mass
+            e = const.elementary_charge
+            h = const.Planck
+            gamma = 1 + e * self.acceleration_voltage / (m0 * const.speed_of_light**2)
+            self.interaction_constant = 2 * np.pi * gamma * m0 * e * (self.wavelength * 1e-10) / h**2 * 1e-10
 
 
 class FreeParticleHamiltonian:
@@ -122,8 +110,9 @@ class FreeParticleHamiltonian:
         freq_x = fftfreq(self.params.grid_size_x, d=self.params.pixel_size)
         freq_y = fftfreq(self.params.grid_size_y, d=self.params.pixel_size)
 
-        # Convert to k-space (k = 2π·freq)
-        kx, ky = np.meshgrid(2 * np.pi * freq_x, 2 * np.pi * freq_y, indexing="ij")
+        # Spatial frequencies in 1/A (cycles): the propagator and aberration formulas
+        # (pi lambda z k^2, pi lambda defocus k^2, ...) are written for k in 1/A.
+        kx, ky = np.meshgrid(freq_x, freq_y, indexing="ij")
 
         return kx, ky
 
@@ -137,7 +126,8 @@ class FreeParticleHamiltonian:
         Returns:
             Energy at each k-point (2D array)
         """
-        return 0.5 * self.k_squared
+        # k is in cycles/A; (2 pi)^2 restores the angular wavenumber of E = k^2 / 2 (hbar = m = 1)
+        return 0.5 * (2 * np.pi) ** 2 * self.k_squared
 
     def propagator(self, distance: float) -> np.ndarray:
         """
@@ -287,7 +277,9 @@ class LensHamiltonian:
         """Generate momentum space grid."""
         freq_x = fftfreq(self.params.grid_size_x, d=self.params.pixel_size)
         freq_y = fftfreq(self.params.grid_size_y, d=self.params.pixel_size)
-        kx, ky = np.meshgrid(2 * np.pi * freq_x, 2 * np.pi * freq_y, indexing="ij")
+        # Spatial frequencies in 1/A (cycles): the propagator and aberration formulas
+        # (pi lambda z k^2, pi lambda defocus k^2, ...) are written for k in 1/A.
+        kx, ky = np.meshgrid(freq_x, freq_y, indexing="ij")
         return kx, ky
 
     def calculate_aberration_function(self) -> np.ndarray:

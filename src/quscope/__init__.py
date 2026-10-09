@@ -37,7 +37,7 @@ from importlib.metadata import version as _pkg_version
 try:
     __version__ = _pkg_version("quscope")
 except _PkgNotFoundError:
-    __version__ = "0.1.0+dev"
+    __version__ = "0.2.1+dev"
 
 # =============================================================================
 # High-Level API (Recommended for most users)

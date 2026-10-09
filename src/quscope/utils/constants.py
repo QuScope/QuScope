@@ -41,7 +41,8 @@ class PhysicalConstants:
         # Kirkland's formula (Eq. 5.2)
         # λ = h/√(2m₀eV(1 + eV/(2m₀c²)))
         V = beam_energy
-        wavelength = PhysicalConstants.hc / np.sqrt(V + 0.97845e-6 * V**2)
+        # Kirkland: lambda = 12.2643 / sqrt(V (1 + 0.97845e-6 V)) A, with h / sqrt(2 m0 e) = 12.2643 A V^1/2
+        wavelength = 12.2643 / np.sqrt(V + 0.97845e-6 * V**2)
         return wavelength
 
     @staticmethod
@@ -57,7 +58,7 @@ class PhysicalConstants:
         Returns:
         --------
         sigma : float
-            Interaction parameter in rad/eV.
+            Interaction parameter in rad/(V A); 7.288e-4 at 200 kV.
         """
         V = beam_energy
         V_keV = V / 1000.0
@@ -66,10 +67,9 @@ class PhysicalConstants:
         # Calculate wavelength
         wavelength = PhysicalConstants.calculate_wavelength(beam_energy)
 
-        # Relativistic factor
-        gamma = (m0c2_eV + V) / (2 * m0c2_eV + V)
 
         # Interaction parameter
-        sigma = 0.00335 * gamma / (wavelength * V_keV)
+        # Kirkland: sigma = 2 pi / (lambda V) * (m0c^2 + eV) / (2 m0c^2 + eV)
+        sigma = 2 * np.pi / (wavelength * V) * (m0c2_eV + V) / (2 * m0c2_eV + V)
 
         return sigma

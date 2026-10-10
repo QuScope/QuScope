@@ -5,9 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+STEM fixes found while validating the quantum STEM pipelines against abTEM on SrTiO3 [001]
+(HAADF, ADF, ABF, BF and iDPC agree with abTEM to a correlation of 0.997-0.9994; see
+`examples-applications`).
+
+### Fixed
+- `run_stem`, `run_stem_multislice`: the `iDPC` image was the divergence of the centre-of-mass
+  field (the Laplacian of the phase), not its integral. It is now the Fourier-space integral
+  (`quantum_stem.integrate_dpc`), a phase image in radians. The centre-of-mass field is also
+  returned as `DPC_x` / `DPC_y` [1/A].
+- `run_stem`, `run_stem_multislice`: scan index `(i, j)` placed the probe at pixel
+  `(i*step - N/2, j*step - N/2)`, so every image was displaced by half the field of view from
+  the potential. The probe is now at `(i*step, j*step)`.
+- STEM detector signals are fractions of the incident beam (unitary FFT); they were scaled by N^2.
+- `run_stem_multislice`: with a 3D potential the result reported the default `n_slices` (4) in its
+  metadata and description instead of the actual slice count.
+
 ## [0.2.1] - 2026-10-09
 
-Physics fixes found while building the sister project [qptycho](https://github.com/QuScope/qptycho)
+Physics fixes found while building the sister project [ptyqo](https://github.com/QuScope/ptyqo)
 (quantum electron ptychography) on QuScope. Reference values: Kirkland, *Advanced Computing in
 Electron Microscopy* (lambda = 0.02508 A, sigma = 7.288e-4 rad/(V A) at 200 kV).
 
@@ -32,7 +50,7 @@ Electron Microscopy* (lambda = 0.02508 A, sigma = 7.288e-4 rad/(V A) at 200 kV).
 
 ### Added
 - `tests/quantum_ctem/test_v021_physics_fixes.py`: regression tests for the fixes above.
-- README: papers, and the sister module qptycho.
+- README: papers, and the sister module ptyqo.
 
 ## [0.2.0] - 2026-07-15
 

@@ -120,7 +120,8 @@ def _probe_real(
 ) -> np.ndarray:
     """
     Real-space probe at a given scan position via Fourier shift theorem.
-    shift_x, shift_y are integer pixel offsets from centre.
+    shift_x, shift_y are integer pixel positions of the probe centre in the
+    same grid as the potential (the probe is centred at pixel (0, 0) for zero shift).
     (Sub-pixel shifts would need a phase ramp; pixels are fine here.)
     """
     N = probe_k.shape[0]
@@ -161,6 +162,47 @@ def _quantum_dwf_exit_wave(
         return probe_r * np.exp(1j * sigma * V_disp)
 
 
+# ── iDPC reconstruction ───────────────────────────────────────────────────────
+
+def integrate_dpc(
+    com_x: np.ndarray,
+    com_y: np.ndarray,
+    step: float,
+) -> np.ndarray:
+    """
+    Integrate a centre-of-mass (DPC) field into a phase image (iDPC).
+
+    For a weak object the first moment of the bright-field disc is the gradient
+    of the specimen phase, ``C = grad(phi) / (2 pi)`` with C in 1/Angstrom, so
+    ``C_hat(q) = i q phi_hat(q)`` and
+
+        phi_hat(q) = -i (q_x C_x_hat + q_y C_y_hat) / |q|^2.
+
+    The integration is done in Fourier space (Lazic et al., Ultramicroscopy 160,
+    2016); the q = 0 term is undetermined and set to zero.
+
+    Parameters
+    ----------
+    com_x, com_y : np.ndarray (n, n)
+        Centre of mass along the first / second scan axis [1/Angstrom].
+    step : float
+        Distance between scan points [Angstrom].
+
+    Returns
+    -------
+    np.ndarray (n, n)
+        Phase image in radians, zero mean. Positive potential gives positive signal.
+    """
+    nx, ny = com_x.shape
+    qx = np.fft.fftfreq(nx, d=step)[:, None]
+    qy = np.fft.fftfreq(ny, d=step)[None, :]
+    q2 = qx ** 2 + qy ** 2
+    q2[0, 0] = 1.0
+    phi_hat = -1j * (qx * np.fft.fft2(com_x) + qy * np.fft.fft2(com_y)) / q2
+    phi_hat[0, 0] = 0.0
+    return np.real(np.fft.ifft2(phi_hat))
+
+
 # ── Core propagation step ─────────────────────────────────────────────────────
 
 def _propagate_to_detector(
@@ -173,8 +215,9 @@ def _propagate_to_detector(
 
     prop_phase : optional Fresnel phase for free-space propagation after specimen.
     """
-    # Fourier transform to detector (back focal) plane
-    psi_k = np.fft.fftshift(np.fft.fft2(psi_exit))
+    # Fourier transform to detector (back focal) plane. Unitary normalisation, so
+    # the detector signals are fractions of the incident beam (sum over all k = 1).
+    psi_k = np.fft.fftshift(np.fft.fft2(psi_exit, norm="ortho"))
     if prop_phase is not None:
         psi_k = psi_k * np.exp(1j * prop_phase)
     I_k = np.abs(psi_k) ** 2
@@ -227,7 +270,8 @@ def run_stem(
     -------
     dict with keys:
         'HAADF', 'ADF', 'ABF', 'BF'   — STEM images (N_scan, N_scan)
-        'idpc'                          — iDPC image
+        'iDPC'                          — iDPC image (phase [rad], zero mean)
+        'DPC_x', 'DPC_y'                — centre-of-mass field [1/Å]
         'images'                        — dict of all images
         'KX', 'KY'                      — k-space axes
         'metadata'                      — parameters dict
@@ -262,8 +306,7 @@ def run_stem(
 
     for si, ix in enumerate(scan_coords):
         for sj, iy in enumerate(scan_coords):
-            probe_r = _probe_real(probe_k, shift_x=ix - N // 2,
-                                  shift_y=iy - N // 2)
+            probe_r = _probe_real(probe_k, shift_x=ix, shift_y=iy)
             psi_exit = _quantum_dwf_exit_wave(probe_r, V, sigma, n_q, N)
 
             sigs, I_k, psi_bfp = _propagate_to_detector(psi_exit, det_masks)
@@ -277,12 +320,8 @@ def run_stem(
             if store_4d:
                 data4d[si, sj] = I_k
 
-    # iDPC: divergence of the centre-of-mass field
-    idpc = np.gradient(idpc_x, axis=0) + np.gradient(idpc_y, axis=1)
-    idpc -= idpc.mean()
-    idpc_scale = max(abs(idpc.max()), abs(idpc.min())) + 1e-12
-    idpc /= idpc_scale
-
+    # iDPC: Fourier integration of the centre-of-mass field
+    idpc = integrate_dpc(idpc_x, idpc_y, scan_step_px * pixel_size)
     images = dict(imgs)
     images["iDPC"] = idpc
 
@@ -292,6 +331,8 @@ def run_stem(
         "ABF":     imgs["ABF"],
         "BF":      imgs["BF"],
         "iDPC":    idpc,
+        "DPC_x":   idpc_x,
+        "DPC_y":   idpc_y,
         "images":  images,
         "KX": KX, "KY": KY,
         "metadata": {

@@ -27,6 +27,7 @@ from quscope.quantum_ctem.quantum_stem import (
     _focused_probe_k,
     _probe_real,
     _propagate_to_detector,
+    integrate_dpc,
 )
 
 MAX_SV_QUBITS = 16    # array-multiply diagonals push this higher than the
@@ -130,6 +131,7 @@ def run_stem_multislice(
         N = V_total.shape[0]
         base_slices = [V_total / n_slices] * n_slices
 
+    n_slices = len(base_slices)
     config_slice_sets = [base_slices]
 
     n_q = 2 * int(np.log2(N))
@@ -158,7 +160,7 @@ def run_stem_multislice(
     n_configs = len(config_slice_sets)
     for si, ix in enumerate(scan_coords):
         for sj, iy in enumerate(scan_coords):
-            probe_r = _probe_real(probe_k, shift_x=ix - N // 2, shift_y=iy - N // 2)
+            probe_r = _probe_real(probe_k, shift_x=ix, shift_y=iy)
             sigs_acc = {name: 0.0 for name in det_masks}
             kx_acc = ky_acc = 0.0
             for slice_potentials in config_slice_sets:
@@ -176,13 +178,12 @@ def run_stem_multislice(
             idpc_x[si, sj] = kx_acc / n_configs
             idpc_y[si, sj] = ky_acc / n_configs
  
-    idpc = np.gradient(idpc_x, axis=0) + np.gradient(idpc_y, axis=1)
-    idpc -= idpc.mean()
-    idpc /= (max(abs(idpc.max()), abs(idpc.min())) + 1e-12)
- 
+    idpc = integrate_dpc(idpc_x, idpc_y, scan_step_px * pixel_size)
+
     return {
         "HAADF": imgs["HAADF"], "ADF": imgs["ADF"], "ABF": imgs["ABF"],
         "BF": imgs["BF"], "iDPC": idpc,
+        "DPC_x": idpc_x, "DPC_y": idpc_y,
         "KX": KX, "KY": KY,
         "metadata": {
             "voltage": voltage, "wavelength": lam, "pixel_size": pixel_size,

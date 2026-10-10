@@ -85,8 +85,8 @@ thermal-diffuse-scattering channels, and the Bloch-wave QPE eigensolver are in t
 source tree as experimental modules (`quantum_diffraction`, `quantum_frozen_phonon`,
 `quantum_bloch_wave`); their APIs may change before they join the stable release.
 
-### 🧭 Sister module: qptycho
-[**qptycho**](https://github.com/QuScope/qptycho) (QuScope project; in preparation, repository
+### 🧭 Sister module: ptyqo
+[**ptyqo**](https://github.com/QuScope/ptyqo) (QuScope project; in preparation, repository
 currently private) builds quantum electron ptychography on QuScope's register, lens model, phase
 grating and backends: STEM probe and multislice circuits validated against abTEM, electron
 counting (one shot = one detected electron), quantum and classical Fisher information for dose

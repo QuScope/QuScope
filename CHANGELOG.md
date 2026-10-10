@@ -11,6 +11,9 @@ STEM fixes found while validating the quantum STEM pipelines against abTEM on Sr
 (HAADF, ADF, ABF, BF and iDPC agree with abTEM to a correlation of 0.997-0.9994; see
 `examples-applications`).
 
+### Added
+- `MoSe2` material (`get_material("mose2")`): 2H MoSe2 with a = 3.29 A and a Se-Se distance of 3.33 A.
+
 ### Changed (breaking)
 - Atomic potentials now come from abTEM only, through the new `quscope.ctem.AtomicPotential`
   (`"kirkland"` or `"lobato"` parametrization, in V*Angstrom). QuScope no longer carries scattering-factor tables.

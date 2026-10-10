@@ -131,6 +131,7 @@ def run_stem_multislice(
         N = V_total.shape[0]
         base_slices = [V_total / n_slices] * n_slices
 
+    n_slices = len(base_slices)
     config_slice_sets = [base_slices]
 
     n_q = 2 * int(np.log2(N))

@@ -70,3 +70,13 @@ def test_stem_detector_signals_are_beam_fractions():
                               convergence_mrad=10, detectors=det, scan_step_px=16)
     assert np.all(res["BF"] <= 1.0 + 1e-9)
     assert res["BF"].min() > 0.95
+
+
+def test_multislice_metadata_reports_actual_slice_count():
+    """A 3D potential defines the slices; the default n_slices must not leak into the result."""
+    from quscope.quantum_ctem.quantum_stem_multislice import run_stem_multislice
+
+    V = np.zeros((3, 16, 16))
+    res = run_stem_multislice(V, 0.2, 200e3, convergence_mrad=10, scan_step_px=8)
+    assert res["metadata"]["n_slices"] == 3
+    assert "3 slices" in res["metrics"]["approach"]

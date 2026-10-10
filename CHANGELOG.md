@@ -20,6 +20,8 @@ STEM fixes found while validating the quantum STEM pipelines against abTEM on Sr
   `(i*step - N/2, j*step - N/2)`, so every image was displaced by half the field of view from
   the potential. The probe is now at `(i*step, j*step)`.
 - STEM detector signals are fractions of the incident beam (unitary FFT); they were scaled by N^2.
+- `run_stem_multislice`: with a 3D potential the result reported the default `n_slices` (4) in its
+  metadata and description instead of the actual slice count.
 
 ## [0.2.1] - 2026-10-09
 

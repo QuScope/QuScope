@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quscope"
-version = "0.2.0"
+version = "0.2.1"
 description = "QuScope - Quantum algorithms for electron microscopy"
 readme = "README.md"
 requires-python = ">=3.9"

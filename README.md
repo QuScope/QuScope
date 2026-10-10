@@ -1,4 +1,4 @@
-# QuScope v0.2.0: Quantum Algorithms for Electron Microscopy
+# QuScope v0.2.1: Quantum Algorithms for Electron Microscopy
 
 [![PyPI version](https://badge.fury.io/py/quscope.svg)](https://badge.fury.io/py/quscope)
 [![Documentation Status](https://readthedocs.org/projects/quscope/badge/?version=latest)](https://quscope.readthedocs.io/en/latest/?badge=latest)
@@ -12,7 +12,11 @@ v0.2.0 provides four fully-quantum imaging pipelines: **CTEM (WPOA)**, **CTEM mu
 
 **Developed by** [Sean D. Lam](https://arxiv.org/search/quant-ph?searchtype=author&query=Lam,+S+D) and [Roberto dos Reis](https://arxiv.org/search/quant-ph?searchtype=author&query=Reis,+R+d) · Northwestern University
 
-> **Paper**: [*Quantum Algorithm Framework for Phase-Contrast Transmission Electron Microscopy Image Simulation*](https://arxiv.org/abs/2602.13438) — arXiv:2602.13438 [quant-ph], Feb 2026
+> **Papers**
+> - S. D. Lam and R. dos Reis, [*QuScope: An Open-Source Python Framework for Quantum-Circuit Simulation of Transmission Electron Microscopy*](https://arxiv.org/abs/2608.02782), arXiv:2608.02782 [quant-ph], Aug 2026
+> - S. D. Lam and R. dos Reis, [*Quantum Algorithm Framework for Phase-Contrast Transmission Electron Microscopy Image Simulation*](https://arxiv.org/abs/2602.13438), arXiv:2602.13438 [quant-ph], Feb 2026
+>
+> **Website**: https://quscope.github.io
 
 ---
 
@@ -55,7 +59,7 @@ print(f"Quantum–classical fidelity: {comparison['fidelity']:.6f}")   # → 1.0
 
 ---
 
-## Available Modules (v0.2.0)
+## Available Modules (v0.2)
 
 | Module | Technique | Quantum Engine |
 |--------|-----------|----------------|
@@ -77,9 +81,17 @@ Supporting infrastructure: `ctf_calculator` (aberration function), `hamiltonian`
 ### Roadmap
 
 Quantum diffraction modes (SAED, CBED, nBD, Kikuchi, EBSD), frozen-phonon /
-thermal-diffuse-scattering channels, and the Bloch-wave QPE eigensolver are
-under development on the [`dev`](https://github.com/QuScope/QuScope/tree/dev)
-branch and planned for a future release.
+thermal-diffuse-scattering channels, and the Bloch-wave QPE eigensolver are in the
+source tree as experimental modules (`quantum_diffraction`, `quantum_frozen_phonon`,
+`quantum_bloch_wave`); their APIs may change before they join the stable release.
+
+### Sister module: ptyqo
+[**ptyqo**](https://github.com/QuScope/ptyqo) (QuScope project; in preparation, repository
+currently private) builds quantum electron ptychography on QuScope's register, lens model, phase
+grating and backends: STEM probe and multislice circuits validated against abTEM, electron
+counting (one shot = one detected electron), quantum and classical Fisher information for dose
+limits (including thermal vibrations as a configuration register), and in-situ specimens (gas and
+liquid cells). The v0.2.1 fixes above came from that work.
 
 ---
 
@@ -302,9 +314,20 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ## Citation
 
-If you use QuScope in your research, please cite the companion paper:
+If you use QuScope in your research, please cite:
 
 ```bibtex
+@article{lam2026quscope,
+  title     = {{QuScope: An Open-Source Python Framework for Quantum-Circuit Simulation
+               of Transmission Electron Microscopy}},
+  author    = {Lam, Sean D. and dos Reis, Roberto},
+  journal   = {arXiv preprint},
+  volume    = {arXiv:2608.02782},
+  year      = {2026},
+  url       = {https://arxiv.org/abs/2608.02782},
+  doi       = {10.48550/arXiv.2608.02782}
+}
+
 @article{lam2026quantum,
   title     = {{Quantum Algorithm Framework for Phase-Contrast Transmission
                Electron Microscopy Image Simulation}},

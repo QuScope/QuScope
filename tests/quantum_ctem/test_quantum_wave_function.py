@@ -72,11 +72,11 @@ class TestQuantumWaveFunctionInitialization:
             QuantumWaveFunction(n_qubits_x=3, n_qubits_y=-1)
 
     def test_qubit_register_assignment(self):
-        """Test that qubit registers are properly assigned."""
+        """Registers follow the C-order flattening of psi[x, y]: y on the low qubits, x on the high ones."""
         qwf = QuantumWaveFunction(n_qubits_x=3, n_qubits_y=2)
 
-        assert qwf.x_qubits == [0, 1, 2]
-        assert qwf.y_qubits == [3, 4]
+        assert qwf.y_qubits == [0, 1]
+        assert qwf.x_qubits == [2, 3, 4]
 
     def test_get_info(self):
         """Test get_info method returns correct configuration."""

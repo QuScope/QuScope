@@ -9,7 +9,7 @@ from typing import Optional, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister
-from qiskit.circuit.library import QFT
+from qiskit.circuit.library import QFT, DiagonalGate
 
 
 class QuantumWaveEncoder:
@@ -226,7 +226,7 @@ class QuantumPhaseGrating:
     For each pixel (i,j):
         |ψ⟩ → exp(iσV_{ij})|ψ⟩
 
-    Implemented as controlled Rz rotations.
+    Implemented exactly as one diagonal gate (Qiskit DiagonalGate).
     """
 
     def __init__(self, n_qubits: int, grid_size: int):
@@ -261,38 +261,10 @@ class QuantumPhaseGrating:
         Returns:
             Modified quantum circuit
         """
-        # This is the key operation!
-        # For now, use simplified approach: discretize phases
-
-        # Discretize potential to k bits
-        k_phase = 8  # 256 unique phase values
-        V_discrete = np.round(V / V.max() * (2**k_phase - 1))
-
-        # Group pixels by phase value
-        phase_groups = {}
-        for i in range(self.N):
-            for j in range(self.N):
-                phase_val = V_discrete[i, j]
-                if phase_val not in phase_groups:
-                    phase_groups[phase_val] = []
-                phase_groups[phase_val].append((i, j))
-
-        print(
-            f"  Phase grating: {len(phase_groups)} unique phases for {self.N}×{self.N} pixels"
-        )
-
-        # For each unique phase, apply to all pixels with that phase
-        for phase_val, pixels in phase_groups.items():
-            theta = sigma * (phase_val / (2**k_phase - 1)) * V.max()
-
-            # Multi-controlled Rz gate
-            # Control: position qubits must encode one of the pixels
-            # Target: apply Rz(theta)
-
-            # Simplified for now: just add barrier
-            qc.barrier()
-            # TODO: Implement efficient multi-controlled rotation
-
+        # One diagonal gate applies exp(i sigma V[x, y]) to every pixel exactly; V is flattened in
+        # C order, matching QuantumWaveFunction (x on the high qubits).
+        phases = np.exp(1j * sigma * np.asarray(V, dtype=float).reshape(-1))
+        qc.append(DiagonalGate(list(phases)), qubits)
         return qc
 
     def resource_estimate(self, V: np.ndarray) -> dict:

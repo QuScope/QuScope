@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-10-09
+
+Physics fixes found while building the sister project [qptycho](https://github.com/QuScope/qptycho)
+(quantum electron ptychography) on QuScope. Reference values: Kirkland, *Advanced Computing in
+Electron Microscopy* (lambda = 0.02508 A, sigma = 7.288e-4 rad/(V A) at 200 kV).
+
+### Fixed
+- `QuantumWaveFunction`: x/y qubit labels now match the C-order flattening of `psi[x, y]`
+  (y on the low qubits, x on the high qubits); the 2D QFT was applied to the wrong axis for
+  non-square grids or single-axis gates.
+- `HamiltonianParameters.interaction_constant`: relativistic mass (was the rest mass,
+  5.24e-4 instead of 7.29e-4 rad/(V A) at 200 kV); now consistent with
+  `quantum_ctem_circuit.interaction_constant`.
+- `LensHamiltonian` and `FreeParticleHamiltonian`: spatial frequencies in 1/A as their formulas
+  require (aberration phases and the Fresnel propagator were 4 pi^2 too large);
+  `FreeParticleHamiltonian.energy` values unchanged. Affects `ctf_calculator`, `quantum_simulation`
+  and the end-to-end workflows that use these classes.
+- `QuantumPhaseGrating.apply`: applies exp(i sigma V) exactly as one `DiagonalGate` (was a
+  barrier-only placeholder).
+- `utils.constants.PhysicalConstants`: Kirkland wavelength (12.2643 / sqrt(V (1 + 0.97845e-6 V)),
+  was 1.1% long) and interaction constant (was 0.53x); used by `simulations/wpo.py` and
+  `simulations/multislice.py`.
+- Notebook 08: `simulate_multislice(..., slice_thickness=...)` (was `dz=`), from the `dev-2` branch.
+- Package version fallback string.
+
+### Added
+- `tests/quantum_ctem/test_v021_physics_fixes.py`: regression tests for the fixes above.
+- README: papers, and the sister module qptycho.
+
 ## [0.2.0] - 2026-07-15
 
 v0.2.0 focuses on four validated quantum imaging pipelines: CTEM (WPOA),

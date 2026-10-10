@@ -36,6 +36,8 @@ dependencies = [
     "scipy>=1.10.0",
     "pillow>=9.0.0",
     "scikit-learn>=1.3.0",
+    "ase>=3.22.0",
+    "abtem>=1.0.0",
 ]
 
 [project.urls]
@@ -46,10 +48,7 @@ Repository = "https://github.com/QuScope/QuScope.git"
 Changelog = "https://github.com/QuScope/QuScope/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
-microscopy = [
-    "ase>=3.22.0",
-    "abtem>=1.0.0",
-]
+microscopy = []  # ase and abtem are core dependencies now; kept so `quscope[microscopy]` still installs
 viz = [
     "matplotlib>=3.7.0",
     "seaborn>=0.12.0",
@@ -80,10 +79,6 @@ all = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[tool.setuptools.package-data]
-"quscope.ctem" = ["*.json"]
-"quscope.utils" = ["*.json"]
 
 [tool.black]
 line-length = 88

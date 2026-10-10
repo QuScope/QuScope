@@ -41,13 +41,15 @@ Requirements
 - scipy >= 1.10.0
 - pillow >= 9.0.0
 - scikit-learn >= 1.3.0
+- ase >= 3.22.0
+- abtem >= 1.0.0 (atomic potentials: the Kirkland and Lobato parametrizations;
+  QuScope has no scattering-factor tables of its own)
 
 **Optional Dependencies**
 
 - matplotlib (for the visualization used throughout the examples)
 - jupyter (to run notebooks locally — see `QuScope/examples-applications
   <https://github.com/QuScope/examples-applications>`_)
-- ase, abtem (for building real crystal structures)
 - qiskit-ibm-runtime, python-dotenv (only needed for the optional IBM Quantum
   hardware sections)
 

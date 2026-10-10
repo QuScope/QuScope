@@ -11,44 +11,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
-from ...ctem.kirkland_potential import KirklandPotential
-
-
-@dataclass
-class AtomicScatteringParams:
-    """
-    Kirkland parameterization for atomic scattering factors.
-
-    Based on: Kirkland, "Advanced Computing in Electron Microscopy", Appendix C.
-    The projected potential is computed as a sum of Gaussians:
-        V(r) = Σ a_i * exp(-π * r² / b_i)
-
-    Attributes:
-        symbol: Element symbol (e.g., "C", "Mo", "S")
-        atomic_number: Z
-        a_coefficients: Gaussian amplitudes [Å²·V]
-        b_coefficients: Gaussian widths [Å²]
-    """
-
-    symbol: str
-    atomic_number: int
-    a_coefficients: List[float] = field(default_factory=list)
-    b_coefficients: List[float] = field(default_factory=list)
-
-    def projected_potential(self, r: np.ndarray) -> np.ndarray:
-        """
-        Calculate projected potential at distance r from atom center.
-
-        Args:
-            r: Distance array in Ångströms
-
-        Returns:
-            Projected potential in V·Å
-        """
-        V = np.zeros_like(r)
-        for a, b in zip(self.a_coefficients, self.b_coefficients):
-            V += a * np.exp(-np.pi * r**2 / b)
-        return V
+from ...ctem.atomic_potential import AtomicPotential
 
 
 @dataclass
@@ -93,12 +56,13 @@ class Material(ABC):
 
     Subclasses must implement:
     - build_structure(): Generate atomic structure
-    - get_scattering_params(): Return Kirkland parameters for all elements
     """
+
+    # Atomic potentials come from abTEM: "kirkland" or "lobato" (see quscope.ctem.AtomicPotential)
+    parametrization: str = "kirkland"
 
     def __init__(self):
         self._parameters: Optional[MaterialParameters] = None
-        self._scattering_params: Dict[str, AtomicScatteringParams] = {}
 
     @property
     @abstractmethod
@@ -124,16 +88,6 @@ class Material(ABC):
         """
         pass
 
-    @abstractmethod
-    def get_scattering_params(self) -> Dict[str, AtomicScatteringParams]:
-        """
-        Get Kirkland scattering parameters for all elements.
-
-        Returns:
-            Dictionary mapping element symbol to AtomicScatteringParams
-        """
-        pass
-
     def get_projected_potential(
         self,
         atoms,
@@ -142,15 +96,15 @@ class Material(ABC):
         padding: float = 2.0,
         supersample: int = 4,
         thermal_sigma: float = 0.08,
+        parametrization: Optional[str] = None,
     ) -> np.ndarray:
         """
         Calculate 2D projected potential for the structure.
 
-        Uses QuScope's own Kirkland scattering-factor tables
-        (quscope.ctem.KirklandPotential, Kirkland Appendix C, full
-        Bessel-K0-plus-Gaussian parametrization) rather than an ad hoc
-        per-material approximation, so results are consistent with the
-        rest of the package (quantum_ctem_circuit, the paper figures, etc).
+        Uses abTEM's atomic potential parametrizations through
+        quscope.ctem.AtomicPotential ("kirkland" or "lobato"), so the
+        potentials are those of abTEM and consistent with the rest of the
+        package (quantum_ctem_circuit, the paper figures, etc).
 
         Args:
             atoms: ASE Atoms object
@@ -168,6 +122,7 @@ class Material(ABC):
                 average-pool down to grid_size, so peak heights don't alias
                 depending on exactly where an atom center falls relative to
                 a pixel. supersample=1 disables this (raw point sampling).
+            parametrization: "kirkland" or "lobato"; default is the material's `parametrization`
             thermal_sigma: Gaussian (Debye-Waller-like) smearing width in
                 Angstrom, representing thermal atomic vibration -- a real
                 specimen at finite temperature, not a mathematical point
@@ -182,7 +137,7 @@ class Material(ABC):
         """
         positions = atoms.get_positions()
         atomic_numbers = atoms.get_atomic_numbers()
-        kirkland = KirklandPotential()
+        kirkland = AtomicPotential(parametrization or self.parametrization)
 
         # Pixel-center coordinates (Angstrom) at the supersampled resolution
         # -- grid_size * pixel_size is the actual field of view, matching

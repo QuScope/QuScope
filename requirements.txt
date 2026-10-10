@@ -13,9 +13,9 @@ scipy>=1.10.0
 pillow>=9.0.0
 scikit-learn>=1.3.0
 
-# Optional: Microscopy simulation (pip install quscope[microscopy])
-# ase>=3.22.0
-# abtem>=1.0.0
+# Structures and atomic potentials (abTEM parametrizations: Kirkland, Lobato)
+ase>=3.22.0
+abtem>=1.0.0
 
 # Optional: Visualization (pip install quscope[viz])
 # matplotlib>=3.7.0

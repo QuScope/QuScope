@@ -64,7 +64,7 @@ module level:
        workflows, backends.
      - :doc:`api/quscope.quantum_ctem`
    * - ``quscope.ctem``
-     - Classical reference implementations (Kirkland potentials, multislice,
+     - Classical reference implementations (abTEM atomic potentials, multislice,
        WPOA) used to validate the quantum circuits.
      - :doc:`api/quscope.ctem`
    * - ``quscope.simulations``
@@ -72,7 +72,7 @@ module level:
        ``quantum_ctem``.
      - :doc:`api/quscope.simulations`
    * - ``quscope.utils``
-     - Physical constants and Kirkland scattering-factor tables.
+     - Physical constants.
      - :doc:`api/quscope.utils`
 
 I want to...

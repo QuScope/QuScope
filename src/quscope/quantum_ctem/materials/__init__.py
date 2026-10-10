@@ -19,7 +19,7 @@ Usage:
     atoms = graphene.build_supercell(nx=5, ny=5)
 """
 
-from .base import Material, MaterialParameters, AtomicScatteringParams
+from .base import Material, MaterialParameters
 from .mos2 import MoS2
 from .graphene import Graphene
 
@@ -72,7 +72,6 @@ def list_materials() -> dict:
 __all__ = [
     "Material",
     "MaterialParameters",
-    "AtomicScatteringParams",
     "MoS2",
     "Graphene",
     "get_material",

@@ -10,7 +10,7 @@ from typing import Dict, Optional
 
 import numpy as np
 
-from .base import AtomicScatteringParams, Material, MaterialParameters
+from .base import Material, MaterialParameters
 
 
 class MoS2(Material):
@@ -30,23 +30,6 @@ class MoS2(Material):
         >>> atoms = mos2.build_structure(nx=3, ny=2)
         >>> V = mos2.get_projected_potential(atoms, grid_size=256)
     """
-
-    # Kirkland scattering parameters for Mo and S
-    # From Kirkland, "Advanced Computing in Electron Microscopy", Appendix C
-    SCATTERING_PARAMS = {
-        "Mo": AtomicScatteringParams(
-            symbol="Mo",
-            atomic_number=42,
-            a_coefficients=[2.5460, 2.6963, 1.8027, 0.5960],
-            b_coefficients=[0.0667, 0.5717, 3.1346, 12.313],
-        ),
-        "S": AtomicScatteringParams(
-            symbol="S",
-            atomic_number=16,
-            a_coefficients=[1.2052, 1.1717, 0.4403, 0.2037],
-            b_coefficients=[0.0331, 0.2636, 1.0096, 4.1210],
-        ),
-    }
 
     # Map layer types to ASE mx2 kind parameter
     _ASE_KIND_MAP = {"1H": "2H", "2H": "2H", "1T": "1T"}
@@ -127,10 +110,6 @@ class MoS2(Material):
     ):
         """Alias for build_structure for API consistency."""
         return self.build_structure(nx=nx, ny=ny, vacuum=vacuum)
-
-    def get_scattering_params(self) -> Dict[str, AtomicScatteringParams]:
-        """Get Kirkland scattering parameters for Mo and S."""
-        return self.SCATTERING_PARAMS.copy()
 
     def get_column_positions(self, atoms) -> Dict[str, np.ndarray]:
         """

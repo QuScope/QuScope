@@ -13,10 +13,6 @@ include docs/Makefile
 include docs/make.bat
 include docs/requirements.txt
 
-# Include example notebooks
-recursive-include notebooks *.ipynb *.py *.md
-recursive-include notebooks *.png *.jpg *.jpeg *.gif
-
 # Include test data and fixtures
 recursive-include tests *.py *.json *.txt *.png *.jpg
 

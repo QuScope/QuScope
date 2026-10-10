@@ -65,3 +65,14 @@ def test_calculate_2d_is_radial_and_additive():
 def test_unknown_parametrization_is_rejected():
     with pytest.raises(ValueError):
         AtomicPotential("peng")
+
+
+@pytest.mark.parametrize("name", ["kirkland", "lobato"])
+def test_accepts_arrays_of_any_shape(name):
+    pot = AtomicPotential(name)
+    r1 = np.linspace(0.1, 3.0, 12)
+    r2 = r1.reshape(3, 4)
+    r3 = np.stack([r2, r2 * 1.5])
+    assert np.array_equal(pot.projected_potential("Mo", r2), pot.projected_potential("Mo", r1).reshape(3, 4))
+    assert pot.projected_potential("Mo", r3).shape == r3.shape
+    assert pot.projected_potential("Mo", 0.7).shape == ()

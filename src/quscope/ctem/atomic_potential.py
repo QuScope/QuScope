@@ -78,7 +78,9 @@ class AtomicPotential:
     def projected_potential(self, element, r) -> np.ndarray:
         """V(r) [V*Angstrom] of a single atom at distance r [Angstrom]; element is a symbol or atomic number."""
         r = np.maximum(np.asarray(r, dtype=float), R_MIN)
-        return np.asarray(self._function(element)(r), dtype=float)
+        # abTEM's Lobato function only takes 1D input, so evaluate on a flat array for any shape
+        flat = self._function(element)(r.ravel())
+        return np.asarray(flat, dtype=float).reshape(r.shape)
 
     def calculate_2d(self, x_grid, y_grid, atom_x: float, atom_y: float, Z: int) -> np.ndarray:
         """Projected potential of one atom on a grid [V*Angstrom], same shape as ``x_grid``.

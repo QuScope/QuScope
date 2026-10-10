@@ -80,10 +80,14 @@ Supporting infrastructure: `ctf_calculator` (aberration function), `hamiltonian`
 
 ### Roadmap
 
-Quantum diffraction modes (SAED, CBED, nBD, Kikuchi, EBSD), frozen-phonon /
-thermal-diffuse-scattering channels, and the Bloch-wave QPE eigensolver are in the
-source tree as experimental modules (`quantum_diffraction`, `quantum_frozen_phonon`,
-`quantum_bloch_wave`); their APIs may change before they join the stable release.
+**v0.3.** Convergent-beam electron diffraction (CBED) from the multislice circuits, and thermal
+vibrations as an option through the whole multislice stack: frozen-phonon configurations and
+thermal diffuse scattering (TDS) for CTEM, STEM and CBED. The experimental modules
+`quantum_diffraction` and `quantum_frozen_phonon` are the starting point; their APIs may change
+before the stable release.
+
+**Later.** The Bloch-wave eigensolver (`quantum_bloch_wave`, QPE), which is about the
+fundamental physics of scattering, is planned for the version after v0.3.
 
 ### Sister module: ptyqo
 [**ptyqo**](https://github.com/QuScope/ptyqo) (QuScope project; in preparation, repository

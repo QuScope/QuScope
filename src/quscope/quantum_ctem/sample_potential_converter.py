@@ -80,6 +80,12 @@ KIRKLAND_PARAMS = {
         a=np.array([0.3831, 1.3533, 4.5397]),
         b=np.array([0.3216, 0.9622, 3.3763])
     ),
+    'Se': AtomicScatteringParameters(
+        symbol='Se',
+        Z=34,
+        a=np.array([0.8120, 2.2100, 5.6000]),
+        b=np.array([0.4500, 1.3000, 4.2000])
+    ),
     'Au': AtomicScatteringParameters(
         symbol='Au',
         Z=79,
@@ -236,6 +242,7 @@ class SamplePotentialConverter:
             'S': 20.0,
             'Mo': 90.0,
             'Si': 8.0,
+            'Se': 35.0,
             'Au': 300.0
         }
 

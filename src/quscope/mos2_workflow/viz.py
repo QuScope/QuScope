@@ -5,9 +5,21 @@ import matplotlib.pyplot as plt
 from typing import Tuple
 
 
-def build_mos2(nx: int = 3, ny: int = 2, vacuum: float = 10.0):
-    """Build a MoS2 patch using ASE's mx2 helper."""
+def build_mos2(nx: int = 3, ny: int = 2, vacuum: float = 10.0, material: str = "MoS2"):
+    """Build a tiled transition-metal dichalcogenide (TMD) patch.
+
+    material: 'MoS2' or 'MoSe2' (case-insensitive). The function uses
+    ASE's mx2 builder under the hood.
+    """
+    mat = material.lower()
+    # Build using ASE's default mx2() which constructs MoS2; if MoSe2
+    # is requested, convert S -> Se after building.
     atoms = mx2(vacuum=vacuum)
+    if 'se' in mat:
+        for atom in atoms:
+            if atom.symbol == 'S':
+                atom.symbol = 'Se'
+
     atoms = atoms.repeat((nx, ny, 1))
     atoms.center()
     return atoms

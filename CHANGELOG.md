@@ -11,7 +11,13 @@ STEM fixes found while validating the quantum STEM pipelines against abTEM on Sr
 (HAADF, ADF, ABF, BF and iDPC agree with abTEM to a correlation of 0.997-0.9994; see
 `examples-applications`).
 
+### Added
+- `MoSe2` material (`get_material("mose2")`): 2H MoSe2 with a = 3.29 A and a Se-Se distance of 3.33 A.
+
 ### Fixed
+- `KirklandPotential.get_element_symbol` only knew 20 elements, so atomic numbers such as Se (34),
+  Te, W or Mn failed although `kirkland.json` has all 103. It now uses the full table
+  (`ELEMENT_SYMBOLS`, checked against the JSON in a test).
 - `run_stem`, `run_stem_multislice`: the `iDPC` image was the divergence of the centre-of-mass
   field (the Laplacian of the phase), not its integral. It is now the Fourier-space integral
   (`quantum_stem.integrate_dpc`), a phase image in radians. The centre-of-mass field is also

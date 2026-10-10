@@ -48,6 +48,11 @@ class MoS2(Material):
         ),
     }
 
+    # Passed to ase.build.mx2; subclasses (MoSe2) override these.
+    _FORMULA = "MoS2"
+    _LATTICE_A = None  # None -> parameters.a
+    _THICKNESS = None  # None -> ASE default
+
     # Map layer types to ASE mx2 kind parameter
     _ASE_KIND_MAP = {"1H": "2H", "2H": "2H", "1T": "1T"}
 
@@ -106,12 +111,15 @@ class MoS2(Material):
             )
 
         # Build MoS₂ using ASE's mx2 builder
-        atoms = mx2(
-            formula="MoS2",
+        mx2_kwargs = dict(
+            formula=self._FORMULA,
             kind=self._ase_kind,
-            a=self.parameters.a,
+            a=self._LATTICE_A or self.parameters.a,
             vacuum=vacuum,
         )
+        if self._THICKNESS is not None:
+            mx2_kwargs["thickness"] = self._THICKNESS
+        atoms = mx2(**mx2_kwargs)
 
         # Create supercell
         atoms = atoms.repeat((nx, ny, 1))

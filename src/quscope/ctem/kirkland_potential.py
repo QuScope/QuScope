@@ -25,6 +25,22 @@ import numpy as np
 from scipy.special import kn
 
 
+# Element symbols for Z = 1..103 (the elements in kirkland.json), in order.
+ELEMENT_SYMBOLS = (
+    "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne",
+    "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", "K", "Ca",
+    "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn",
+    "Ga", "Ge", "As", "Se", "Br", "Kr", "Rb", "Sr", "Y", "Zr",
+    "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn",
+    "Sb", "Te", "I", "Xe", "Cs", "Ba", "La", "Ce", "Pr", "Nd",
+    "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb",
+    "Lu", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg",
+    "Tl", "Pb", "Bi", "Po", "At", "Rn", "Fr", "Ra", "Ac", "Th",
+    "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm",
+    "Md", "No", "Lr",
+)
+
+
 class KirklandPotential:
     """
     Calculate 2D projected atomic potential using Kirkland parameterization.
@@ -114,31 +130,7 @@ class KirklandPotential:
         Raises:
             ValueError: If element not in parameters dictionary
         """
-        # Common elements used in Kirkland examples
-        Z_TO_SYMBOL = {
-            1: "H",
-            6: "C",
-            7: "N",
-            8: "O",
-            13: "Al",
-            14: "Si",
-            16: "S",
-            22: "Ti",
-            26: "Fe",
-            29: "Cu",
-            31: "Ga",
-            33: "As",
-            38: "Sr",
-            42: "Mo",
-            47: "Ag",
-            56: "Ba",
-            57: "La",
-            79: "Au",
-            82: "Pb",
-            92: "U",
-        }
-
-        symbol = Z_TO_SYMBOL.get(Z)
+        symbol = ELEMENT_SYMBOLS[Z - 1] if 1 <= Z <= len(ELEMENT_SYMBOLS) else None
         if symbol is None or symbol not in self.params_dict:
             raise ValueError(
                 f"Element with Z={Z} not found in parameters.\n"

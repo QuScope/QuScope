@@ -4,6 +4,7 @@ Material Definitions for Quantum CTEM Simulation.
 This module provides material-specific parameters and structure builders
 for quantum CTEM simulations. Currently supports:
 - MoS₂ (Molybdenum disulfide) - 2D transition metal dichalcogenide
+- MoSe₂ (Molybdenum diselenide) - 2D transition metal dichalcogenide
 - Graphene - 2D carbon allotrope
 
 Usage:
@@ -19,8 +20,9 @@ Usage:
     atoms = graphene.build_supercell(nx=5, ny=5)
 """
 
-from .base import Material, MaterialParameters, AtomicScatteringParams
+from .base import Material, MaterialParameters
 from .mos2 import MoS2
+from .mose2 import MoSe2
 from .graphene import Graphene
 
 # Material registry
@@ -28,6 +30,9 @@ _MATERIAL_REGISTRY = {
     "mos2": MoS2,
     "MoS2": MoS2,
     "molybdenum_disulfide": MoS2,
+    "mose2": MoSe2,
+    "MoSe2": MoSe2,
+    "molybdenum_diselenide": MoSe2,
     "graphene": Graphene,
     "Graphene": Graphene,
     "carbon": Graphene,
@@ -65,6 +70,7 @@ def list_materials() -> dict:
     """List all available materials with descriptions."""
     return {
         "mos2": "Molybdenum disulfide (MoS₂) - 2D TMD semiconductor",
+        "mose2": "Molybdenum diselenide (MoSe₂) - 2D TMD semiconductor",
         "graphene": "Graphene - 2D carbon with honeycomb lattice",
     }
 
@@ -72,8 +78,8 @@ def list_materials() -> dict:
 __all__ = [
     "Material",
     "MaterialParameters",
-    "AtomicScatteringParams",
     "MoS2",
+    "MoSe2",
     "Graphene",
     "get_material",
     "list_materials",

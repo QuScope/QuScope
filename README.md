@@ -3,7 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/quscope.svg)](https://badge.fury.io/py/quscope)
 [![Documentation Status](https://readthedocs.org/projects/quscope/badge/?version=latest)](https://quscope.readthedocs.io/en/latest/?badge=latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Qiskit 2.x](https://img.shields.io/badge/Qiskit-2.x-purple.svg)](https://qiskit.org/)
 
 **QuScope** is a Python package for applying quantum computing algorithms to Transmission Electron Microscopy (TEM) simulation. Built on Qiskit, it expresses the TEM image-formation pipeline as quantum circuits — the electron wavefunction is amplitude-encoded on qubits, and every optical element (phase grating, Fresnel propagation, objective lens) is a diagonal unitary conjugated by quantum Fourier transforms — validated against classical reference implementations to unit fidelity.
@@ -67,6 +67,8 @@ print(f"Quantum–classical fidelity: {comparison['fidelity']:.6f}")   # → 1.0
 | `quantum_multislice_circuit` | CTEM multislice propagation | Alternating phase grating / Fresnel-propagator DiagonalGates + QFT |
 | `quantum_stem` | STEM imaging (single-slice WPOA) | One quantum circuit per probe position |
 | `quantum_stem_multislice` | STEM multislice propagation | Probe state through the multislice circuit per scan position |
+
+Atomic potentials come from abTEM (`quscope.ctem.AtomicPotential`, "kirkland" or "lobato"); QuScope ships no scattering-factor tables.
 
 Supporting infrastructure: `ctf_calculator` (aberration function), `hamiltonian` (TEM Hamiltonian), `momentum_space`, `quantum_encoding`, classical reference implementations (`classical_validation`, `ctem/`, `simulations/`), Kirkland scattering-factor tables (`utils/`), materials workflows (MoS₂, graphene), circuit optimization, and IBM Quantum backend wrappers.
 
@@ -143,7 +145,7 @@ quantum_algo_microscopy/
 │   │   └── backends/                        # IBM Quantum / Aer backend wrappers
 │   ├── ctem/                                # Classical CTEM (reference)
 │   ├── simulations/                         # Shared simulation utilities
-│   ├── utils/                               # Constants, Kirkland parameters
+│   ├── utils/                               # Physical constants
 │   └── quantum_backend.py                   # IBM Quantum session manager
 ├── pyproject.toml
 └── docs/                                    # Sphinx documentation source

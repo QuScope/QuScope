@@ -94,8 +94,9 @@ fundamental physics of scattering, is planned for the version after v0.3.
 currently private) builds quantum electron ptychography on QuScope's register, lens model, phase
 grating and backends: STEM probe and multislice circuits validated against abTEM, electron
 counting (one shot = one detected electron), quantum and classical Fisher information for dose
-limits (including thermal vibrations as a configuration register), and in-situ specimens (gas and
-liquid cells). The v0.2.1 fixes above came from that work.
+limits (including thermal vibrations as a configuration register). It targets beam-sensitive
+specimens in general; gas and liquid cells are the demanding in-situ test cases. The v0.2.1 fixes above came
+from that work.
 
 ---
 

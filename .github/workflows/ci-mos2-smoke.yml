@@ -24,7 +24,7 @@ jobs:
           # install mamba into the base env so we can use it
           conda install -y -n base -c conda-forge mamba
           # create a small env with core deps for the smoke test
-          mamba create -y -n quantum python=3.10 numpy scipy matplotlib pytest -c conda-forge
+          mamba create -y -n quantum python=3.11 numpy scipy matplotlib pytest -c conda-forge
           # Ensure pip is available and install qiskit via pip (lightweight install)
           mamba run -n quantum python -m pip install qiskit
 

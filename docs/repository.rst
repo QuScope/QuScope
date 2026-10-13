@@ -17,25 +17,23 @@ Branches
      - What it has
      - Use it for
    * - ``main``
-     - The released v0.2.0 package: four validated pipelines (CTEM WPOA,
+     - The released v0.2 package (v0.2.1 fixes included): four validated pipelines (CTEM WPOA,
        CTEM multislice, STEM WPOA, STEM multislice). This site is built from
        ``main``. No top-level ``notebooks/`` directory — only
        ``docs/notebooks/`` (pre-rendered, needed for this documentation
        build).
      - Installing and using QuScope, reporting bugs, contributing fixes to
        the released pipelines.
-   * - ``dev``
-     - Everything on ``main``, plus work in progress: quantum diffraction
-       modes (SAED, CBED, nano-beam diffraction, Kikuchi, EBSD), the
-       Bloch-wave QPE eigensolver, frozen-phonon / thermal-diffuse-scattering
-       modules, and the full notebook set (including the runnable sources
-       and a few additional work-in-progress notebooks).
-     - Working on the next release, or trying features that haven't shipped
-       yet.
    * - ``v0.2.x``
-     - The v0.2.0 release line. Kept in sync with ``dev``'s content.
-     - Release-management purposes; most contributors want ``main`` or
-       ``dev`` instead.
+     - The v0.2 maintenance line. Fixes are made here and merged into
+       ``main``.
+     - Release management; most contributors want ``main``.
+
+Work towards v0.3 (CBED, and frozen-phonon / thermal-diffuse-scattering
+options through the multislice stack) happens on feature branches, starting
+from the experimental ``quantum_diffraction`` and ``quantum_frozen_phonon``
+modules already in the source tree. The Bloch-wave eigensolver is planned for
+the version after that.
 
 Related repositories
 =====================

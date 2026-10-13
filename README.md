@@ -80,18 +80,23 @@ Supporting infrastructure: `ctf_calculator` (aberration function), `hamiltonian`
 
 ### Roadmap
 
-Quantum diffraction modes (SAED, CBED, nBD, Kikuchi, EBSD), frozen-phonon /
-thermal-diffuse-scattering channels, and the Bloch-wave QPE eigensolver are in the
-source tree as experimental modules (`quantum_diffraction`, `quantum_frozen_phonon`,
-`quantum_bloch_wave`); their APIs may change before they join the stable release.
+**v0.3.** Convergent-beam electron diffraction (CBED) from the multislice circuits, and thermal
+vibrations as an option through the whole multislice stack: frozen-phonon configurations and
+thermal diffuse scattering (TDS) for CTEM, STEM and CBED. The experimental modules
+`quantum_diffraction` and `quantum_frozen_phonon` are the starting point; their APIs may change
+before the stable release.
+
+**Later.** The Bloch-wave eigensolver (`quantum_bloch_wave`, QPE), which is about the
+fundamental physics of scattering, is planned for the version after v0.3.
 
 ### Sister module: ptyqo
 [**ptyqo**](https://github.com/QuScope/ptyqo) (QuScope project; in preparation, repository
 currently private) builds quantum electron ptychography on QuScope's register, lens model, phase
 grating and backends: STEM probe and multislice circuits validated against abTEM, electron
 counting (one shot = one detected electron), quantum and classical Fisher information for dose
-limits (including thermal vibrations as a configuration register), and in-situ specimens (gas and
-liquid cells). The v0.2.1 fixes above came from that work.
+limits (including thermal vibrations as a configuration register). It targets beam-sensitive
+specimens in general; gas and liquid cells are the demanding in-situ test cases. The v0.2.1 fixes above came
+from that work.
 
 ---
 

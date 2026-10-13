@@ -29,7 +29,7 @@ Requirements
 
 **Python Version**
 
-- Python >= 3.9
+- Python >= 3.11 (abTEM, which provides the atomic potentials, requires it)
 
 **Core Dependencies**
 

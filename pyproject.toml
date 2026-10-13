@@ -7,7 +7,7 @@ name = "quscope"
 version = "0.2.1"
 description = "QuScope - Quantum algorithms for electron microscopy"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 license = "MIT"
 authors = [
     {name = "Roberto Reis", email = "roberto.reis@northwestern.edu"},
@@ -19,8 +19,6 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Physics",
@@ -82,7 +80,7 @@ where = ["src"]
 
 [tool.black]
 line-length = 88
-target-version = ['py39', 'py310', 'py311']
+target-version = ['py311', 'py312']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -106,14 +104,14 @@ known_first_party = ["quscope"]
 src_paths = ["src"]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
 exclude = ["tests/", "docs/"]
 
 [tool.ruff]
-target-version = "py39"
+target-version = "py311"
 line-length = 88
 src = ["src"]
 exclude = [

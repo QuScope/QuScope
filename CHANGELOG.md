@@ -15,6 +15,7 @@ STEM fixes found while validating the quantum STEM pipelines against abTEM on Sr
 - `MoSe2` material (`get_material("mose2")`): 2H MoSe2 with a = 3.29 A and a Se-Se distance of 3.33 A.
 
 ### Changed (breaking)
+- Python >= 3.11 (was 3.9). abTEM requires it and now provides the atomic potentials; 3.9 is end-of-life and 3.10 reaches it in October 2026.
 - Atomic potentials now come from abTEM only, through the new `quscope.ctem.AtomicPotential`
   (`"kirkland"` or `"lobato"` parametrization, in V*Angstrom). QuScope no longer carries scattering-factor tables.
   abTEM and ASE are core dependencies now (`quscope[microscopy]` is kept as an empty extra).

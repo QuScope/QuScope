@@ -8,7 +8,7 @@
 
 **QuScope** is a Python package for applying quantum computing algorithms to Transmission Electron Microscopy (TEM) simulation. Built on Qiskit, it expresses the TEM image-formation pipeline as quantum circuits — the electron wavefunction is amplitude-encoded on qubits, and every optical element (phase grating, Fresnel propagation, objective lens) is a diagonal unitary conjugated by quantum Fourier transforms — validated against classical reference implementations to unit fidelity.
 
-v0.2.0 provides four fully-quantum imaging pipelines: **CTEM (WPOA)**, **CTEM multislice**, **STEM (WPOA)**, and **STEM multislice**.
+v0.2.1 provides four fully-quantum imaging pipelines: **CTEM (WPOA)**, **CTEM multislice**, **STEM (WPOA)**, and **STEM multislice**.
 
 **Developed by** [Sean D. Lam](https://arxiv.org/search/quant-ph?searchtype=author&query=Lam,+S+D) and [Roberto dos Reis](https://arxiv.org/search/quant-ph?searchtype=author&query=Reis,+R+d) · Northwestern University
 
@@ -80,18 +80,23 @@ Supporting infrastructure: `ctf_calculator` (aberration function), `hamiltonian`
 
 ### Roadmap
 
-Quantum diffraction modes (SAED, CBED, nBD, Kikuchi, EBSD), frozen-phonon /
-thermal-diffuse-scattering channels, and the Bloch-wave QPE eigensolver are in the
-source tree as experimental modules (`quantum_diffraction`, `quantum_frozen_phonon`,
-`quantum_bloch_wave`); their APIs may change before they join the stable release.
+**v0.3.** Convergent-beam electron diffraction (CBED) from the multislice circuits, and thermal
+vibrations as an option through the whole multislice stack: frozen-phonon configurations and
+thermal diffuse scattering (TDS) for CTEM, STEM and CBED. The experimental modules
+`quantum_diffraction` and `quantum_frozen_phonon` are the starting point; their APIs may change
+before the stable release.
+
+**Later.** The Bloch-wave eigensolver (`quantum_bloch_wave`, QPE), which is about the
+fundamental physics of scattering, is planned for the version after v0.3.
 
 ### Sister module: ptyqo
 [**ptyqo**](https://github.com/QuScope/ptyqo) (QuScope project; in preparation, repository
 currently private) builds quantum electron ptychography on QuScope's register, lens model, phase
 grating and backends: STEM probe and multislice circuits validated against abTEM, electron
 counting (one shot = one detected electron), quantum and classical Fisher information for dose
-limits (including thermal vibrations as a configuration register), and in-situ specimens (gas and
-liquid cells). The v0.2.1 fixes above came from that work.
+limits (including thermal vibrations as a configuration register). It targets beam-sensitive
+specimens in general; gas and liquid cells are the demanding in-situ test cases. The v0.2.1 fixes above came
+from that work.
 
 ---
 
@@ -119,7 +124,7 @@ export IBMQ_TOKEN="YOUR_API_TOKEN"
 ## Repository Structure
 
 ```
-quantum_algo_microscopy/
+QuScope/
 ├── src/quscope/
 │   ├── quantum_ctem/                        # Core quantum TEM modules
 │   │   ├── quantum_ctem_circuit.py          # CTEM WPOA: QFT + CTF DiagonalGate
@@ -211,7 +216,8 @@ result = run_stem(
     detectors=STEMDetectors(),       # default angular ranges
     scan_step_px=1,
 )
-# result["HAADF"], result["ADF"], result["ABF"], result["BF"], result["iDPC"]
+# result["HAADF"], result["ADF"], result["ABF"], result["BF"]   (detector fractions of the incident beam)
+# result["iDPC"]  integrated DPC phase image (rad); result["DPC_x"], result["DPC_y"]  centre-of-mass field (1/Å)
 ```
 
 ### 4. Quantum STEM Multislice

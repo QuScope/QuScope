@@ -10,8 +10,8 @@ from typing import Dict, Optional
 
 import numpy as np
 
-from .base import AtomicScatteringParams, Material, MaterialParameters
-from ...ctem.kirkland_potential import KirklandPotential
+from .base import Material, MaterialParameters
+from ...ctem.atomic_potential import AtomicPotential
 
 
 class Graphene(Material):
@@ -38,15 +38,6 @@ class Graphene(Material):
 
     # Kirkland scattering parameters for Carbon
     # From Kirkland, "Advanced Computing in Electron Microscopy", Appendix C
-    SCATTERING_PARAMS = {
-        "C": AtomicScatteringParams(
-            symbol="C",
-            atomic_number=6,
-            a_coefficients=[0.7307, 0.6166, 0.2098, 0.1058],
-            b_coefficients=[0.0207, 0.1813, 0.7028, 2.8454],
-        ),
-    }
-
     # Graphene lattice parameters
     LATTICE_CONSTANT = 2.46  # Å (in-plane)
     BOND_LENGTH = 1.42  # Å (C-C bond)
@@ -201,10 +192,6 @@ class Graphene(Material):
 
         return atoms
 
-    def get_scattering_params(self) -> Dict[str, AtomicScatteringParams]:
-        """Get Kirkland scattering parameters for Carbon."""
-        return self.SCATTERING_PARAMS.copy()
-
     def get_sublattice_positions(self, atoms) -> Dict[str, np.ndarray]:
         """
         Get positions of A and B sublattice atoms.
@@ -253,7 +240,7 @@ class Graphene(Material):
         # Peak projected potential for an isolated C atom, from QuScope's
         # own Kirkland scattering-factor table (evaluated just off-center
         # to avoid the r=0 singularity in the Bessel-K0 term).
-        kirkland = KirklandPotential()
+        kirkland = AtomicPotential(self.parametrization)
         r0 = np.array([[0.01]])
         V_max_approx = float(kirkland.calculate_2d(r0, np.zeros_like(r0), atom_x=0.0, atom_y=0.0, Z=6)[0, 0])
 

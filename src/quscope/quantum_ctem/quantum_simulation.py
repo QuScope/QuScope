@@ -144,7 +144,7 @@ class QuantumTEMSimulator:
 
         # Initialize potential converter
         self.potential_converter = SamplePotentialConverter(
-            acceleration_voltage=params.acceleration_voltage, use_scattering_params=True
+            acceleration_voltage=params.acceleration_voltage
         )
 
         # Calculate wavelength

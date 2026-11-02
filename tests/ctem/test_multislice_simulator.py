@@ -20,28 +20,17 @@ Test Structure:
 import numpy as np
 import pytest
 
-from quscope.ctem.kirkland_potential import KirklandPotential
 from quscope.ctem.multislice_simulator import MultisliceSimulator
 
 
 @pytest.fixture
-def kirkland_path():
-    """Get path to kirkland.json parameters file."""
-    kirkland_file = KirklandPotential.DEFAULT_PARAMS_FILE
-    if not kirkland_file.exists():
-        pytest.skip("kirkland.json not found")
-    return str(kirkland_file)
-
-
-@pytest.fixture
-def basic_simulator(kirkland_path):
+def basic_simulator():
     """Create a basic multislice simulator for testing."""
     return MultisliceSimulator(
         image_size=40.0,  # 40 Å
         pixels=256,  # 256x256 image
         beam_energy=200e3,  # 200 keV
         slice_thickness=2.0,  # 2 Å slices
-        kirkland_params_path=kirkland_path,
     )
 
 
@@ -96,30 +85,28 @@ def gaas_atoms():
 class TestMultisliceSimulatorInitialization:
     """Test simulator initialization and parameter calculations."""
 
-    def test_initialization(self, kirkland_path):
+    def test_initialization(self):
         """Test basic initialization."""
         sim = MultisliceSimulator(
             image_size=50.0,
             pixels=256,
             beam_energy=200e3,
             slice_thickness=2.0,
-            kirkland_params_path=kirkland_path,
-        )
+            )
 
         assert sim.image_size == 50.0
         assert sim.pixels == 256
         assert sim.beam_energy == 200e3
         assert sim.slice_thickness == 2.0
 
-    def test_power_of_2_check(self, kirkland_path):
+    def test_power_of_2_check(self):
         """Test that non-power-of-2 pixels raises error."""
         with pytest.raises(ValueError, match="power of 2"):
             MultisliceSimulator(
                 image_size=50.0,
                 pixels=250,  # Not a power of 2
                 beam_energy=200e3,
-                kirkland_params_path=kirkland_path,
-            )
+                    )
 
     def test_wavelength_calculation(self, basic_simulator):
         """Test relativistic wavelength calculation."""
@@ -264,15 +251,19 @@ class TestTransmissionFunction:
         assert abs(center_phase) > abs(edge_phase)
 
     def test_multiple_atoms_superposition(self, basic_simulator):
-        """Test transmission for multiple atoms."""
+        """Two atoms give two phase maxima and no phase between them."""
         atoms = [{"position": [-5, 0, 5], "Z": 14}, {"position": [5, 0, 5], "Z": 14}]
 
         transmission = basic_simulator.calculate_slice_transmission(atoms, 2.0)
-
-        # Should have two phase maxima
         phase = np.angle(transmission)
-        assert phase.max() > 0
-        assert phase.min() < 0
+
+        x = basic_simulator.x
+        row = np.argmin(np.abs(x))
+        left, right, middle = (np.argmin(np.abs(x - v)) for v in (-5, 5, 0))
+        assert phase[row, left] > 1.0 and phase[row, right] > 1.0
+        assert phase[row, left] == pytest.approx(phase[row, right], rel=1e-6)
+        assert abs(phase[row, middle]) < 1e-3
+        assert phase.min() >= 0  # sigma V is below pi, so the phase does not wrap
 
 
 class TestSingleThicknessSimulation:
@@ -413,7 +404,7 @@ class TestKirklandValidation:
         assert intensity_std >= 0  # Passes - detailed check in validation notebook
 
     @pytest.mark.slow
-    def test_comparison_with_kirkland_table_7_2(self, kirkland_path):
+    def test_comparison_with_kirkland_table_7_2(self):
         """
         Validate against Kirkland Table 7.2 mean intensity values.
 
@@ -434,7 +425,7 @@ class TestKirklandValidation:
         pytest.skip("Requires large GaAs structure - implement in validation notebook")
 
     @pytest.mark.slow
-    def test_wave_function_structure_figure_7_2(self, kirkland_path):
+    def test_wave_function_structure_figure_7_2(self):
         """
         Validate wave function structure against Kirkland Figure 7.2.
 
@@ -444,7 +435,7 @@ class TestKirklandValidation:
         pytest.skip("Requires visual comparison - implement in validation notebook")
 
     @pytest.mark.slow
-    def test_phase_contrast_images_figure_7_4(self, kirkland_path):
+    def test_phase_contrast_images_figure_7_4(self):
         """
         Validate phase contrast images against Kirkland Figure 7.4.
 
@@ -488,7 +479,7 @@ class TestNumericalStability:
         assert np.allclose(result["mean_intensity"], 1.0, atol=0.01)
 
 
-def test_multislice_vs_wpoa_thin_limit(kirkland_path):
+def test_multislice_vs_wpoa_thin_limit():
     """
     Test that multislice reduces to WPOA for thin specimens.
 
@@ -507,10 +498,8 @@ def test_multislice_vs_wpoa_thin_limit(kirkland_path):
         pixels=pixels,
         beam_energy=beam_energy,
         slice_thickness=1.0,
-        kirkland_params_path=kirkland_path,
     )
 
-    # WPOASimulator finds kirkland.json automatically
     wpoa_sim = WPOASimulator(
         image_size=image_size, pixels=pixels, beam_energy=beam_energy
     )

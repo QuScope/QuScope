@@ -13,7 +13,7 @@ import numpy as np
 
 from quscope.simulations.quantum_utils import TEMQFT
 from quscope.utils.constants import PhysicalConstants
-from quscope.utils.kirkland import KirklandPotential
+from quscope.ctem.atomic_potential import AtomicPotential
 
 
 class ThinCTEM:
@@ -32,7 +32,7 @@ class ThinCTEM:
         image_size=50.0,
         n_qubits=8,
         beam_energy=200e3,
-        kirkland_params_file=None,
+        parametrization="kirkland",
     ):
         """
         Initialize thin specimen simulator.
@@ -45,6 +45,8 @@ class ThinCTEM:
             Number of qubits per dimension (n_qubits=8 gives 256x256 pixels)
         beam_energy : float
             Electron beam energy in eV.
+        parametrization : str
+            Atomic potential parametrization from abTEM: "kirkland" or "lobato".
         """
 
         self.image_size = image_size
@@ -56,8 +58,8 @@ class ThinCTEM:
         self.wavelength = PhysicalConstants.calculate_wavelength(beam_energy)
         self.sigma = PhysicalConstants.calculate_sigma(beam_energy)
 
-        # Load Kirkland parameters
-        self.params = KirklandPotential(kirkland_params_file)
+        # Projected atomic potentials from abTEM ("kirkland" or "lobato")
+        self.params = AtomicPotential(parametrization)
 
         # Set up QFTs
         self.qfts = TEMQFT(n_qubits)
@@ -90,7 +92,7 @@ class ThinCTEM:
 
         print("\nAtomic potential peaks:")
         for (x_atom, y_atom), Z in zip(atom_positions, atom_z_values):
-            V_atom = self.params.kirkland_potential_2d(
+            V_atom = self.params.calculate_2d(
                 self.X, self.Y, x_atom, y_atom, Z
             )
             V_total += V_atom

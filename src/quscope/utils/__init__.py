@@ -2,22 +2,14 @@
 Utility module for TEM simulations
 
 This module contains utility functions and constants for electron microscopy
-simulations, including physical constants, Kirkland atomic potentials, and
-common calculations.
+simulations, including physical constants and common calculations. Atomic
+potentials live in quscope.ctem.atomic_potential (abTEM parametrizations).
 
 Modules:
 - constants: Physical constants and common TEM calculations
-- kirkland: Kirkland atomic potential parameterization
 """
 
 from quscope.utils.constants import PhysicalConstants
-from quscope.utils.kirkland import KIRKLAND_SCATTERING_FACTOR, KirklandPotential
 
 __version__ = "0.1.0"
-__all__ = [
-    # Classes
-    PhysicalConstants,
-    KirklandPotential,
-    # Constants
-    KIRKLAND_SCATTERING_FACTOR,
-]
+__all__ = ["PhysicalConstants"]

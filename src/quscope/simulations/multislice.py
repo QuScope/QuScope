@@ -8,7 +8,7 @@ import numpy as np
 
 from quscope.simulations.quantum_utils import TEMQFT
 from quscope.utils.constants import PhysicalConstants
-from quscope.utils.kirkland import KirklandPotential
+from quscope.ctem.atomic_potential import AtomicPotential
 
 
 class ThickCTEM:
@@ -27,7 +27,7 @@ class ThickCTEM:
         image_size=50.0,
         n_qubits=8,
         beam_energy=200e3,
-        kirkland_params_file=None,
+        parametrization="kirkland",
     ):
         """
         Initialize thick specimen simulator.
@@ -40,6 +40,8 @@ class ThickCTEM:
             Number of qubits per dimension.
         beam_energy : float
             Electron beam energy in eV.
+        parametrization : str
+            Atomic potential parametrization from abTEM: "kirkland" or "lobato".
         """
 
         self.image_size = image_size
@@ -51,8 +53,8 @@ class ThickCTEM:
         self.wavelength = PhysicalConstants.calculate_wavelength(beam_energy)
         self.sigma = PhysicalConstants.calculate_sigma(beam_energy)
 
-        # Load Kirkland parameters
-        self.params = KirklandPotential(kirkland_params_file)
+        # Projected atomic potentials from abTEM ("kirkland" or "lobato")
+        self.params = AtomicPotential(parametrization)
 
         # Set up QFTs
         self.qfts = TEMQFT(n_qubits)
@@ -104,28 +106,28 @@ class ThickCTEM:
             Z = atom["Z"]
 
             # Add potential from this atom
-            V_atom = self.params.kirkland_potential_2d(self.X, self.Y, x, y, Z)
+            V_atom = self.params.calculate_2d(self.X, self.Y, x, y, Z)
             V_slice += V_atom
 
             # Also add periodic images if atom is near boundary
             # This ensures continuity at edges
             if abs(x) > self.image_size / 2 - 5:  # Near x boundary
                 x_periodic = x - np.sign(x) * self.image_size
-                V_atom = self.params.kirkland_potential_2d(
+                V_atom = self.params.calculate_2d(
                     self.X, self.Y, x_periodic, y, Z
                 )
                 V_slice += V_atom
 
             if abs(y) > self.image_size / 2 - 5:  # Near y boundary
                 y_periodic = y - np.sign(y) * self.image_size
-                V_atom = self.params.kirkland_potential_2d(
+                V_atom = self.params.calculate_2d(
                     self.X, self.Y, x, y_periodic, Z
                 )
                 V_slice += V_atom
 
-        # Transmission function with correct normalization
-        # Phase should be proportional to projected potential and slice thickness
-        phase = self.sigma * V_slice * slice_thickness
+        # The atomic potentials are projected along z already, so the phase is sigma * V_proj
+        # (no extra factor of the slice thickness)
+        phase = self.sigma * V_slice
         transmission = np.exp(1j * phase)
 
         return transmission

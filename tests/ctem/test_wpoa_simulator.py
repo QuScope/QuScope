@@ -59,21 +59,14 @@ class TestWPOASimulator:
 
     def test_sigma_calculation_200kev(self, sim_200kev):
         """
-        Test interaction parameter σ for 200 keV.
-
-        Expected: σ ≈ 0.000389 rad/eV (empirically calibrated to match Kirkland figures)
-        For 5600 eV potential (C at origin) → phase ≈ 2.18 radians
+        Interaction parameter at 200 keV: sigma = 2 pi gamma m0 e lambda / h^2 = 7.288e-4 rad/(V*Angstrom)
+        (Kirkland Eq. 5.6), applied to the projected potential in V*Angstrom.
         """
-        sigma = sim_200kev.sigma
+        assert sim_200kev.sigma == pytest.approx(7.288e-4, rel=2e-3)
 
-        # Should be in correct order of magnitude
-        # (empirically determined from Kirkland Fig 5.11 output)
-        assert 0.0003 < sigma < 0.0005
-
-        # Verify this matches expected behavior:
-        # For C atom at origin (V ≈ 5600 eV), phase ≈ 2.18 radians
-        expected_phase = sigma * 5600
-        assert 2.0 < expected_phase < 2.4  # Matches notebook output
+        # an abTEM Kirkland carbon atom (about 320 V*Angstrom at 0.05 A) then shifts the phase by about 0.2 rad
+        pot = sim_200kev.potential_calculator.projected_potential("C", 0.05)
+        assert 0.1 < sim_200kev.sigma * pot < 0.4
 
     def test_coordinate_grid_setup(self, sim_200kev):
         """Test that coordinate grids are correctly set up."""

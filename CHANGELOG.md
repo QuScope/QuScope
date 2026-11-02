@@ -11,7 +11,40 @@ STEM fixes found while validating the quantum STEM pipelines against abTEM on Sr
 (HAADF, ADF, ABF, BF and iDPC agree with abTEM to a correlation of 0.997-0.9994; see
 `examples-applications`).
 
+### Added
+- `MoSe2` material (`get_material("mose2")`): 2H MoSe2 with a = 3.29 A and a Se-Se distance of 3.33 A.
+
+### Changed (breaking)
+- Python >= 3.11 (was 3.9). abTEM requires it and now provides the atomic potentials; 3.9 is end-of-life and 3.10 reaches it in October 2026.
+- Atomic potentials now come from abTEM only, through the new `quscope.ctem.AtomicPotential`
+  (`"kirkland"` or `"lobato"` parametrization, in V*Angstrom). QuScope no longer carries scattering-factor tables.
+  abTEM and ASE are core dependencies now (`quscope[microscopy]` is kept as an empty extra).
+- `WPOASimulator`, `MultisliceSimulator`, `simulations.WPO`, `simulations.Multislice`:
+  the `params_file` / `kirkland_params_path` / `kirkland_params_file` arguments are replaced by
+  `parametrization="kirkland"`.
+- `SamplePotentialConverter(acceleration_voltage, parametrization="kirkland")`: `use_scattering_params`
+  is gone. Potentials are in V*Angstrom (the old per-element `ELEMENT_SCALE` factors are gone).
+- `Material.get_projected_potential(..., parametrization=None)`; materials carry a `parametrization` attribute.
+
+### Removed
+- `quscope.ctem.KirklandPotential`, `quscope.utils.kirkland` (`KirklandPotential`,
+  `KIRKLAND_SCATTERING_FACTOR`), `kirkland.json`, the hand-typed `AtomicScatteringParams` /
+  `SCATTERING_PARAMS` tables and `Material.get_scattering_params`, and the copy of the formula in
+  `MultisliceSimulator`.
+
 ### Fixed
+- Atomic potentials were 1.2 to 1.9 times larger than abTEM's Kirkland potentials for every element, with a
+  different shape: the prefactor was a bare 14.4 instead of 4 pi^2 a0 e (the Bohr radius a0 was missing) and
+  the Gaussian terms used the 3D form. Other constants were tuned to compensate, which is why the following
+  changed together with the potentials:
+  - `WPOASimulator` and `MultisliceSimulator` used an "empirically calibrated" sigma of 3.9e-4 at 200 kV; they now use
+    the physical 7.29e-4 rad/(V*Angstrom).
+  - `MultisliceSimulator` and `simulations.Multislice` multiplied the already z-projected potential by the slice
+    thickness again; removed.
+  - `SamplePotentialConverter` used the non-relativistic electron mass in sigma (5.24e-4 at 200 kV, 0.72x too small);
+    it is relativistic now.
+- `MultisliceSimulator.kirkland_potential_2d` silently used carbon for every element except Ga, As, Si and C
+  (gold became carbon). All elements are supported.
 - `run_stem`, `run_stem_multislice`: the `iDPC` image was the divergence of the centre-of-mass
   field (the Laplacian of the phase), not its integral. It is now the Fourier-space integral
   (`quantum_stem.integrate_dpc`), a phase image in radians. The centre-of-mass field is also

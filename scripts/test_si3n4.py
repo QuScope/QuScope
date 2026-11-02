@@ -11,7 +11,7 @@ from quscope.quantum_ctem import (
     QuantumMultisliceCircuit,
     QuantumClassicalMultisliceValidator,
 )
-from quscope.ctem.kirkland_potential import KirklandPotential
+from quscope.ctem import AtomicPotential
 from quscope.quantum_ctem.quantum_ctem_circuit import relativistic_wavelength, interaction_constant
 
 # --- Structure ---
@@ -56,8 +56,8 @@ wl    = relativistic_wavelength(200e3)
 sigma = interaction_constant(200e3, wl)
 print(f"lambda={wl:.4f} A  sigma={sigma:.4f} V-1A-1")
 
-# --- Kirkland slice potentials ---
-kirk     = KirklandPotential()
+# --- abTEM (Kirkland) slice potentials ---
+kirk     = AtomicPotential("kirkland")   # abTEM parametrization
 SYMBOL_Z = {"Si": 14, "N": 7}
 N_SLICES = 4
 extent   = GRID_SIZE * PIXEL_SIZE

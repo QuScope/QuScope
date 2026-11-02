@@ -10,13 +10,13 @@ The classical implementations serve as:
 3. Comparison benchmarks for quantum advantage demonstrations
 
 Modules:
-- kirkland_potential: Atomic potential calculations (Kirkland Appendix C)
+- atomic_potential: Projected atomic potentials from abTEM (Kirkland or Lobato parametrization)
 - wpoa_simulator: Weak Phase Object Approximation simulator (Kirkland Chapter 5)
 - multislice_simulator: Full multislice algorithm (Kirkland Chapter 7)
 - structures: Crystal structure generation utilities [TO BE ADDED]
 """
 
-from .kirkland_potential import KirklandPotential
+from .atomic_potential import AtomicPotential
 from .multislice_simulator import MultisliceSimulator
 from .wpoa_simulator import WPOASimulator
 
@@ -24,7 +24,7 @@ from .wpoa_simulator import WPOASimulator
 # from .structures import create_gaas_structure, create_silicon_structure
 
 __all__ = [
-    "KirklandPotential",
+    "AtomicPotential",
     "WPOASimulator",
     "MultisliceSimulator",
     # 'create_gaas_structure',

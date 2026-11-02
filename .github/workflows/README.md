@@ -9,7 +9,7 @@ This directory contains GitHub Actions workflows for the QuScope project.
 - **Trigger**: When a GitHub release is published
 - **Environment**: Uses the `pypi` environment (needs to be configured in repository settings)
 - **Features**:
-  - Runs tests across Python 3.9-3.12 before publishing
+  - Runs tests across Python 3.11-3.12 before publishing
   - Uses trusted publishing (no API tokens needed)
   - Builds and verifies the package before upload
 
@@ -17,7 +17,7 @@ This directory contains GitHub Actions workflows for the QuScope project.
 - **Purpose**: Runs tests and checks on every push and pull request
 - **Trigger**: Push to main/develop branches, PRs to main
 - **Features**:
-  - Tests across Python 3.9-3.12
+  - Tests across Python 3.11-3.12
   - Linting with flake8
   - Documentation building
   - Import verification

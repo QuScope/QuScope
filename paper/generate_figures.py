@@ -7,7 +7,7 @@ no diagonal-as-array shortcuts are used.
 
 Figures (saved to paper/figures/ as PDF + PNG preview):
   fig_ctem_wpoa    potential | quantum CTEM intensity | classical reference
-  fig_stem         Z-contrast: O/Ti/Sr/Au columns (Kirkland potentials),
+  fig_stem         Z-contrast: O/Ti/Sr/Au columns (abTEM Kirkland potentials),
                    HAADF + ABF + HAADF-peak-vs-Z scaling panel
   fig_multislice   SrTiO3 [100], 10 unit cells (20 slices): quantum vs
                    classical exit wave + difference
@@ -55,7 +55,7 @@ from quscope.quantum_ctem.quantum_ctem_circuit import (             # noqa: E402
 from quscope.quantum_ctem.quantum_stem import (                     # noqa: E402
     _focused_probe_k, _probe_real, _propagate_to_detector,
 )
-from quscope.ctem.kirkland_potential import KirklandPotential       # noqa: E402
+from quscope.ctem import AtomicPotential                             # noqa: E402
 
 FIGDIR = HERE / "figures"
 FIGDIR.mkdir(exist_ok=True)
@@ -72,7 +72,7 @@ CM_POT = "magma"    # projected potential (sequential magnitude)
 VOLTAGE = 200e3
 LAM = relativistic_wavelength(VOLTAGE)
 SIGMA = interaction_constant(VOLTAGE, LAM)
-KP = KirklandPotential()
+KP = AtomicPotential("kirkland")   # abTEM's Kirkland parametrization
 
 
 def kirkland_grid(N, px, atoms, origin=0.0, supersample=1):

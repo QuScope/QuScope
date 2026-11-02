@@ -19,12 +19,12 @@ References:
     - Table 7.2: Mean intensity validation values
 """
 
-import json
-from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
-from scipy.special import kn
+
+from ..utils.constants import PhysicalConstants
+from .atomic_potential import AtomicPotential
 
 
 class MultisliceSimulator:
@@ -64,7 +64,7 @@ class MultisliceSimulator:
         pixels: int,
         beam_energy: float,
         slice_thickness: float = 2.0,
-        kirkland_params_path: Optional[str] = None,
+        parametrization: str = "kirkland",
     ):
         """
         Initialize multislice simulator.
@@ -74,11 +74,11 @@ class MultisliceSimulator:
             pixels: Number of pixels (must be power of 2 for efficient FFT)
             beam_energy: Electron beam energy in eV (e.g., 200e3 for 200 keV)
             slice_thickness: Thickness of each slice in Angstroms (default: 2.0)
-            kirkland_params_path: Path to kirkland.json parameters file
+            parametrization: Atomic potential parametrization from abTEM, "kirkland" or "lobato"
 
         Raises:
             ValueError: If pixels is not a power of 2
-            FileNotFoundError: If kirkland.json cannot be found
+            ValueError: If the parametrization is unknown
         """
         # Check power of 2
         if pixels & (pixels - 1) != 0:
@@ -108,20 +108,8 @@ class MultisliceSimulator:
         self.KX, self.KY = np.meshgrid(self.kx, self.kx, indexing="xy")
         self.k_squared = self.KX**2 + self.KY**2
 
-        # Load Kirkland parameters
-        if kirkland_params_path is None:
-            from quscope.ctem.kirkland_potential import KirklandPotential
-
-            kirkland_params_path = str(KirklandPotential.DEFAULT_PARAMS_FILE)
-
-        if not Path(kirkland_params_path).exists():
-            raise FileNotFoundError(
-                f"Kirkland parameters file not found: {kirkland_params_path}. "
-                "Please provide kirkland_params_path parameter."
-            )
-
-        with open(kirkland_params_path, "r") as f:
-            self.kirkland_params = json.load(f)
+        # Projected atomic potentials from abTEM
+        self.potential_calculator = AtomicPotential(parametrization)
 
     def _calculate_wavelength(self) -> float:
         """
@@ -140,29 +128,11 @@ class MultisliceSimulator:
 
     def _calculate_sigma(self) -> float:
         """
-        Calculate interaction parameter σ.
+        Interaction parameter sigma = 2 pi gamma m0 e lambda / h^2 (Kirkland Eq. 5.6) in rad/(V*Angstrom).
 
-        σ = 2π m₀ e λ / h² × (E + E₀) / (E(E + 2E₀))
-
-        where E is beam energy, E₀ is rest mass energy (511 keV).
-
-        Simplified form (empirically calibrated):
-        σ ≈ 0.00335 × γ / (λ × V_keV)
-
-        Returns:
-            Interaction parameter in rad/(eV·Å)
+        Applied to the projected potential in V*Angstrom; 7.29e-4 rad/(V*Angstrom) at 200 keV.
         """
-        V = self.beam_energy
-        V_keV = V / 1000.0
-        m0c2_eV = self.m0c2
-
-        # Relativistic correction factor
-        gamma = (m0c2_eV + V) / (2 * m0c2_eV + V)
-
-        # Interaction parameter (empirically calibrated)
-        sigma = 0.00335 * gamma / (self.wavelength * V_keV)
-
-        return sigma
+        return PhysicalConstants.calculate_sigma(self.beam_energy)
 
     def kirkland_potential_2d(
         self,
@@ -173,95 +143,12 @@ class MultisliceSimulator:
         Z: int,
     ) -> np.ndarray:
         """
-        Calculate 2D projected atomic potential using Kirkland parameterization.
+        Projected atomic potential of one atom on a grid, in V*Angstrom.
 
-        V(x,y) = Σᵢ 4π²aᵢ K₀(2πr√bᵢ) + Σᵢ π^(3/2) cᵢ/dᵢ^(3/2) exp(-π²r²/dᵢ)
-
-        where K₀ is the modified Bessel function of the second kind.
-
-        Parameters:
-            x_grid: 2D array of x coordinates (Å)
-            y_grid: 2D array of y coordinates (Å)
-            atom_x: Atom x position (Å)
-            atom_y: Atom y position (Å)
-            Z: Atomic number
-
-        Returns:
-            2D array of potential values in eV·Å
-
-        References:
-            Kirkland Table 4.1: Scattering factor parameterization
+        Delegates to abTEM's parametrization chosen at construction (the method name is kept for
+        compatibility; the parametrization can also be "lobato").
         """
-        # Map atomic number to element symbol
-        element_map = {31: "Ga", 33: "As", 14: "Si", 6: "C"}
-        element = element_map.get(Z, "C")
-
-        if element not in self.kirkland_params:
-            # Use similar element if not found
-            similar = {"Ga": "Ge", "As": "Se"}
-            element = similar.get(element, "C")
-
-        params = self.kirkland_params[element]
-        a = np.array(params[0], dtype=float)
-        b = np.array(params[1], dtype=float)
-        c = np.array(params[2], dtype=float)
-        d = np.array(params[3], dtype=float)
-
-        # Distance from atom
-        r2 = (x_grid - atom_x) ** 2 + (y_grid - atom_y) ** 2
-        r = np.sqrt(r2 + 1e-16)  # Avoid division by zero
-
-        V = np.zeros_like(r, dtype=float)
-
-        # Modified Bessel K₀ terms
-        for i in range(3):
-            if b[i] > 0:
-                arg = 2 * np.pi * r * np.sqrt(b[i])
-
-                # Handle small and large arguments separately for numerical stability
-                mask_small = arg < 50
-                mask_large = arg >= 50
-
-                if np.any(mask_small):
-                    V[mask_small] += 4 * np.pi**2 * a[i] * kn(0, arg[mask_small])
-
-                if np.any(mask_large):
-                    # Asymptotic form: K₀(x) ≈ √(π/2x) exp(-x) for large x
-                    x = arg[mask_large]
-                    V[mask_large] += (
-                        4 * np.pi**2 * a[i] * np.sqrt(np.pi / (2 * x)) * np.exp(-x)
-                    )
-
-        # Gaussian terms
-        for i in range(3):
-            if d[i] > 0:
-                V += (
-                    np.pi ** (3 / 2)
-                    * c[i]
-                    / d[i] ** (3 / 2)
-                    * np.exp(-np.pi**2 * r2 / d[i])
-                )
-
-        # Handle r=0 singularity for K₀
-        center_mask = r < 1e-8
-        if np.any(center_mask):
-            V_center = 0
-            for i in range(3):
-                if b[i] > 0:
-                    small_arg = 2 * np.pi * 1e-8 * np.sqrt(b[i])
-                    # K₀(x) ≈ -log(x/2) - γ for small x (γ = Euler's constant)
-                    V_center += (
-                        4 * np.pi**2 * a[i] * (-np.log(small_arg / 2) - 0.5772156649)
-                    )
-            for i in range(3):
-                if d[i] > 0:
-                    V_center += np.pi ** (3 / 2) * c[i] / d[i] ** (3 / 2)
-            V[center_mask] = V_center
-
-        # Convert to eV·Å (Kirkland uses factor of 14.4)
-        V *= 14.4
-
-        return V
+        return self.potential_calculator.calculate_2d(x_grid, y_grid, atom_x, atom_y, Z)
 
     def get_atoms_in_slice(
         self, atoms: List[Dict], z_min: float, z_max: float
@@ -311,9 +198,10 @@ class MultisliceSimulator:
         """
         Calculate transmission function for a slice.
 
-        t_n(x,y) = exp(iσV_n(x,y)Δz)
+        t_n(x,y) = exp(iσ v_n(x,y))
 
-        where V_n is the projected potential for slice n.
+        where v_n is the projected potential of the atoms in slice n [V*Angstrom]. The atomic
+        potentials are already integrated along z, so there is no extra factor of the slice thickness.
 
         Parameters:
             atoms_in_slice: List of atoms in this slice
@@ -345,7 +233,7 @@ class MultisliceSimulator:
                 V_slice += V_atom
 
         # Transmission function: phase is proportional to V·Δz
-        phase = self.sigma * V_slice * slice_thickness
+        phase = self.sigma * V_slice
         transmission = np.exp(1j * phase)
 
         return transmission

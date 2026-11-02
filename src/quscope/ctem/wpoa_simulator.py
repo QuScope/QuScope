@@ -9,7 +9,7 @@ The WPOA assumes the transmission function is:
 
 where:
 - σ = interaction parameter (depends on beam energy)
-- V(x,y) = projected atomic potential (from KirklandPotential)
+- V(x,y) = projected atomic potential (from AtomicPotential, abTEM parametrizations)
 
 The simulation pipeline:
 1. Calculate projected potential V(x,y) for all atoms
@@ -29,7 +29,8 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
-from .kirkland_potential import KirklandPotential
+from .atomic_potential import AtomicPotential
+from ..utils.constants import PhysicalConstants
 
 
 class WPOASimulator:
@@ -49,10 +50,10 @@ class WPOASimulator:
         pixels: Number of pixels (assumed square image)
         beam_energy: Electron beam energy in eV
         wavelength: Relativistic electron wavelength in Angstroms
-        sigma: Interaction parameter in rad/eV
+        sigma: Interaction parameter in rad/(V*Angstrom)
         dx: Pixel size in Angstroms
         X, Y: 2D coordinate grids in Angstroms
-        potential_calculator: KirklandPotential instance for atomic potentials
+        potential_calculator: AtomicPotential instance for atomic potentials
 
     Example:
         >>> from quscope.ctem import WPOASimulator
@@ -96,7 +97,7 @@ class WPOASimulator:
         image_size: float = 50.0,
         pixels: int = 512,
         beam_energy: float = 200e3,
-        params_file: Optional[Path] = None,
+        parametrization: str = "kirkland",
     ):
         """
         Initialize WPOA simulator.
@@ -105,7 +106,7 @@ class WPOASimulator:
             image_size: Physical size of image in Angstroms
             pixels: Number of pixels (square image assumed)
             beam_energy: Electron beam energy in eV (e.g., 200e3 for 200 keV)
-            params_file: Optional path to Kirkland parameters file
+            parametrization: Atomic potential parametrization from abTEM, "kirkland" or "lobato"
 
         Notes:
             - Coordinate system: origin at image center
@@ -129,7 +130,7 @@ class WPOASimulator:
         self.X, self.Y = np.meshgrid(x, y, indexing="xy")
 
         # Initialize potential calculator
-        self.potential_calculator = KirklandPotential(params_file=params_file)
+        self.potential_calculator = AtomicPotential(parametrization)
 
     def _calculate_wavelength(self) -> float:
         """
@@ -157,35 +158,12 @@ class WPOASimulator:
 
     def _calculate_sigma(self) -> float:
         """
-        Calculate interaction parameter σ.
+        Interaction parameter sigma = 2 pi gamma m0 e lambda / h^2 (Kirkland Eq. 5.6) in rad/(V*Angstrom).
 
-        Uses Kirkland Equation 5.6:
-            σ = (2πmeλ/h²) · (m₀c² + eV)/(2m₀c² + eV)
-
-        In practical units (Angstroms and eV):
-            σ ≈ C · γ / (λ · V)
-
-        where C ≈ 60 for λ in Angstroms, V in eV.
-
-        Returns:
-            Interaction parameter in rad/eV
-
-        Notes:
-            - For 200 keV: σ ≈ 0.00729 rad/eV
-            - For 1000 eV potential: phase ≈ 7.29 radians
+        Applied to the projected potential in V*Angstrom, so the phase is sigma * V(x, y). At 200 keV sigma is
+        7.29e-4 rad/(V*Angstrom).
         """
-        V = self.beam_energy  # in eV
-
-        # Relativistic factor
-        gamma = (self.M0C2 + V) / (2 * self.M0C2 + V)
-
-        # Interaction parameter
-        # Using empirically determined constant (from Kirkland figures)
-        # Note: This constant was calibrated with wavelength formula
-        V_keV = V / 1000.0
-        sigma = 0.00335 * gamma / (self.wavelength * V_keV)
-
-        return sigma
+        return PhysicalConstants.calculate_sigma(self.beam_energy)
 
     def calculate_transmission_function(
         self, atom_positions: List[Tuple[float, float, int]]
@@ -205,7 +183,7 @@ class WPOASimulator:
 
         Returns:
             transmission: Complex transmission function, shape (pixels, pixels)
-            potential: Total projected potential in eV, shape (pixels, pixels)
+            potential: Total projected potential in V*Angstrom, shape (pixels, pixels)
 
         Example:
             >>> atoms = [(0, 0, 6), (5, 0, 14)]  # C and Si
@@ -321,7 +299,7 @@ class WPOASimulator:
             Dictionary containing:
                 - 'intensity': Image intensity I = |ψ|², shape (pixels, pixels)
                 - 'transmission': Complex transmission function
-                - 'potential': Projected atomic potential in eV
+                - 'potential': Projected atomic potential in V*Angstrom
                 - 'positions': Atom positions used
                 - 'psi': Complex wavefunction (if return_wavefunction=True)
 
@@ -383,7 +361,7 @@ class WPOASimulator:
             Dictionary with simulation parameters:
                 - beam_energy: in eV
                 - wavelength: in Angstroms
-                - sigma: interaction parameter in rad/eV
+                - sigma: interaction parameter in rad/(V*Angstrom)
                 - pixel_size: in Angstroms
                 - image_size: in Angstroms
                 - pixels: number of pixels

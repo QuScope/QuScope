@@ -4,7 +4,7 @@ quscope.ctem
 Classical CTEM reference implementations used to validate the quantum
 circuits in :doc:`quscope.quantum_ctem`.
 
-.. automodule:: quscope.ctem.kirkland_potential
+.. automodule:: quscope.ctem.atomic_potential
    :members:
    :undoc-members:
    :show-inheritance:

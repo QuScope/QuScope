@@ -76,14 +76,6 @@ class TestMoS2Material:
         atoms = mos2.build_supercell(nx=3, ny=3)
         assert len(atoms) > 0
 
-    def test_get_scattering_params(self, mos2):
-        """Test getting Kirkland scattering parameters."""
-        params = mos2.get_scattering_params()
-        assert "Mo" in params
-        assert "S" in params
-        assert len(params["Mo"].a_coefficients) == 4
-        assert len(params["Mo"].b_coefficients) == 4
-
     def test_projected_potential(self, mos2):
         """Test computing projected potential."""
         atoms = mos2.build_structure(nx=2, ny=2)

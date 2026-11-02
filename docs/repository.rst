@@ -93,4 +93,5 @@ I want to...
    * - Report a bug or contribute a fix
      - :doc:`contributing`
    * - Work on diffraction, Bloch-wave, or frozen-phonon features
-     - The ``dev`` branch (not yet released)
+     - The experimental ``quantum_diffraction``, ``quantum_frozen_phonon`` and
+       ``quantum_bloch_wave`` modules, on a feature branch from ``main``

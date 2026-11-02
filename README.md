@@ -70,7 +70,7 @@ print(f"Quantum–classical fidelity: {comparison['fidelity']:.6f}")   # → 1.0
 
 Atomic potentials come from abTEM (`quscope.ctem.AtomicPotential`, "kirkland" or "lobato"); QuScope ships no scattering-factor tables.
 
-Supporting infrastructure: `ctf_calculator` (aberration function), `hamiltonian` (TEM Hamiltonian), `momentum_space`, `quantum_encoding`, classical reference implementations (`classical_validation`, `ctem/`, `simulations/`), Kirkland scattering-factor tables (`utils/`), materials workflows (MoS₂, graphene), circuit optimization, and IBM Quantum backend wrappers.
+Supporting infrastructure: `ctf_calculator` (aberration function), `hamiltonian` (TEM Hamiltonian), `momentum_space`, `quantum_encoding`, classical reference implementations (`classical_validation`, `ctem/`, `simulations/`), atomic potentials via abTEM (`ctem/atomic_potential`), materials workflows (MoS₂, MoSe₂, graphene), circuit optimization, and IBM Quantum backend wrappers.
 
 ### STEM Detector Channels
 | Channel | Inner (mrad) | Outer (mrad) | Contrast |
@@ -144,7 +144,7 @@ QuScope/
 │   │   ├── classical_validation.py          # Classical reference implementations
 │   │   ├── circuit_optimization.py          # Gate cancellation & transpilation
 │   │   ├── performance_benchmarking.py      # Benchmark suite
-│   │   ├── materials/                       # MoS₂, Graphene structure factors
+│   │   ├── materials/                       # MoS₂, MoSe₂, Graphene structures
 │   │   ├── mos2_workflow/                   # End-to-end MoS₂ orchestration
 │   │   ├── workflows/                       # Reusable workflow base classes
 │   │   └── backends/                        # IBM Quantum / Aer backend wrappers

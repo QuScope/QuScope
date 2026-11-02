@@ -11,23 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          fetch-depth: 0
+          python-version: '3.11'
+          cache: pip
 
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          auto-activate-base: false
-
-      - name: Install mamba and create env
+      - name: Install package
         run: |
-          # install mamba into the base env so we can use it
-          conda install -y -n base -c conda-forge mamba
-          # create a small env with core deps for the smoke test
-          mamba create -y -n quantum python=3.11 numpy scipy matplotlib pytest -c conda-forge
-          # Ensure pip is available and install qiskit via pip (lightweight install)
-          mamba run -n quantum python -m pip install qiskit
+          python -m pip install --upgrade pip
+          python -m pip install -e . pytest
 
-      - name: Run fast MoS2 smoke test
-        run: |
-          mamba run -n quantum python -c "import sys, os; sys.path.append('src'); import pytest; pytest.main(['-q','tests/test_mos2_smoke.py'])"
+      - name: Run fast MoS2/MoSe2 smoke test
+        run: python -m pytest -q tests/quantum_ctem/test_mose2.py

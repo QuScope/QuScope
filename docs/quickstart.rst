@@ -84,11 +84,16 @@ Beyond CTEM: Quantum STEM
                                  n_slices=4, slice_thickness=6.5)
 
 Both return a dict keyed by detector channel (``"HAADF"``, ``"ADF"``,
-``"ABF"``, ``"BF"``, ``"iDPC"``).
+``"ABF"``, ``"BF"``, ``"iDPC"``) Detector signals are fractions of the
+incident beam. ``"iDPC"`` is the integrated differential-phase-contrast image
+(a phase image in radians); the underlying centre-of-mass field is returned as
+``"DPC_x"`` and ``"DPC_y"`` (1/Å). The probe at scan index ``(i, j)`` sits at
+pixel ``(i*step, j*step)`` of the potential.
 
 Quantum diffraction modes, frozen-phonon/thermal-diffuse scattering, and the
-Bloch-wave QPE eigensolver are under development on the ``dev`` branch and
-not yet part of a release.
+Bloch-wave QPE eigensolver are experimental modules in the source tree
+(``quantum_diffraction``, ``quantum_frozen_phonon``, ``quantum_bloch_wave``);
+their APIs may change before they join a stable release.
 
 Next Steps
 =============

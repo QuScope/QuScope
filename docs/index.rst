@@ -1,7 +1,7 @@
 .. QuScope documentation master file
 
 ============================
-QuScope v0.2.0 Documentation
+QuScope v0.2.1 Documentation
 ============================
 
 **QuScope** is a Python package for applying quantum computing algorithms to
@@ -12,7 +12,7 @@ grating, Fresnel propagation, objective lens) is a diagonal unitary conjugated
 by quantum Fourier transforms — validated against classical reference
 implementations to unit fidelity.
 
-v0.2.0 provides four fully-quantum imaging pipelines: CTEM (WPOA), CTEM
+v0.2.1 provides four fully-quantum imaging pipelines: CTEM (WPOA), CTEM
 multislice, STEM (WPOA), and STEM multislice. New to the project? Start with
 :doc:`quickstart`, or see :doc:`repository` for a map of the branches, related
 repositories, and package layout.

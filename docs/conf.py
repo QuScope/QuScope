@@ -17,8 +17,8 @@ project = 'QuScope'
 copyright = '2026, Roberto dos Reis and Sean D. Lam'
 author = 'Roberto dos Reis and Sean D. Lam'
 
-version = '0.2.0'
-release = '0.2.0'
+version = '0.2.1'
+release = '0.2.1'
 
 # -- General configuration ---------------------------------------------------
 

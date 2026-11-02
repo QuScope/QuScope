@@ -8,7 +8,7 @@
 
 **QuScope** is a Python package for applying quantum computing algorithms to Transmission Electron Microscopy (TEM) simulation. Built on Qiskit, it expresses the TEM image-formation pipeline as quantum circuits — the electron wavefunction is amplitude-encoded on qubits, and every optical element (phase grating, Fresnel propagation, objective lens) is a diagonal unitary conjugated by quantum Fourier transforms — validated against classical reference implementations to unit fidelity.
 
-v0.2.0 provides four fully-quantum imaging pipelines: **CTEM (WPOA)**, **CTEM multislice**, **STEM (WPOA)**, and **STEM multislice**.
+v0.2.1 provides four fully-quantum imaging pipelines: **CTEM (WPOA)**, **CTEM multislice**, **STEM (WPOA)**, and **STEM multislice**.
 
 **Developed by** [Sean D. Lam](https://arxiv.org/search/quant-ph?searchtype=author&query=Lam,+S+D) and [Roberto dos Reis](https://arxiv.org/search/quant-ph?searchtype=author&query=Reis,+R+d) · Northwestern University
 
@@ -124,7 +124,7 @@ export IBMQ_TOKEN="YOUR_API_TOKEN"
 ## Repository Structure
 
 ```
-quantum_algo_microscopy/
+QuScope/
 ├── src/quscope/
 │   ├── quantum_ctem/                        # Core quantum TEM modules
 │   │   ├── quantum_ctem_circuit.py          # CTEM WPOA: QFT + CTF DiagonalGate
@@ -216,7 +216,8 @@ result = run_stem(
     detectors=STEMDetectors(),       # default angular ranges
     scan_step_px=1,
 )
-# result["HAADF"], result["ADF"], result["ABF"], result["BF"], result["iDPC"]
+# result["HAADF"], result["ADF"], result["ABF"], result["BF"]   (detector fractions of the incident beam)
+# result["iDPC"]  integrated DPC phase image (rad); result["DPC_x"], result["DPC_y"]  centre-of-mass field (1/Å)
 ```
 
 ### 4. Quantum STEM Multislice

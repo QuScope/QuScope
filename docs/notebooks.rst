@@ -54,8 +54,8 @@ Quantum STEM
 
 .. note::
    Quantum diffraction modes, frozen-phonon/thermal-diffuse-scattering
-   channels, and the Bloch-wave QPE eigensolver are under development on the
-   ``dev`` branch and not yet part of a release.
+   channels, and the Bloch-wave QPE eigensolver are experimental modules
+   in the source tree; their APIs may change before they join a stable release.
 
 Executed Reference Copies
 ---------------------------

@@ -74,8 +74,8 @@ Development Guidelines
 
 **Git Workflow**
 
-- Create feature branches from ``main`` (or ``dev`` for work-in-progress
-  features not yet released — see :doc:`repository`)
+- Create feature branches from ``main`` (see :doc:`repository` for the
+  branch map)
 - Use descriptive commit messages
 - Keep commits focused and atomic
 - Include issue numbers in commit messages when applicable
